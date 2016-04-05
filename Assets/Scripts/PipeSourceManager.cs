@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class ClickableTester : MonoBehaviour {
+public class PipeSourceManager : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
@@ -9,5 +9,7 @@ public class ClickableTester : MonoBehaviour {
 	}
 	
 	// Update is called once per frame
+	void Update () {
 	
+	}
 }
