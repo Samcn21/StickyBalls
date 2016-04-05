@@ -39,7 +39,8 @@ public class PlayerManager : MonoBehaviour {
         _tPipeRef.transform.parent = transform;
         _voidPipeRef.transform.parent = transform;
     }
-
+    //This function is called when the player is carrying a pipe of type cross
+    //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
     public void carryCrossPipe()
     {
         _voidPipeRef.SetActive(false);
@@ -51,7 +52,8 @@ public class PlayerManager : MonoBehaviour {
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
             _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Cross, (int)pos.x, (int)pos.y);
     }
-
+    //This function is called when the player is carrying a pipe of type straight
+    //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
     public void carryStraightPipe()
     {
         _voidPipeRef.SetActive(false);
@@ -63,7 +65,8 @@ public class PlayerManager : MonoBehaviour {
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
             _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Straight, (int)pos.x, (int)pos.y);
     }
-
+    //This function is called when the player is carrying a pipe of type t
+    //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
     public void carryTPipe()
     {
         _voidPipeRef.SetActive(false);
@@ -75,7 +78,8 @@ public class PlayerManager : MonoBehaviour {
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
             _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.T, (int)pos.x, (int)pos.y);
     }
-
+    //This function is called when the player is carrying a pipe of type corner
+    //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
     public void carryCornerPipe()
     {
         _voidPipeRef.SetActive(false);
@@ -87,7 +91,7 @@ public class PlayerManager : MonoBehaviour {
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
             _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Corner, (int)pos.x, (int)pos.y);
     }
-
+    //This function is called when the player decided to waste the pipe that was carrying
     public void emptyPipe()
     {
         _voidPipeRef.SetActive(true);

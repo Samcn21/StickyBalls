@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
+/*
+* Class that contains the several input keys from a player
+*/
 
 public class InputKeys : MonoBehaviour {
     public string vAxis;
