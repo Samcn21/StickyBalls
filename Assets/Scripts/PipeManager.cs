@@ -43,7 +43,7 @@ public class PipeManager : MonoBehaviour {
         _builtPipe = new Hashtable();
         _placeHPipe = new Hashtable();
     }
-
+    //This function place a tiles of type at the position x,y with a rotation of rotation
     public void placePipeOfTypeAt(int playerIndex,PipeType t, int x, int y,Quaternion rotation)
     {
         if (!_builtPipe.ContainsKey(new Vector2(x, y)))
@@ -77,7 +77,7 @@ public class PipeManager : MonoBehaviour {
             _builtPipe.Add(new Vector2(x, y), pipe);
         }
     }
-
+    //This function place a placeholder of type at the position x,y with a rotation of rotation
     public void placePipePHOfTypeAt(int playerIndex, PipeType t, int x, int y)
     {
         if (_placeHPipe.ContainsKey(new Vector2(x, y))){

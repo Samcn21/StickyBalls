@@ -60,9 +60,11 @@ public class tileManager : MonoBehaviour {
                 foreach (Vector2 pos in _pipeHolePositions[_indexHoles])
                 {
                     bool found = false;
+                    //Cycle over the current sourcepositions to detect if one of the pipeholeposition is the same of one of the source position (if the pipe that you are trying to place match with the other pipes)
                     foreach (Vector2 availablePos in _pipeManager.lastSourcePositions)
                         if (pos == availablePos)
                         {
+                            //If you find a match, place the pipe, remove from the source position and add to the source positions every valid free position
                             GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>().placePipeOfTypeAt(_lastPlayerInside, type, xPos, yPos, transform.rotation);
                             _pipeManager.removeFreePosition(new Vector2(xPos, yPos));
                             foreach (Vector2 p in _pipeHolePositions[_indexHoles])
@@ -73,6 +75,7 @@ public class tileManager : MonoBehaviour {
                         }
                     if (found)
                     {
+                        //If you find a match, destroy the placeholder and add the current position in the last source positions
                         _pipeManager.lastSourcePositions.Add(new Vector2(xPos, yPos));
                         Destroy(gameObject);
                     }
@@ -83,7 +86,7 @@ public class tileManager : MonoBehaviour {
         
 
     }
-
+    //Function that generates the different free positions based on the type of the pipe and on the rotation
     public void updatePipeHolePositions()
     {
         _pipeHolePositions = new List<List<Vector2>>();
