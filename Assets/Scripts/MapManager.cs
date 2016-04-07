@@ -7,16 +7,30 @@ public class MapManager : MonoBehaviour {
     public int nPlayers;
 
     [SerializeField]
+    private bool spawnHammers;
+
+    public float sightRadius;
+
+    [SerializeField]
+    private GameObject hammerPrefab;
+
+    [SerializeField]
     private float playersSpeed;
 
     [SerializeField]
     private GameObject pipeSourcePrefab;
+
+	[SerializeField]
+	private GameObject centralMachinePrefab;
 
     [SerializeField]
     private GameObject pipeFactoryPrefab;
 
     [SerializeField]
     private List<Vector2> listOfFactoryPositions;
+
+    [SerializeField]
+    private List<Vector3> listOfFactoryRotations;
 
     [SerializeField]
     private GameObject tile;
@@ -100,8 +114,10 @@ public class MapManager : MonoBehaviour {
             boardCamera.orthographicSize = 5 * columns / 10;
         else
             boardCamera.orthographicSize = 5 * rows / 10;
-
+        if (spawnHammers)
+            instantiateNHammers();
         instantiateNSources();
+		instantiateCentralMachine();
         instantiateNPlayers();
         instantiateFactories();
        
@@ -112,6 +128,27 @@ public class MapManager : MonoBehaviour {
         if (positionsMapping.ContainsKey(new Vector2(x, y)))
             return (GameObject)positionsMapping[new Vector2(x, y)];
         return null;
+    }
+
+    private void instantiateNHammers()
+    {
+        Vector3 thickness = new Vector3(0, hammerPrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y/2 + tile.GetComponent<MeshRenderer>().bounds.size.y / 2, 0);
+        switch (nPlayers)
+        {
+            case 1:
+                Instantiate(hammerPrefab, getTileByCoord(5, 5).transform.position + thickness, Quaternion.identity);
+                break;
+            case 2:
+                Instantiate(hammerPrefab, getTileByCoord(5, 5).transform.position + thickness, Quaternion.identity);
+                Instantiate(hammerPrefab, getTileByCoord(rows-5,columns- 5).transform.position + thickness, Quaternion.identity);
+                break;
+            case 4:
+                Instantiate(hammerPrefab, getTileByCoord(5, 5).transform.position + thickness, Quaternion.identity);
+                Instantiate(hammerPrefab, getTileByCoord(rows - 5, columns - 5).transform.position + thickness, Quaternion.identity);
+                Instantiate(hammerPrefab, getTileByCoord(5,columns- 5).transform.position + thickness, Quaternion.identity);
+                Instantiate(hammerPrefab, getTileByCoord(rows - 5, 5).transform.position + thickness, Quaternion.identity);
+                break;
+        }
     }
 
     private void instantiateNPlayers()
@@ -169,13 +206,21 @@ public class MapManager : MonoBehaviour {
     private void instantiateFactories()
     {
         float thickness = pipeFactoryPrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y/2 + tile.GetComponent<MeshRenderer>().bounds.size.y / 2;
+        int i = 0;
         foreach (Vector2 pos in listOfFactoryPositions)
         {
             Vector3 p = getTileByCoord((int)pos.x, (int)pos.y).transform.position;
             p.y += thickness;
-            Instantiate(pipeFactoryPrefab,p , Quaternion.identity);
+            Instantiate(pipeFactoryPrefab,p , Quaternion.Euler(listOfFactoryRotations[i]));
+            i++;
         }
     }
+	private void instantiateCentralMachine()
+	{
+		Vector3 thickness = new Vector3(0, centralMachinePrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y + tile.GetComponent<MeshRenderer>().bounds.size.y / 2, 0);
+
+		Instantiate(centralMachinePrefab, getTileByCoord(rows / 2 , columns / 2 ).transform.position + thickness, Quaternion.identity);
+	}
     private void instantiateNSources()
     {
         Vector3 thickness =new Vector3(0, pipeSourcePrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y/2+tile.GetComponent<MeshRenderer>().bounds.size.y/2,0);
@@ -206,34 +251,42 @@ public class MapManager : MonoBehaviour {
     }
     private GameObject assignKeysToP1(GameObject g)
     {
-        g.GetComponent<PlayerInputManager>().speed = playersSpeed;
-        g.GetComponent<PlayerInputManager>().releasePipeKey = _inputsManagerRef.playerInputs[0].releasePipe;
-        g.GetComponent<PlayerInputManager>().horizontalAxis = _inputsManagerRef.playerInputs[0].hAxis;
-        g.GetComponent<PlayerInputManager>().verticalAxis = _inputsManagerRef.playerInputs[0].vAxis;
+        PlayerInputManager p = g.GetComponent<PlayerInputManager>();
+       p.speed = playersSpeed;
+        p.releasePipeKey = _inputsManagerRef.playerInputs[0].releasePipe;
+        p.horizontalAxis = _inputsManagerRef.playerInputs[0].hAxis;
+        p.verticalAxis = _inputsManagerRef.playerInputs[0].vAxis;
+        p.hitHammer = _inputsManagerRef.playerInputs[0].hitHammer;
         return g;
     }
     private GameObject assignKeysToP2(GameObject g)
     {
-        g.GetComponent<PlayerInputManager>().speed = playersSpeed;
-        g.GetComponent<PlayerInputManager>().releasePipeKey = _inputsManagerRef.playerInputs[1].releasePipe;
-        g.GetComponent<PlayerInputManager>().horizontalAxis = _inputsManagerRef.playerInputs[1].hAxis;
-        g.GetComponent<PlayerInputManager>().verticalAxis = _inputsManagerRef.playerInputs[1].vAxis;
+        PlayerInputManager p = g.GetComponent<PlayerInputManager>();
+        p.speed = playersSpeed;
+        p.releasePipeKey = _inputsManagerRef.playerInputs[1].releasePipe;
+        p.horizontalAxis = _inputsManagerRef.playerInputs[1].hAxis;
+        p.verticalAxis = _inputsManagerRef.playerInputs[1].vAxis;
+        p.hitHammer = _inputsManagerRef.playerInputs[1].hitHammer;
         return g;
     }
     private GameObject assignKeysToP3(GameObject g)
     {
-        g.GetComponent<PlayerInputManager>().speed = playersSpeed;
-        g.GetComponent<PlayerInputManager>().releasePipeKey = _inputsManagerRef.playerInputs[2].releasePipe;
-        g.GetComponent<PlayerInputManager>().horizontalAxis = _inputsManagerRef.playerInputs[2].hAxis;
-        g.GetComponent<PlayerInputManager>().verticalAxis = _inputsManagerRef.playerInputs[2].vAxis;
+        PlayerInputManager p = g.GetComponent<PlayerInputManager>();
+        p.speed = playersSpeed;
+        p.releasePipeKey = _inputsManagerRef.playerInputs[2].releasePipe;
+        p.horizontalAxis = _inputsManagerRef.playerInputs[2].hAxis;
+        p.verticalAxis = _inputsManagerRef.playerInputs[2].vAxis;
+        p.hitHammer = _inputsManagerRef.playerInputs[2].hitHammer;
         return g;
     }
     private GameObject assignKeysToP4(GameObject g)
     {
-        g.GetComponent<PlayerInputManager>().speed = playersSpeed;
-        g.GetComponent<PlayerInputManager>().releasePipeKey = _inputsManagerRef.playerInputs[3].releasePipe;
-        g.GetComponent<PlayerInputManager>().horizontalAxis = _inputsManagerRef.playerInputs[3].hAxis;
-        g.GetComponent<PlayerInputManager>().verticalAxis = _inputsManagerRef.playerInputs[3].vAxis;
+        PlayerInputManager p = g.GetComponent<PlayerInputManager>();
+        p.speed = playersSpeed;
+        p.releasePipeKey = _inputsManagerRef.playerInputs[3].releasePipe;
+        p.horizontalAxis = _inputsManagerRef.playerInputs[3].hAxis;
+        p.verticalAxis = _inputsManagerRef.playerInputs[3].vAxis;
+        p.hitHammer = _inputsManagerRef.playerInputs[3].hitHammer;
         return g;
     }
 }

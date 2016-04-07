@@ -1,7 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 [RequireComponent(typeof(MapManager))]
 public class PipeManager : MonoBehaviour {
+    //ConveyorPipe Textures
+    [SerializeField]
+    private Material voidPipeMat;
+
+    [SerializeField]
+    private Material cornerPipeMat;
+
+    [SerializeField]
+    private Material straightPipeMat;
+
+    [SerializeField]
+    private Material crossPipeMat;
+
+    [SerializeField]
+    private Material tPipeMat;
+
     [SerializeField]
     private GameObject voidPipePrefab;
 
@@ -33,21 +51,40 @@ public class PipeManager : MonoBehaviour {
 
     private MapManager _mapManager;
 
-    private Hashtable _builtPipe;
+    private List<Hashtable> _builtPipe;
+    
+    public Dictionary<PipeType, Material> pipeTextures; 
 
-    private Hashtable _placeHPipe;
+    private List<Hashtable> _placeHPipe;
     void Awake()
     {
         _boardReference = GameObject.FindGameObjectWithTag("Board");
         _mapManager = GetComponent<MapManager>();
-        _builtPipe = new Hashtable();
-        _placeHPipe = new Hashtable();
+
+        _builtPipe = new List<Hashtable>();
+        _placeHPipe = new List<Hashtable>();
+
+        for (int i = 0; i < _mapManager.nPlayers; i++) {
+            _builtPipe.Add(new Hashtable());
+            _placeHPipe.Add(new Hashtable());
+        }
+        
+        pipeTextures = new Dictionary<PipeType, Material>()
+        {
+            {PipeType.Void, voidPipeMat},
+            {PipeType.Corner, cornerPipeMat},
+            {PipeType.Cross, crossPipeMat},
+            {PipeType.T, tPipeMat},
+            {PipeType.Straight, straightPipeMat}
+        };
     }
     //This function place a tiles of type at the position x,y with a rotation of rotation
     public void placePipeOfTypeAt(int playerIndex,PipeType t, int x, int y,Quaternion rotation)
     {
-        if (!_builtPipe.ContainsKey(new Vector2(x, y)))
+
+        if (!_builtPipe[playerIndex].ContainsKey(new Vector2(x, y)))
         {
+           
             Vector3 position;
             GameObject g = new GameObject();
             position = _mapManager.getTileByCoord(x, y).transform.position;
@@ -74,16 +111,16 @@ public class PipeManager : MonoBehaviour {
             pipe.objRef = g;
             pipe.playerIndex = playerIndex;
 
-            _builtPipe.Add(new Vector2(x, y), pipe);
+            _builtPipe[playerIndex].Add(new Vector2(x, y), pipe);
         }
     }
     //This function place a placeholder of type at the position x,y with a rotation of rotation
     public void placePipePHOfTypeAt(int playerIndex, PipeType t, int x, int y)
     {
-        if (_placeHPipe.ContainsKey(new Vector2(x, y))){
-            foreach (Vector2 key in _placeHPipe.Keys)
-                GameObject.Destroy(((PipeT)_placeHPipe[key]).objRef);
-            _placeHPipe = new Hashtable();
+        if (_placeHPipe[playerIndex].ContainsKey(new Vector2(x, y))){
+            foreach (Vector2 key in _placeHPipe[playerIndex].Keys)
+                GameObject.Destroy(((PipeT)_placeHPipe[playerIndex][key]).objRef);
+            _placeHPipe[playerIndex] = new Hashtable();
         }
             Vector3 position;
             GameObject g = new GameObject();
@@ -116,11 +153,11 @@ public class PipeManager : MonoBehaviour {
             pipe.objRef = g;
             pipe.playerIndex = playerIndex;
 
-        _placeHPipe.Add(new Vector2(x, y), pipe);
+        _placeHPipe[playerIndex].Add(new Vector2(x, y), pipe);
         
     }
     //Inner class used to store data relative to each placed pipe
-    private class PipeT {
+    public class PipeT {
         public PipeType pipeType;
         public GameObject objRef;
         public int playerIndex;
@@ -186,6 +223,29 @@ public class PipeManager : MonoBehaviour {
     public GameObject getStraightPipePHPrefab()
     {
         return straightPipePHPrefab;
+    }
+
+    public void flushPHPipes(int playerIndex)
+    {
+        _placeHPipe[playerIndex] = new Hashtable();
+    }
+
+    public Hashtable getPipeOfPlayer(int index)
+    {
+        return _builtPipe[index];
+    }
+
+    public Hashtable getPHPipeOfPlayer(int index)
+    {
+        return _placeHPipe[index];
+    }
+    public void removePipeFromPlayer(int index,Vector2 key)
+    {
+        _builtPipe[index].Remove(key);
+    }
+    public void removePipePHFromPlayer(int index, Vector2 key)
+    {
+        _placeHPipe[index].Remove(key);
     }
 }
 
