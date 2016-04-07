@@ -8,9 +8,11 @@ public class PlayerInputManager : MonoBehaviour {
     public string horizontalAxis;
     public string verticalAxis;
     public string releasePipeKey;
+    public string hitHammer;
     public float speed;
 
     private PlayerManager _manager;
+    public float pressHitHammer;
     private CharacterController _controller;
     void Awake()
     {
@@ -21,6 +23,7 @@ public class PlayerInputManager : MonoBehaviour {
     {
        if (Input.GetAxis(releasePipeKey) == 1)
             _manager.emptyPipe();
+        pressHitHammer = Input.GetAxis(hitHammer);
         /*  float h, v;
           h = Input.GetAxis(horizontalAxis);
           v = Input.GetAxis(verticalAxis);

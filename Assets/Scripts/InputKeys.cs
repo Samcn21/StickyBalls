@@ -11,4 +11,5 @@ public class InputKeys : MonoBehaviour {
     public string releasePipe;
     public string rotatePipeLeft;
     public string rotatePipeRight;
+    public string hitHammer;
 }
