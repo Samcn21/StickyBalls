@@ -20,6 +20,9 @@ public class MapManager : MonoBehaviour {
     [SerializeField]
     private GameObject pipeSourcePrefab;
 
+	[SerializeField]
+	private GameObject centralMachinePrefab;
+
     [SerializeField]
     private GameObject pipeFactoryPrefab;
 
@@ -114,6 +117,7 @@ public class MapManager : MonoBehaviour {
         if (spawnHammers)
             instantiateNHammers();
         instantiateNSources();
+		instantiateCentralMachine();
         instantiateNPlayers();
         instantiateFactories();
        
@@ -211,6 +215,12 @@ public class MapManager : MonoBehaviour {
             i++;
         }
     }
+	private void instantiateCentralMachine()
+	{
+		Vector3 thickness = new Vector3(0, centralMachinePrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y + tile.GetComponent<MeshRenderer>().bounds.size.y / 2, 0);
+
+		Instantiate(centralMachinePrefab, getTileByCoord(rows / 2 , columns / 2 ).transform.position + thickness, Quaternion.identity);
+	}
     private void instantiateNSources()
     {
         Vector3 thickness =new Vector3(0, pipeSourcePrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y/2+tile.GetComponent<MeshRenderer>().bounds.size.y/2,0);
