@@ -6,7 +6,6 @@ using System.Linq;
 public class MapManager : MonoBehaviour {
     public int nPlayers;
 
-    public float sightRadius;
     [SerializeField]
     private bool spawnHammers;
 

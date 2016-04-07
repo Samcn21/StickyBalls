@@ -4,6 +4,22 @@ using System.Collections.Generic;
 
 [RequireComponent(typeof(MapManager))]
 public class PipeManager : MonoBehaviour {
+    //ConveyorPipe Textures
+    [SerializeField]
+    private Material voidPipeMat;
+
+    [SerializeField]
+    private Material cornerPipeMat;
+
+    [SerializeField]
+    private Material straightPipeMat;
+
+    [SerializeField]
+    private Material crossPipeMat;
+
+    [SerializeField]
+    private Material tPipeMat;
+
     [SerializeField]
     private GameObject voidPipePrefab;
 
@@ -36,20 +52,31 @@ public class PipeManager : MonoBehaviour {
     private MapManager _mapManager;
 
     private List<Hashtable> _builtPipe;
+    
+    public Dictionary<PipeType, Material> pipeTextures; 
 
     private List<Hashtable> _placeHPipe;
     void Awake()
     {
         _boardReference = GameObject.FindGameObjectWithTag("Board");
         _mapManager = GetComponent<MapManager>();
+
         _builtPipe = new List<Hashtable>();
         _placeHPipe = new List<Hashtable>();
-        for(int i=0;i<_mapManager.nPlayers;i++)
-        {
+
+        for (int i = 0; i < _mapManager.nPlayers; i++) {
             _builtPipe.Add(new Hashtable());
             _placeHPipe.Add(new Hashtable());
         }
         
+        pipeTextures = new Dictionary<PipeType, Material>()
+        {
+            {PipeType.Void, voidPipeMat},
+            {PipeType.Corner, cornerPipeMat},
+            {PipeType.Cross, crossPipeMat},
+            {PipeType.T, tPipeMat},
+            {PipeType.Straight, straightPipeMat}
+        };
     }
 
     public void placePipeOfTypeAt(int playerIndex,PipeType t, int x, int y,Quaternion rotation)

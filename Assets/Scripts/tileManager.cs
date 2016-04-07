@@ -9,8 +9,7 @@ public class tileManager : MonoBehaviour {
     private int _playerThatCanModify;
     private int _lastPlayerInside;
     private GameObject _lastPlayerRef;
-    private PipeManager _gamePipeManager;
-    
+
     private string _rotateToLeft;
     private string _rotateToRight;
     private string _placeTile;
@@ -35,7 +34,6 @@ public class tileManager : MonoBehaviour {
         _lastPlayerInside = -1;
         _inputsManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<InputsManager>();
         _indexHoles = 0;
-        _gamePipeManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
     }
 	
 	// Update is called once per frame
@@ -52,11 +50,10 @@ public class tileManager : MonoBehaviour {
             if (l != 1&&r!=1)
                 _rotated = false;
         }
-        if (_playerInside)
+            if (_playerInside)
             {
             if (Input.GetAxis(_placeTile)==1)
             {
-                
                 PlayerPipeManager _pipeManager= _lastPlayerRef.GetComponent<PlayerPipeManager>();
                
                
@@ -66,7 +63,7 @@ public class tileManager : MonoBehaviour {
                     foreach (Vector2 availablePos in _pipeManager.lastSourcePositions)
                         if (pos == availablePos)
                         {
-                            _gamePipeManager.placePipeOfTypeAt(_lastPlayerInside, type, xPos, yPos, transform.rotation);
+                            GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>().placePipeOfTypeAt(_lastPlayerInside, type, xPos, yPos, transform.rotation);
                             _pipeManager.removeFreePosition(new Vector2(xPos, yPos));
                             foreach (Vector2 p in _pipeHolePositions[_indexHoles])
                                 if (p != pos&&p.x>=0&&p.x<GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>().r&&p.y>=0&&p.y<GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>().c)
@@ -77,8 +74,6 @@ public class tileManager : MonoBehaviour {
                     if (found)
                     {
                         _pipeManager.lastSourcePositions.Add(new Vector2(xPos, yPos));
-                        _gamePipeManager.removePipePHFromPlayer(_lastPlayerInside,new Vector2(xPos, yPos));
-                        _lastPlayerRef.GetComponent<PlayerManager>().emptyPipe();
                         Destroy(gameObject);
                     }
                 }
