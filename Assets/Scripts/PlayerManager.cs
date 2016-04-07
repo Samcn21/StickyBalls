@@ -6,21 +6,74 @@ public class PlayerManager : MonoBehaviour {
     private PlayerPipeManager _playerPipeManagerRef;
     private GameObject _voidPipeRef;
     private GameObject _crossPipeRef;
+    private MapManager _mapManager;
     private GameObject _cornerPipeRef;
     private GameObject _straightPipeRef;
     private GameObject _tPipeRef;
 
     public int index;
-
+    private Vector2 _closestPos;
+     private float sightRadius;
     private PipeType carryingPipe;
     
     void Awake()
     {
         carryingPipe = PipeType.Void;
         _pipeManagerRef = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
+        _mapManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>();
+        sightRadius = _mapManager.sightRadius;
         _playerPipeManagerRef = GetComponent<PlayerPipeManager>();
+        _closestPos = new Vector2(-1, -1);
         initializePipes();
     }
+
+    void Update()
+    {
+        if (_pipeManagerRef.getPHPipeOfPlayer(index).Count > 0)
+        {
+            if (_closestPos == new Vector2(-1, -1))
+            {
+                _closestPos = new Vector2();
+                foreach (Vector2 pos in _pipeManagerRef.getPHPipeOfPlayer(index).Keys)
+                {
+                    PipeManager.PipeT g = (PipeManager.PipeT)_pipeManagerRef.getPHPipeOfPlayer(index)[pos];
+                    g.objRef.SetActive(false);
+                }
+            }
+            float d = -1;
+            float d1;
+            bool foundSomethingClose = false;
+            foreach (Vector2 pos in _pipeManagerRef.getPHPipeOfPlayer(index).Keys)
+                if (d == -1)
+                {
+                    d1 = Mathf.Abs(Vector3.Distance(_mapManager.getTileByCoord((int)pos.x, (int)pos.y).transform.position, transform.position));
+                    if (d1 > sightRadius)
+                        continue;
+                    d = d1;
+                    foundSomethingClose = true;
+                    _closestPos = pos;
+                    PipeManager.PipeT g = (PipeManager.PipeT)_pipeManagerRef.getPHPipeOfPlayer(index)[pos];
+                    g.objRef.SetActive(true);
+                }
+                else
+                if (Mathf.Abs(Vector3.Distance(_mapManager.getTileByCoord((int)pos.x, (int)pos.y).transform.position, transform.position)) < d)
+                {
+                    d1 = Mathf.Abs(Vector3.Distance(_mapManager.getTileByCoord((int)pos.x, (int)pos.y).transform.position, transform.position));
+                    if (d1 > sightRadius)
+                        continue;
+                    d = d1;
+                    PipeManager.PipeT g = (PipeManager.PipeT)_pipeManagerRef.getPHPipeOfPlayer(index)[_closestPos];
+                    g.objRef.SetActive(false);
+                    _closestPos = pos;
+                    foundSomethingClose = true;
+                    g = (PipeManager.PipeT)_pipeManagerRef.getPHPipeOfPlayer(index)[pos];
+                    g.objRef.SetActive(true);
+                }
+            if (!foundSomethingClose)
+                _closestPos = new Vector2(-1, -1);
+        }
+    }
+
     private void initializePipes()
     {
         Vector3 offset = new Vector3(0, 20, 0);
@@ -100,5 +153,11 @@ public class PlayerManager : MonoBehaviour {
         _straightPipeRef.SetActive(false);
         _tPipeRef.SetActive(false);
         carryingPipe = PipeType.Void;
+        _pipeManagerRef.flushPHPipes(index);
+    }
+
+    public bool isCarryingEmptyPipe()
+    {
+        return carryingPipe == PipeType.Void;
     }
 }

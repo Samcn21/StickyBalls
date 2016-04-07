@@ -9,6 +9,8 @@ public class MapManager : MonoBehaviour {
     [SerializeField]
     private bool spawnHammers;
 
+    public float sightRadius;
+
     [SerializeField]
     private GameObject hammerPrefab;
 
@@ -23,6 +25,9 @@ public class MapManager : MonoBehaviour {
 
     [SerializeField]
     private List<Vector2> listOfFactoryPositions;
+
+    [SerializeField]
+    private List<Vector3> listOfFactoryRotations;
 
     [SerializeField]
     private GameObject tile;
@@ -197,11 +202,13 @@ public class MapManager : MonoBehaviour {
     private void instantiateFactories()
     {
         float thickness = pipeFactoryPrefab.GetComponentInChildren<MeshRenderer>().bounds.size.y/2 + tile.GetComponent<MeshRenderer>().bounds.size.y / 2;
+        int i = 0;
         foreach (Vector2 pos in listOfFactoryPositions)
         {
             Vector3 p = getTileByCoord((int)pos.x, (int)pos.y).transform.position;
             p.y += thickness;
-            Instantiate(pipeFactoryPrefab,p , Quaternion.identity);
+            Instantiate(pipeFactoryPrefab,p , Quaternion.Euler(listOfFactoryRotations[i]));
+            i++;
         }
     }
     private void instantiateNSources()

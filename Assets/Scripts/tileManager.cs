@@ -9,7 +9,7 @@ public class tileManager : MonoBehaviour {
     private int _playerThatCanModify;
     private int _lastPlayerInside;
     private GameObject _lastPlayerRef;
-
+    private PipeManager _gamePipeManager;
     private string _rotateToLeft;
     private string _rotateToRight;
     private string _placeTile;
@@ -33,6 +33,7 @@ public class tileManager : MonoBehaviour {
         _rotated = false;
         _lastPlayerInside = -1;
         _inputsManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<InputsManager>();
+        _gamePipeManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
         _indexHoles = 0;
     }
 	
@@ -63,7 +64,7 @@ public class tileManager : MonoBehaviour {
                     foreach (Vector2 availablePos in _pipeManager.lastSourcePositions)
                         if (pos == availablePos)
                         {
-                            GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>().placePipeOfTypeAt(_lastPlayerInside, type, xPos, yPos, transform.rotation);
+                            _gamePipeManager.placePipeOfTypeAt(_lastPlayerInside, type, xPos, yPos, transform.rotation);
                             _pipeManager.removeFreePosition(new Vector2(xPos, yPos));
                             foreach (Vector2 p in _pipeHolePositions[_indexHoles])
                                 if (p != pos&&p.x>=0&&p.x<GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>().r&&p.y>=0&&p.y<GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>().c)
@@ -74,6 +75,8 @@ public class tileManager : MonoBehaviour {
                     if (found)
                     {
                         _pipeManager.lastSourcePositions.Add(new Vector2(xPos, yPos));
+                        _gamePipeManager.removePipePHFromPlayer(_lastPlayerInside, new Vector2(xPos, yPos));
+                        _lastPlayerRef.GetComponent<PlayerManager>().emptyPipe();
                         Destroy(gameObject);
                     }
                 }
@@ -148,15 +151,10 @@ public class tileManager : MonoBehaviour {
     {
         transform.rotation = Quaternion.Euler(0, transform.rotation.eulerAngles.y + 90, 0);
         _rotated = true;
-        Debug.Log(gameObject.name);
-        Debug.Log("BEFORE");
-        foreach (Vector2 v in _pipeHolePositions[_indexHoles])
-            Debug.Log(v);
         if (_indexHoles + 1 < _pipeHolePositions.Count)
             _indexHoles ++;
         else
             _indexHoles=0;
-        Debug.Log("AFTER");
         foreach (Vector2 v in _pipeHolePositions[_indexHoles])
             Debug.Log(v);
     }
