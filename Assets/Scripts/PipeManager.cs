@@ -1,7 +1,25 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
+
 [RequireComponent(typeof(MapManager))]
 public class PipeManager : MonoBehaviour {
+    //ConveyorPipe Textures
+    [SerializeField]
+    private Material voidPipeMat;
+
+    [SerializeField]
+    private Material cornerPipeMat;
+
+    [SerializeField]
+    private Material straightPipeMat;
+
+    [SerializeField]
+    private Material crossPipeMat;
+
+    [SerializeField]
+    private Material tPipeMat;
+
     [SerializeField]
     private GameObject voidPipePrefab;
 
@@ -36,12 +54,22 @@ public class PipeManager : MonoBehaviour {
     private Hashtable _builtPipe;
 
     private Hashtable _placeHPipe;
+
+    public Dictionary<PipeType, Material> pipeTextures; 
     void Awake()
     {
         _boardReference = GameObject.FindGameObjectWithTag("Board");
         _mapManager = GetComponent<MapManager>();
         _builtPipe = new Hashtable();
         _placeHPipe = new Hashtable();
+        pipeTextures = new Dictionary<PipeType, Material>()
+        {
+            {PipeType.Void, voidPipeMat},
+            {PipeType.Corner, cornerPipeMat},
+            {PipeType.Cross, crossPipeMat},
+            {PipeType.T, tPipeMat},
+            {PipeType.Straight, straightPipeMat}
+        };
     }
 
     public void placePipeOfTypeAt(int playerIndex,PipeType t, int x, int y,Quaternion rotation)
