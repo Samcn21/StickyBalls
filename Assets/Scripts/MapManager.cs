@@ -162,7 +162,6 @@ public class MapManager : MonoBehaviour {
                  g= (GameObject)Instantiate(playerPrefab, getTileByCoord(0, 0).transform.position+ thickness, Quaternion.identity);
                 g.GetComponent<PlayerManager>().index = 0;
                 g.GetComponent<PlayerPipeManager>().setSource((Vector2) _sourcesRef[0]);
-                Debug.Log((Vector2)_sourcesRef[0]);
                 g =assignKeysToP1(g);
                 _playersRef.Add(0,g);
                 break;

@@ -14,11 +14,11 @@ public class PlayerManager : MonoBehaviour {
     public int index;
     private Vector2 _closestPos;
      private float sightRadius;
-    private PipeType carryingPipe;
+    private PipeData.PipeType carryingPipe;
     
     void Awake()
     {
-        carryingPipe = PipeType.Void;
+        carryingPipe = PipeData.PipeType.Void;
         _pipeManagerRef = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
         _mapManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<MapManager>();
         sightRadius = _mapManager.sightRadius;
@@ -101,9 +101,9 @@ public class PlayerManager : MonoBehaviour {
         _cornerPipeRef.SetActive(false);
         _straightPipeRef.SetActive(false);
         _tPipeRef.SetActive(false);
-        carryingPipe = PipeType.Cross;
+        carryingPipe = PipeData.PipeType.Cross;
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
-            _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Cross, (int)pos.x, (int)pos.y);
+            _pipeManagerRef.placePipePHOfTypeAt(index, PipeData.PipeType.Cross, (int)pos.x, (int)pos.y);
     }
     //This function is called when the player is carrying a pipe of type straight
     //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
@@ -114,9 +114,9 @@ public class PlayerManager : MonoBehaviour {
         _cornerPipeRef.SetActive(false);
         _straightPipeRef.SetActive(true);
         _tPipeRef.SetActive(false);
-        carryingPipe = PipeType.Straight;
+        carryingPipe = PipeData.PipeType.Straight;
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
-            _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Straight, (int)pos.x, (int)pos.y);
+            _pipeManagerRef.placePipePHOfTypeAt(index, PipeData.PipeType.Straight, (int)pos.x, (int)pos.y);
     }
     //This function is called when the player is carrying a pipe of type t
     //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
@@ -127,9 +127,9 @@ public class PlayerManager : MonoBehaviour {
         _cornerPipeRef.SetActive(false);
         _straightPipeRef.SetActive(false);
         _tPipeRef.SetActive(true);
-        carryingPipe = PipeType.T;
+        carryingPipe = PipeData.PipeType.T;
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
-            _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.T, (int)pos.x, (int)pos.y);
+            _pipeManagerRef.placePipePHOfTypeAt(index, PipeData.PipeType.T, (int)pos.x, (int)pos.y);
     }
     //This function is called when the player is carrying a pipe of type corner
     //It is called when the player take the pipe from the factory and it instantiates for each free position a placeholder
@@ -140,9 +140,9 @@ public class PlayerManager : MonoBehaviour {
         _cornerPipeRef.SetActive(true);
         _straightPipeRef.SetActive(false);
         _tPipeRef.SetActive(false);
-        carryingPipe = PipeType.Corner;
+        carryingPipe = PipeData.PipeType.Corner;
         foreach (Vector2 pos in _playerPipeManagerRef.freePositions)
-            _pipeManagerRef.placePipePHOfTypeAt(index, PipeType.Corner, (int)pos.x, (int)pos.y);
+            _pipeManagerRef.placePipePHOfTypeAt(index, PipeData.PipeType.Corner, (int)pos.x, (int)pos.y);
     }
     //This function is called when the player decided to waste the pipe that was carrying
     public void emptyPipe()
@@ -152,12 +152,12 @@ public class PlayerManager : MonoBehaviour {
         _cornerPipeRef.SetActive(false);
         _straightPipeRef.SetActive(false);
         _tPipeRef.SetActive(false);
-        carryingPipe = PipeType.Void;
+        carryingPipe = PipeData.PipeType.Void;
         _pipeManagerRef.flushPHPipes(index);
     }
 
     public bool isCarryingEmptyPipe()
     {
-        return carryingPipe == PipeType.Void;
+        return carryingPipe == PipeData.PipeType.Void;
     }
 }
