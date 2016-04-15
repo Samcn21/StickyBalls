@@ -146,6 +146,8 @@ public class InputController : MonoBehaviour
         
 	}
 
+    //If player is not holding a pipe, check if the collider is a conveyor pipe
+    //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
         if (player.HeldPipeType == PipeData.PipeType.Void)
@@ -172,6 +174,8 @@ public class InputController : MonoBehaviour
         }
     }
 
+    //If it was a conveyor pipe, remove the selection. 
+    //If it was a pipe remove it.
     void OnTriggerExit(Collider col)
     {
         ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -205,6 +209,8 @@ public class InputController : MonoBehaviour
         }
     }
 
+    //Calculates the possible rotation that a pipe can have for a point in space. Looks for nearby pipes that are connected to that spot
+    //and tries to see which rotations it has, that can fit them.
     private List<int> CalculatePossibleRotations(GameData.Coordinate toPlace, PipeData.PipeType type)
     {
         List<Vector2> rotations = new List<Vector2>();

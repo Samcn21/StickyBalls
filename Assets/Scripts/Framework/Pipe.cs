@@ -36,6 +36,7 @@ public class Pipe : MonoBehaviour
         PipeType = pipeType;
         positionCoordinate = coord;
 
+        //Foreach connection in the pipes default rotation-set, rotate the connection to fit the actual placement.
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
             GameData.Coordinate conCoord = new GameData.Coordinate(positionCoordinate.x + Mathf.RoundToInt(rotatedVector.x), positionCoordinate.y + Mathf.RoundToInt(rotatedVector.y));
