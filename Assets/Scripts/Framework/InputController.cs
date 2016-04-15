@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 
+//Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
     [SerializeField] private float stickSensivity = 0.25f;
@@ -63,8 +64,9 @@ public class InputController : MonoBehaviour
 	{
 	    if (!initialized) return;
 
-        //Pick up selected conveyor pipe
-	    if (gamepadState.A)
+        //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
+        //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
+	    if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
 	    {
 	        if (selectedConveyorPipe != null)
 	        {
@@ -79,7 +81,8 @@ public class InputController : MonoBehaviour
             }
 	    }
 
-	    if (gamepadState.B)
+        //If B is pressed, rotate the pipe to one of the allowed rotations
+	    if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
 	    {
 	        if (selectedPipeConnection != null)
 	        {
@@ -90,7 +93,7 @@ public class InputController : MonoBehaviour
 	        }
 	    }
 
-        //Select closest conveyor pipe
+        //Select closest conveyor pipe out of all within the sphere collider
 	    if (closeConveyorPipes.Count > 0 && player.HeldPipeType == PipeData.PipeType.Void)
 	    {
 	        float shortestDistance = float.MaxValue;
@@ -112,7 +115,8 @@ public class InputController : MonoBehaviour
 	            closestPipe.SetHightlight(true);
 	        }
 	    }
-        
+
+        //Select closest place to put a pipe out of all within the sphere collider
         else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void)
         {
             float shortestDistance = float.MaxValue;
@@ -124,6 +128,7 @@ public class InputController : MonoBehaviour
                     closestPipeConnection = tile;
                 }
             }
+            //If the selected tile changes, destroy the previous placeholder and place a new.
             if (selectedPipeConnection != closestPipeConnection) {
                 if (selectedPipePlaceholder != null) 
                     Destroy(selectedPipePlaceholder.gameObject);

@@ -5,6 +5,7 @@ public class Tile : MonoBehaviour
 {
 
     public Pipe pipe { get; private set; }
+    public bool locked;
 
 	// Use this for initialization
 	void Start () {

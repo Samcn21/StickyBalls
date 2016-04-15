@@ -78,7 +78,7 @@ public class DemoScript : MonoBehaviour
 
         // Axes
         GUILayout.Label("" + state.LeftStickAxis);
-        GUILayout.Label("" + state.rightStickAxis);
+        GUILayout.Label("" + state.RightStickAxis);
         GUILayout.Label("" + state.dPadAxis);
         
 
@@ -117,7 +117,7 @@ public class DemoScript : MonoBehaviour
         GUILayout.Label("");
 
         GUILayout.Label("LeftStickAxis");
-        GUILayout.Label("rightStickAxis");
+        GUILayout.Label("RightStickAxis");
         GUILayout.Label("dPadAxis");
 
         GUILayout.EndVertical();

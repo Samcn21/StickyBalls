@@ -39,7 +39,8 @@ public class Pipe : MonoBehaviour
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
             GameData.Coordinate conCoord = new GameData.Coordinate(positionCoordinate.x + Mathf.RoundToInt(rotatedVector.x), positionCoordinate.y + Mathf.RoundToInt(rotatedVector.y));
-            connections.Add(conCoord);
+            if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0)-1 && conCoord.y >= 0 && conCoord.y <= gridController.Grid.GetLength(1)-1)
+                connections.Add(conCoord);
         }
         gridController.Grid[coord.x, coord.y].SetPipe(this);
 

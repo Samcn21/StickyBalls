@@ -35,5 +35,15 @@ public class GridController : MonoBehaviour
                 Grid[x, y] = tile;
             }
         }
+
+        int middleX = Mathf.FloorToInt(gridWidth / 2);
+        int middleY = Mathf.FloorToInt(gridHeight / 2);
+
+        Grid[middleX - 1, middleY + 1].locked = true;
+        Grid[middleX - 1, middleY - 1].locked = true;
+        Grid[middleX, middleY].locked = true;
+        Grid[middleX + 1, middleY + 1].locked = true;
+        Grid[middleX + 1, middleY - 1].locked = true;
+
     }
 }

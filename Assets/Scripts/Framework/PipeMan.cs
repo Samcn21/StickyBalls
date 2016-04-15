@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
+//Contains information needed for placing pipes
 public class PipeMan : MonoBehaviour {
 
     [SerializeField] private Material voidPipeMat;
