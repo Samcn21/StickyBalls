@@ -8,6 +8,7 @@ using GamepadInput;
 public class InputController : MonoBehaviour
 {
     [SerializeField] private float stickSensivity = 0.25f;
+    [SerializeField] private GamePad.Index index;
 
     private Player player;
     private GamepadState gamepadState;
@@ -50,7 +51,7 @@ public class InputController : MonoBehaviour
 
 
         //TEST
-        Initialize(GameData.Team.Black, GamePad.Index.Any);
+        Initialize(GameData.Team.Black, index);
 	}
 
     void FixedUpdate()
@@ -98,14 +99,24 @@ public class InputController : MonoBehaviour
 	    {
 	        float shortestDistance = float.MaxValue;
 	        ConveyorPipe closestPipe = null;
+            List<ConveyorPipe> pipesToDelete = new List<ConveyorPipe>();
 	        foreach (ConveyorPipe pipe in closeConveyorPipes)
 	        {
+	            if (pipe == null)
+	            {
+                    pipesToDelete.Add(pipe);
+	                continue;
+	            }
 	            float distance = Vector3.Distance(transform.position, pipe.transform.position);
 	            if (distance < shortestDistance)
 	            {
 	                shortestDistance = distance;
 	                closestPipe = pipe;
 	            }
+	        }
+	        foreach (ConveyorPipe pipe in pipesToDelete)
+	        {
+	            closeConveyorPipes.Remove(pipe);
 	        }
 	        if (selectedConveyorPipe != closestPipe)
 	        {
@@ -167,7 +178,7 @@ public class InputController : MonoBehaviour
             Pipe pipe = col.GetComponent<Pipe>();
             if (pipe == null) return;
             foreach (GameData.Coordinate c in pipe.connections) {
-                if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c)) {
+                if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked) {
                     closePipeConnections.Add(c);
                 }
             }
