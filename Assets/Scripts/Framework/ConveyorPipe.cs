@@ -57,16 +57,10 @@ public class ConveyorPipe : MonoBehaviour
     }
 
     //Initializes ConveyorPipe with the correct material and type.
-    public void Initialize(PipeData.PipeType pipeType, Transform travelTarget, ConveyorBelt belt)
+    public void Initialize(PipeData.PipeType pipeType, Transform travelTarget, int travelIndex, ConveyorBelt belt)
     {
-        /*
-        PipeManager nullTest = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
-        if (nullTest != null)
-        {
-            pipeManager = nullTest;
-        }
-        */
-        pipeMan = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeMan>();
+        travelPointIndex = travelIndex;
+        pipeMan = GameController.Instance.PipeMan;
         meshRender = GetComponent<MeshRenderer>();
         PipeType = pipeType;
         conveyorBelt = belt;
