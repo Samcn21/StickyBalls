@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class GridController : MonoBehaviour
 {
@@ -16,7 +17,6 @@ public class GridController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-        
 	    Grid = new Tile[gridWidth, gridHeight];
         GenerateGrid(boardGenerationPoint.position);
 
