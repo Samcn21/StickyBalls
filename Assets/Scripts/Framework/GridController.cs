@@ -9,12 +9,18 @@ public class GridController : MonoBehaviour
     [SerializeField] private int gridHeight = 9;
     [SerializeField] private int gridWidth = 16;
 
+    public int GridWidth { get; private set; }
+    public int GridHeight { get; private set; }
+
     public Tile[,] Grid;
 	// Use this for initialization
 	void Start ()
 	{
 	    Grid = new Tile[gridWidth, gridHeight];
         GenerateGrid(boardGenerationPoint.position);
+
+	    GridWidth = gridWidth;
+	    GridHeight = gridHeight;
 	}
 	
 	// Update is called once per frame
@@ -39,11 +45,34 @@ public class GridController : MonoBehaviour
         int middleX = Mathf.FloorToInt(gridWidth / 2);
         int middleY = Mathf.FloorToInt(gridHeight / 2);
 
+
+        Grid[middleX - 2, middleY + 2].locked = true;
+        Grid[middleX - 1, middleY + 2].locked = true;
+        Grid[middleX + 1, middleY + 2].locked = true;
+        Grid[middleX + 2, middleY + 2].locked = true;
+
+        Grid[middleX - 2, middleY + 1].locked = true;
         Grid[middleX - 1, middleY + 1].locked = true;
-        Grid[middleX - 1, middleY - 1].locked = true;
-        Grid[middleX, middleY].locked = true;
+        Grid[middleX, middleY + 1].locked = true;
         Grid[middleX + 1, middleY + 1].locked = true;
+        Grid[middleX + 2, middleY + 1].locked = true;
+
+        Grid[middleX - 1, middleY].locked = true;
+        Grid[middleX, middleY].locked = true;
+        Grid[middleX + 1, middleY].locked = true;
+        
+        Grid[middleX - 2, middleY - 1].locked = true;
+        Grid[middleX - 1, middleY - 1].locked = true;
+        Grid[middleX, middleY - 1].locked = true;
         Grid[middleX + 1, middleY - 1].locked = true;
+        Grid[middleX + 2, middleY - 1].locked = true;
+
+        Grid[middleX - 2, middleY - 2].locked = true;
+        Grid[middleX - 1, middleY - 2].locked = true;
+        Grid[middleX + 1, middleY - 2].locked = true;
+        Grid[middleX + 2, middleY - 2].locked = true;
+
+
 
     }
 }

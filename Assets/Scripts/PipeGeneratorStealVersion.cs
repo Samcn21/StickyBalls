@@ -31,7 +31,7 @@ public class PipeGeneratorStealVersion : ConveyorBelt
 	{
 	    _pipeSpawnIntervalRemaining -= Time.deltaTime;
         if (_pipeSpawnIntervalRemaining <= 0 && pipesOnBelt[0] == null) 
-            SpawnPipe();
+            SpawnPipeTop(PipeData.PipeType.Corner);
 	}
 
    
