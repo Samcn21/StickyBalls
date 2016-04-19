@@ -29,7 +29,7 @@ public class ConveyorBelt : MonoBehaviour
 	    _pipeSpawnIntervalRemaining -= Time.deltaTime;
         if (_pipeSpawnIntervalRemaining <= 0) {
             PipeData.PipeType newType = PipeData.PipeType.Void;
-            if (pipesOnBelt[0] == null || pipesOnBelt[8] == null) {
+            if (pipesOnBelt[0] == null || pipesOnBelt[pipesOnBelt.Length/2] == null) {
                 newType = pipeQueue.Dequeue();
                 if (pipeQueue.Count == 0) pipeQueue = new Queue<PipeData.PipeType>(pipeQueueTemplate.ToArray());
             }
@@ -37,7 +37,7 @@ public class ConveyorBelt : MonoBehaviour
             if (pipesOnBelt[0] == null) {
                 SpawnPipeTop(newType);
             }
-            if (pipesOnBelt[8] == null) {
+            if (pipesOnBelt[pipesOnBelt.Length / 2] == null) {
                 SpawnPipeBottom(newType);
            } 
 
@@ -62,7 +62,7 @@ public class ConveyorBelt : MonoBehaviour
         newPipe.GetComponent<ConveyorPipe>().Initialize(type, travelPoints[8], 8, this);
         newPipe.name = counter.ToString();
         counter++;
-        pipesOnBelt[8] = newPipe.transform;
+        pipesOnBelt[pipesOnBelt.Length / 2] = newPipe.transform;
 
     }
 
