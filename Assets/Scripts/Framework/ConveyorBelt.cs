@@ -46,7 +46,7 @@ public class ConveyorBelt : MonoBehaviour
 
     //Spawns pipe on belt on the first spot, and initializes based on which pipe in the queue it is.
     //If queue is empty, it loops it.
-    private void SpawnPipeTop(PipeData.PipeType type)
+    protected void SpawnPipeTop(PipeData.PipeType type)
     {
 
         _pipeSpawnIntervalRemaining = pipeSpawnInterval;
@@ -57,7 +57,7 @@ public class ConveyorBelt : MonoBehaviour
         pipesOnBelt[0] = newPipe.transform;
     }
 
-    private void SpawnPipeBottom(PipeData.PipeType type) {
+    protected void SpawnPipeBottom(PipeData.PipeType type) {
         GameObject newPipe = Instantiate(conveyorPipePrefab, travelPoints[8].position, Quaternion.Euler(90, 0, 0)) as GameObject;
         newPipe.GetComponent<ConveyorPipe>().Initialize(type, travelPoints[8], 8, this);
         newPipe.name = counter.ToString();
