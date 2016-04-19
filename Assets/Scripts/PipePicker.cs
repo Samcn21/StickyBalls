@@ -18,19 +18,19 @@ public class PipePicker : MonoBehaviour {
         {
             switch (col.gameObject.GetComponent<ConveyorPipe>().PipeType)
             {
-                case PipeType.Corner:
+                case PipeData.PipeType.Corner:
                     _playerManagerRef.carryCornerPipe();
                     _pipeSelected.Add(col.gameObject);
                     break;
-                case PipeType.Cross:
+                case PipeData.PipeType.Cross:
                     _playerManagerRef.carryCrossPipe();
                     _pipeSelected.Add(col.gameObject);
                     break;
-                case PipeType.T:
+                case PipeData.PipeType.T:
                     _playerManagerRef.carryTPipe();
                     _pipeSelected.Add(col.gameObject);
                     break;
-                case PipeType.Straight:
+                case PipeData.PipeType.Straight:
                     _playerManagerRef.carryStraightPipe();
                     _pipeSelected.Add(col.gameObject);
                     break;

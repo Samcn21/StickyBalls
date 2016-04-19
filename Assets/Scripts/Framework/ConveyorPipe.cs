@@ -3,7 +3,7 @@ using System.Collections;
 
 public class ConveyorPipe : MonoBehaviour
 {
-    public PipeType PipeType = PipeType.Void;
+    public PipeData.PipeType PipeType = PipeData.PipeType.Void;
 
     [SerializeField]
     private float moveSpeed = 0.5f;
@@ -13,6 +13,7 @@ public class ConveyorPipe : MonoBehaviour
     private Transform prevTravelTarget;
     private float moveProgress = 0;
     private bool initialized = false;
+    private PipeMan pipeMan;
 
     public Transform currentTravelTarget { get; private set; }
     public int travelPointIndex = 0;
@@ -20,6 +21,10 @@ public class ConveyorPipe : MonoBehaviour
     //For testing picking up
     [SerializeField]
     private bool Pick = false;
+
+    void Start()
+    {
+    }
 
     // Update is called once per frame
     void Update()
@@ -37,7 +42,10 @@ public class ConveyorPipe : MonoBehaviour
                 {
                     prevTravelTarget = currentTravelTarget;
                     currentTravelTarget = newTravelTarget;
-                    travelPointIndex++;
+                    if (travelPointIndex + 1 > conveyorBelt.pipesOnBelt.Length - 1)
+                        travelPointIndex = 0;
+                    else 
+                        travelPointIndex++;
                     moveProgress = 0;
                 }
             }
@@ -52,18 +60,14 @@ public class ConveyorPipe : MonoBehaviour
     }
 
     //Initializes ConveyorPipe with the correct material and type.
-    public void Initialize(PipeType pipeType, Transform travelTarget, ConveyorBelt belt)
+    public void Initialize(PipeData.PipeType pipeType, Transform travelTarget, int travelIndex, ConveyorBelt belt)
     {
-        PipeManager nullTest = GameObject.FindGameObjectWithTag("GameController").GetComponent<PipeManager>();
-        if (nullTest != null)
-        {
-            pipeManager = nullTest;
-        }
-
+        travelPointIndex = travelIndex;
+        pipeMan = GameController.Instance.PipeMan;
         meshRender = GetComponent<MeshRenderer>();
         PipeType = pipeType;
         conveyorBelt = belt;
-        GetComponent<MeshRenderer>().material = pipeManager.pipeTextures[PipeType];
+        GetComponent<MeshRenderer>().material = pipeMan.pipeTextures[PipeType];
         currentTravelTarget = travelTarget;
         initialized = true;
     }
@@ -75,5 +79,16 @@ public class ConveyorPipe : MonoBehaviour
         Destroy(gameObject);
     }
 
+    public void SetHightlight(bool isHighlighted)
+    {
+        if (isHighlighted)
+        {
+            GetComponent<MeshRenderer>().material.color = Color.green;
+        }
+        else
+        {
+            GetComponent<MeshRenderer>().material.color = Color.white;
+        }
+    }
    
 }

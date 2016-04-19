@@ -22,7 +22,7 @@ public class tileManager : MonoBehaviour {
 
     private int _indexHoles;
     [SerializeField]
-    private PipeType type;
+    private PipeData.PipeType type;
 
     public int xPos, yPos;
 	// Use this for initialization
@@ -96,7 +96,7 @@ public class tileManager : MonoBehaviour {
         List<Vector2> l3 = new List<Vector2>();
         switch (type)
         {
-            case PipeType.Corner:
+            case PipeData.PipeType.Corner:
                 l.Add(new Vector2(xPos - 1, yPos));
                 l.Add(new Vector2(xPos, yPos - 1));
                 _pipeHolePositions.Add(l);
@@ -110,14 +110,14 @@ public class tileManager : MonoBehaviour {
                 l3.Add(new Vector2(xPos-1, yPos));
                 _pipeHolePositions.Add(l3);
                 break;
-            case PipeType.Cross:
+            case PipeData.PipeType.Cross:
                 l.Add(new Vector2(xPos + 1, yPos));
                 l.Add(new Vector2(xPos - 1, yPos));
                 l.Add(new Vector2(xPos, yPos + 1));
                 l.Add(new Vector2(xPos, yPos - 1));
                 _pipeHolePositions.Add(l);
                 break;
-            case PipeType.T:
+            case PipeData.PipeType.T:
                 l.Add(new Vector2(xPos + 1, yPos));
                 l.Add(new Vector2(xPos, yPos+1));
                 l.Add(new Vector2(xPos, yPos - 1));
@@ -135,7 +135,7 @@ public class tileManager : MonoBehaviour {
                 l3.Add(new Vector2(xPos, yPos - 1));
                 _pipeHolePositions.Add(l3);
                 break;
-            case PipeType.Straight:
+            case PipeData.PipeType.Straight:
                 l.Add(new Vector2(xPos + 1, yPos));
                 l.Add(new Vector2(xPos - 1, yPos));
                 _pipeHolePositions.Add(l);
@@ -159,9 +159,13 @@ public class tileManager : MonoBehaviour {
             _indexHoles ++;
         else
             _indexHoles=0;
+<<<<<<< HEAD
         Debug.Log("AFTER");
         foreach (Vector2 v in _pipeHolePositions[_indexHoles])
             Debug.Log(v);
+=======
+        
+>>>>>>> Development
     }
 
     public void rotateToLeft()

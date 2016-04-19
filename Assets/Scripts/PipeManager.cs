@@ -53,7 +53,9 @@ public class PipeManager : MonoBehaviour {
 
     private List<Hashtable> _builtPipe;
     
-    public Dictionary<PipeType, Material> pipeTextures; 
+    public Dictionary<PipeData.PipeType, Material> pipeTextures;
+
+    public GameObject pipeConnectionPrefab;
 
     private List<Hashtable> _placeHPipe;
     void Awake()
@@ -69,17 +71,22 @@ public class PipeManager : MonoBehaviour {
             _placeHPipe.Add(new Hashtable());
         }
         
-        pipeTextures = new Dictionary<PipeType, Material>()
+        pipeTextures = new Dictionary<PipeData.PipeType, Material>()
         {
-            {PipeType.Void, voidPipeMat},
-            {PipeType.Corner, cornerPipeMat},
-            {PipeType.Cross, crossPipeMat},
-            {PipeType.T, tPipeMat},
-            {PipeType.Straight, straightPipeMat}
+            {PipeData.PipeType.Void, voidPipeMat},
+            {PipeData.PipeType.Corner, cornerPipeMat},
+            {PipeData.PipeType.Cross, crossPipeMat},
+            {PipeData.PipeType.T, tPipeMat},
+            {PipeData.PipeType.Straight, straightPipeMat}
         };
     }
+<<<<<<< HEAD
     //This function place a tiles of type at the position x,y with a rotation of rotation
     public void placePipeOfTypeAt(int playerIndex,PipeType t, int x, int y,Quaternion rotation)
+=======
+
+    public void placePipeOfTypeAt(int playerIndex,PipeData.PipeType t, int x, int y,Quaternion rotation)
+>>>>>>> Development
     {
 
         if (!_builtPipe[playerIndex].ContainsKey(new Vector2(x, y)))
@@ -91,16 +98,16 @@ public class PipeManager : MonoBehaviour {
             position.y += 1f;
             switch (t)
             {
-                case PipeType.Corner:
+                case PipeData.PipeType.Corner:
                     g = (GameObject)Instantiate(cornerPipePrefab, position, rotation);
                     break;
-                case PipeType.Straight:
+                case PipeData.PipeType.Straight:
                     g = (GameObject)Instantiate(straightPipePrefab, position, rotation);
                     break;
-                case PipeType.Cross:
+                case PipeData.PipeType.Cross:
                     g = (GameObject)Instantiate(crossPipePrefab, position, rotation);
                     break;
-                case PipeType.T:
+                case PipeData.PipeType.T:
                     g = (GameObject)Instantiate(tPipePrefab, position, rotation);
                     break;
             }
@@ -114,8 +121,13 @@ public class PipeManager : MonoBehaviour {
             _builtPipe[playerIndex].Add(new Vector2(x, y), pipe);
         }
     }
+<<<<<<< HEAD
     //This function place a placeholder of type at the position x,y with a rotation of rotation
     public void placePipePHOfTypeAt(int playerIndex, PipeType t, int x, int y)
+=======
+
+    public void placePipePHOfTypeAt(int playerIndex, PipeData.PipeType t, int x, int y)
+>>>>>>> Development
     {
         if (_placeHPipe[playerIndex].ContainsKey(new Vector2(x, y))){
             foreach (Vector2 key in _placeHPipe[playerIndex].Keys)
@@ -128,16 +140,16 @@ public class PipeManager : MonoBehaviour {
             position.y += 3f;
             switch (t)
             {
-                case PipeType.Corner:
+                case PipeData.PipeType.Corner:
                     g = (GameObject)Instantiate(cornerPipePHPrefab, position, Quaternion.identity);
                     break;
-                case PipeType.Straight:
+                case PipeData.PipeType.Straight:
                     g = (GameObject)Instantiate(straightPipePHPrefab, position, Quaternion.identity);
                     break;
-                case PipeType.Cross:
+                case PipeData.PipeType.Cross:
                     g = (GameObject)Instantiate(crossPipePHPrefab, position, Quaternion.identity);
                     break;
-                case PipeType.T:
+                case PipeData.PipeType.T:
                     g = (GameObject)Instantiate(tPipePHPrefab, position, Quaternion.identity);
                     break;
             }
@@ -145,8 +157,6 @@ public class PipeManager : MonoBehaviour {
             g.GetComponent<tileManager>().xPos = x;
             g.GetComponent<tileManager>().yPos = y;
             g.GetComponent<tileManager>().updatePipeHolePositions();
-            Debug.Log(g.name);
-            Debug.Log("X:" + x + " Y:"+y);
             g.transform.parent = _boardReference.transform;
             PipeT pipe = new PipeT();
             pipe.pipeType = t;
@@ -158,7 +168,7 @@ public class PipeManager : MonoBehaviour {
     }
     //Inner class used to store data relative to each placed pipe
     public class PipeT {
-        public PipeType pipeType;
+        public PipeData.PipeType pipeType;
         public GameObject objRef;
         public int playerIndex;
 
@@ -168,13 +178,13 @@ public class PipeManager : MonoBehaviour {
         {
             switch (pipeType)
             {
-                case PipeType.Corner:
+                case PipeData.PipeType.Corner:
                     break;
-                case PipeType.Cross:
+                case PipeData.PipeType.Cross:
                     break;
-                case PipeType.Straight:
+                case PipeData.PipeType.Straight:
                     break;
-                case PipeType.T:
+                case PipeData.PipeType.T:
                     break;
                 
             }
@@ -249,6 +259,4 @@ public class PipeManager : MonoBehaviour {
     }
 }
 
-public enum PipeType{
-    Void,Corner,Straight,Cross,T
-}
+
