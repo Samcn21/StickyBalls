@@ -16,6 +16,7 @@ public class GridController : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+        
 	    Grid = new Tile[gridWidth, gridHeight];
         GenerateGrid(boardGenerationPoint.position);
 

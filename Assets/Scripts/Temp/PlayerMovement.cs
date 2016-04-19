@@ -3,24 +3,24 @@ using System.Collections;
 using GamepadInput;
 
 public class PlayerMovement : MonoBehaviour {
-    private Rigidbody rigidbody;
-    private GamepadState gamepadState;
-    //private GamePad.Index gamepadIndex;
-    //private Player player;
+    //private Rigidbody rigidbody;
+    //private GamepadState gamepadState;
+    ////private GamePad.Index gamepadIndex;
+    ////private Player player;
 
-    [SerializeField]
-    private float stickSensivity = 0.25f;
+    //[SerializeField]
+    //private float stickSensivity = 0.25f;
 
-	// Use this for initialization
-	void Start () {
-        gamepadState = GamePad.GetState(GamePad.Index.Any);
-        player = GetComponent<Player>();
-        rigidbody = GetComponent<Rigidbody>();
+    //// Use this for initialization
+    //void Start () {
+    //    gamepadState = GamePad.GetState(GamePad.Index.Any);
+    //   // player = GetComponent<Player>();
+    //    rigidbody = GetComponent<Rigidbody>();
 
-	}
-    void FixedUpdate()
-    {
+    //}
+    //void FixedUpdate()
+    //{
 
-        rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * moveSpeed);
-    }
+    //   // rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * moveSpeed);
+    //}
 }
