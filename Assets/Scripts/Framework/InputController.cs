@@ -133,6 +133,8 @@ public class InputController : MonoBehaviour
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
             foreach (GameData.Coordinate tile in closePipeConnections) {
+                if (gridController.Grid[tile.x, tile.y].pipe != null)
+                    continue;
                 float distance = Vector3.Distance(transform.position, gridController.Grid[tile.x, tile.y].transform.position);
                 if (distance < shortestDistance) {
                     shortestDistance = distance;
@@ -156,6 +158,11 @@ public class InputController : MonoBehaviour
         }
         
 	}
+
+    void OnTriggerStay(Collider col)
+    {
+        OnTriggerEnter(col);
+    }
 
     //If player is not holding a pipe, check if the collider is a conveyor pipe
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding

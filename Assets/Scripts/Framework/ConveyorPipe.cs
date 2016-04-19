@@ -42,7 +42,10 @@ public class ConveyorPipe : MonoBehaviour
                 {
                     prevTravelTarget = currentTravelTarget;
                     currentTravelTarget = newTravelTarget;
-                    travelPointIndex++;
+                    if (travelPointIndex + 1 > conveyorBelt.pipesOnBelt.Length - 1)
+                        travelPointIndex = 0;
+                    else 
+                        travelPointIndex++;
                     moveProgress = 0;
                 }
             }

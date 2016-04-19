@@ -11,7 +11,7 @@ public class ConveyorBelt : MonoBehaviour
     [SerializeField] private float pipeSpawnInterval = 5;
     [SerializeField] private GameObject conveyorPipePrefab;
 
-    private Transform[] pipesOnBelt; 
+    public Transform[] pipesOnBelt { get; private set; }
     private float _pipeSpawnIntervalRemaining = 0;
     private Queue<PipeData.PipeType> pipeQueue;
     private float counter = 0;
@@ -69,7 +69,7 @@ public class ConveyorBelt : MonoBehaviour
     //Returns the next travelpoint on the belt, if the position is empty, else null.
     public Transform GetNextTravelPoint(ConveyorPipe pipe)
     {
-        if (pipe.travelPointIndex+1 == travelPoints.Count-1)
+        if (pipe.travelPointIndex+1 >= travelPoints.Count)
         {
             if (pipesOnBelt[0] == null) {
                 pipesOnBelt[pipe.travelPointIndex] = null;
@@ -78,7 +78,6 @@ public class ConveyorBelt : MonoBehaviour
             }
             return null;
         }
-            
         if (pipesOnBelt[pipe.travelPointIndex + 1] == null)
         {
             pipesOnBelt[pipe.travelPointIndex] = null;
