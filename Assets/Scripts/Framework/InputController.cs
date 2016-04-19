@@ -133,7 +133,7 @@ public class InputController : MonoBehaviour
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
             foreach (GameData.Coordinate tile in closePipeConnections) {
-                if (gridController.Grid[tile.x, tile.y].pipe != null)
+                if (gridController.Grid[tile.x, tile.y].pipe != null || CalculatePossibleRotations(tile, player.HeldPipeType).Count == 0)
                     continue;
                 float distance = Vector3.Distance(transform.position, gridController.Grid[tile.x, tile.y].transform.position);
                 if (distance < shortestDistance) {
@@ -143,9 +143,12 @@ public class InputController : MonoBehaviour
             }
             //If the selected tile changes, destroy the previous placeholder and place a new.
             if (selectedPipeConnection != closestPipeConnection) {
+
                 if (selectedPipePlaceholder != null) 
                     Destroy(selectedPipePlaceholder.gameObject);
                 selectedPipeConnection = closestPipeConnection;
+                if (closestPipeConnection == null)
+                    return;
                 GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
                 selectedPipePlaceholder = placeholder.transform;
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material =
@@ -153,10 +156,10 @@ public class InputController : MonoBehaviour
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
 
                 possibleRotationAngles = CalculatePossibleRotations(selectedPipeConnection, player.HeldPipeType);
+
                 RotatePipe(possibleRotationAngles[0]);
             }
         }
-        
 	}
 
     void OnTriggerStay(Collider col)
@@ -176,7 +179,6 @@ public class InputController : MonoBehaviour
                 if (!closeConveyorPipes.Contains(conveyorPipe))
                 {
                     closeConveyorPipes.Add(conveyorPipe);
-
                 }
             }
         }
@@ -184,6 +186,8 @@ public class InputController : MonoBehaviour
         {
             Pipe pipe = col.GetComponent<Pipe>();
             if (pipe == null) return;
+            if (pipe.Team == GameData.Team.Neutral && !pipe.isCenterMachine)
+                return;
             foreach (GameData.Coordinate c in pipe.connections) {
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked) {
                     closePipeConnections.Add(c);
@@ -235,27 +239,26 @@ public class InputController : MonoBehaviour
         List<int> rotationAngles = new List<int>();
         if (toPlace.x > 0)
         {
-            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
-            {
-                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace))
+            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null) {
+                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(-1,0));
             }
         }
         if (toPlace.x < gridController.Grid.GetLength(0)-1) {
             if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe != null) {
-                if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace))
+                if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
         if (toPlace.y > 0) {
             if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe != null) {
-                if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace))
+                if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
         if (toPlace.y < gridController.Grid.GetLength(1) - 1) {
             if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe != null) {
-                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace))
+                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
         }
@@ -295,4 +298,5 @@ public class InputController : MonoBehaviour
         Destroy(selectedPipePlaceholder.gameObject);
         rotationIndex = 0;
     }
+
 }

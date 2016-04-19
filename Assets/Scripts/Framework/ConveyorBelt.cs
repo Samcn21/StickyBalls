@@ -26,7 +26,6 @@ public class ConveyorBelt : MonoBehaviour
 	
 	void Update ()
 	{
-	    _pipeSpawnIntervalRemaining -= Time.deltaTime;
         if (_pipeSpawnIntervalRemaining <= 0) {
             PipeData.PipeType newType = PipeData.PipeType.Void;
             if (pipesOnBelt[0] == null || pipesOnBelt[pipesOnBelt.Length/2] == null) {
@@ -42,7 +41,9 @@ public class ConveyorBelt : MonoBehaviour
            } 
 
         }
-	}
+        else
+            _pipeSpawnIntervalRemaining -= Time.deltaTime;
+    }
 
     //Spawns pipe on belt on the first spot, and initializes based on which pipe in the queue it is.
     //If queue is empty, it loops it.

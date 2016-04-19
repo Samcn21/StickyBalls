@@ -17,14 +17,30 @@ public class Pipe : MonoBehaviour
 
     private GameData.Team team;
     public GameData.Team Team {
-        private set { team = value; }
+        protected set
+        {
+            team = value;
+            if (isSource)
+            {
+                foreach (Transform t in transform.FindChild("Geometry").transform)
+                {
+                    t.GetComponent<MeshRenderer>().material.color = GameData.TeamColors[value];
+                }
+            }
+            else 
+                meshRenderer.material.color = GameData.TeamColors[value];
+        }
         get { return team; }
     }
 
     public List<GameData.Coordinate> connections;
     public GameData.Coordinate positionCoordinate { get; private set; } 
+    public bool isCenterMachine { get; protected set; }
+    public bool isSource { get; protected set; }
+    
+    private List<GameData.Coordinate> visited; 
 
-    private MeshRenderer meshRenderer;
+    protected MeshRenderer meshRenderer;
     protected PipeMan pipeMan;
     protected GridController gridController;
 
@@ -35,20 +51,74 @@ public class Pipe : MonoBehaviour
         connections = new List<GameData.Coordinate>();
         PipeType = pipeType;
         positionCoordinate = coord;
+        List<GameData.Team> connectedTeams = new List<GameData.Team>();
 
         //Foreach connection in the pipes default rotation-set, rotate the connection to fit the actual placement.
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
             GameData.Coordinate conCoord = new GameData.Coordinate(positionCoordinate.x + Mathf.RoundToInt(rotatedVector.x), positionCoordinate.y + Mathf.RoundToInt(rotatedVector.y));
-            if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0)-1 && conCoord.y >= 0 && conCoord.y <= gridController.Grid.GetLength(1)-1)
+            if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0) - 1 && conCoord.y >= 0 &&
+                conCoord.y <= gridController.Grid.GetLength(1) - 1) {
                 connections.Add(conCoord);
+                    if (gridController.Grid[conCoord.x, conCoord.y].pipe != null)
+                    {
+                        if (gridController.Grid[conCoord.x, conCoord.y].pipe.team != GameData.Team.Neutral) 
+                            connectedTeams.Add(gridController.Grid[conCoord.x, conCoord.y].pipe.team);
+                    }
+            }
         }
         gridController.Grid[coord.x, coord.y].SetPipe(this);
 
+        foreach (GameData.Team t in connectedTeams)
+        {
+            if (connectedTeams.Count == 1)
+            {
+                Team = t;
+                break;
+            }
+            else
+            {
+                Team = t;
+                break;
+            }
+        }
+
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+
+    public void DestroyPipe()
+    {
+        foreach (GameData.Coordinate c in connections)
+        {
+            Pipe connectedPipe = gridController.Grid[c.x, c.y].pipe;
+            if (connectedPipe != null)
+            {
+                visited = new List<GameData.Coordinate>();
+               Debug.Log(isConnectedToSource(c));
+            }
+        }
+    }
+
+    public bool CheckSourceConnection()
+    {
+        visited = new List<GameData.Coordinate>();
+        return isConnectedToSource(positionCoordinate);
+    }
+
+    private bool isConnectedToSource(GameData.Coordinate coord)
+    {
+        List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
+        visited.Add(coord);
+        foreach (GameData.Coordinate c in cons)
+        {
+            if (c == coord) continue;
+            if (gridController.Grid[c.x, c.y].pipe == null) continue;
+            if (gridController.Grid[c.x, c.y].pipe.Team != team) continue;
+            if (visited.Contains(c)) continue;
+
+            if (gridController.Grid[c.x, c.y].pipe.isSource) return true;
+            if (isConnectedToSource(c)) return true;
+        }
+        return false;
+    }
+    
 }

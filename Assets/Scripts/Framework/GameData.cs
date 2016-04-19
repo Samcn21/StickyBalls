@@ -9,7 +9,8 @@ public class GameData {
         Red,
         Blue,
         Yellow,
-        Black
+        Black,
+        Neutral
     }
 
     public enum Direction
@@ -32,7 +33,8 @@ public class GameData {
         {Team.Red, Color.red },
         {Team.Black, Color.black },
         {Team.Blue, Color.blue },
-        {Team.Yellow, Color.yellow }
+        {Team.Yellow, Color.yellow },
+        {Team.Neutral, Color.white }
     };
 
     public class Coordinate
@@ -44,6 +46,22 @@ public class GameData {
         {
             this.x = x;
             this.y = y;
+        }
+
+        public override bool Equals(System.Object obj) {
+            // If parameter is null return false.
+            if (obj == null) {
+                return false;
+            }
+
+            // If parameter cannot be cast to Point return false.
+            Coordinate c = obj as Coordinate;
+            if ((System.Object)c == null) {
+                return false;
+            }
+
+            // Return true if the fields match:
+            return (x == c.x) && (y == c.y);
         }
     }
 
