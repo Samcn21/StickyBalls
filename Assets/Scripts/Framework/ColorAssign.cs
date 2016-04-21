@@ -1,14 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
-using Game.Data;
 using GamepadInput;
-using Game.Data;
+using System.Collections.Generic;
 
 public class ColorAssign : MonoBehaviour {
     public Renderer myColor;
     public Material playerNeutral;
-    public GameData.Team playerColorPicked;
-    private bool colorPicked = false; 
+    public GameData.Team team;
+    private bool colorPicked = false;
+    public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
     
     void Start () {
         myColor = GetComponent<Renderer>();
@@ -30,6 +30,9 @@ public class ColorAssign : MonoBehaviour {
             if (colorPicked == false)
             {
                 other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
+                playerColorAssign.Add(InputController.index, InputController.team);
+                Debug.Log(playerColorAssign[0]);
+
             }
         }
             

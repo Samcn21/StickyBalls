@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 using UnityEngine.UI;
-using Game.Data;
 
 public class GameController : MonoBehaviour
 {

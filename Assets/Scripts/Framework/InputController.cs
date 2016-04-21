@@ -3,13 +3,11 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
-using Game.Data;
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
     [SerializeField] private float stickSensivity = 0.25f;
-    [SerializeField] private GamePad.Index index;
-
+    public GamePad.Index index;
     private Player player;
     private GamepadState gamepadState;
     private GamePad.Index gamepadIndex;
