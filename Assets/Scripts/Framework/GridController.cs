@@ -18,8 +18,12 @@ public class GridController : MonoBehaviour
 	void Start ()
 	{
 	    Grid = new Tile[gridWidth, gridHeight];
-        GenerateGrid(boardGenerationPoint.position);
+        GameObject boardObject = GameObject.Find("BOARDGENERATIONPOINT");
 
+        if (boardObject != null) {
+            GenerateGrid(boardGenerationPoint.position);
+        }
+        
 	    GridWidth = gridWidth;
 	    GridHeight = gridHeight;
 	}

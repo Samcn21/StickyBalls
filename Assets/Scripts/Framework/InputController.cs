@@ -3,7 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
-
+using Game.Data;
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
@@ -24,8 +24,9 @@ public class InputController : MonoBehaviour
     private Transform selectedPipePlaceholder;
     private List<int> possibleRotationAngles;
     private int rotationIndex = 0;
-
     private bool initialized = false;
+    public bool colorPicked { get; private set; }
+    public bool colorPickPermit = false;
     
     public GameData.Team team { get; private set; }
 
@@ -36,6 +37,7 @@ public class InputController : MonoBehaviour
         gamepadState = GamePad.GetState(gamepadIndex);
         rigidbody = GetComponent<Rigidbody>();
         initialized = true;
+        colorPicked = false;
     }
 
 	// Use this for initialization
@@ -80,6 +82,12 @@ public class InputController : MonoBehaviour
             {
                 PlacePipe();
             }
+
+            if (colorPickPermit)
+            {
+                colorPicked = true;
+            }
+
 	    }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
