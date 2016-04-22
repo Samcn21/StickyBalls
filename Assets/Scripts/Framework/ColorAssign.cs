@@ -6,7 +6,8 @@ using System.Collections.Generic;
 public class ColorAssign : MonoBehaviour {
     public Renderer myColor;
     public Material playerNeutral;
-    public GameData.Team team;
+    public GameData.Team color;
+    public GamePad.Index controllerIndex;
     private bool colorPicked = false;
     public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
     
@@ -19,23 +20,26 @@ public class ColorAssign : MonoBehaviour {
         }
 	}
 
-    void OnTriggerEnter(Collider other)
+    void OnTriggerStay(Collider other)
     {
         if ((other.gameObject.tag == "Player"))
         { 
             InputController InputController = other.gameObject.GetComponent<InputController>();
             InputController.colorPickPermit = true;
-
             colorPicked = InputController.colorPicked;
-            if (colorPicked == false)
-            {
-                other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
-                playerColorAssign.Add(InputController.index, InputController.team);
-                Debug.Log(playerColorAssign[0]);
 
+            if (InputController.team == GameData.Team.Neutral && colorPicked && controllerIndex == GamePad.Index.Any)
+            {
+                InputController.team = color;
+                InputController.colorPickPermit = false;
+
+                controllerIndex = InputController.index;
+                other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
+            }
+            else if (InputController.team == GameData.Team.Neutral && controllerIndex == GamePad.Index.Any) {
+                other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
             }
         }
-            
     }
 
     void OnTriggerExit(Collider other) {
@@ -45,10 +49,8 @@ public class ColorAssign : MonoBehaviour {
         {
             InputController InputController = other.gameObject.GetComponent<InputController>();
             InputController.colorPickPermit = false;
-            
-            colorPicked = InputController.colorPicked;
 
-            if (colorPicked == false)
+            if (InputController.team == GameData.Team.Neutral && controllerIndex == GamePad.Index.Any)
             {
                 other.gameObject.GetComponentInChildren<Renderer>().material = playerNeutral;
             }

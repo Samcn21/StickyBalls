@@ -8,6 +8,7 @@ public class InputController : MonoBehaviour
 {
     [SerializeField] private float stickSensivity = 0.25f;
     public GamePad.Index index;
+    public GameData.Team team;
     private Player player;
     private GamepadState gamepadState;
     private GamePad.Index gamepadIndex;
@@ -25,8 +26,8 @@ public class InputController : MonoBehaviour
     private bool initialized = false;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
-    
-    public GameData.Team team { get; private set; }
+
+
 
     public void Initialize (GameData.Team t, GamePad.Index padIndex)
     {
@@ -51,7 +52,7 @@ public class InputController : MonoBehaviour
 
 
         //TEST
-        Initialize(GameData.Team.Black, index);
+        Initialize(GameData.Team.Neutral, index);
 	}
 
     void FixedUpdate()
@@ -81,7 +82,7 @@ public class InputController : MonoBehaviour
                 PlacePipe();
             }
 
-            if (colorPickPermit)
+            if (colorPickPermit && team == GameData.Team.Neutral)
             {
                 colorPicked = true;
             }
