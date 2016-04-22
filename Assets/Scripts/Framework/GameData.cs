@@ -32,11 +32,11 @@ using System.Collections.Generic;
 
         public static Dictionary<Team, Color> TeamColors = new Dictionary<Team, Color>() 
     {
+        {Team.Neutral, Color.white },
         {Team.Red, Color.red },
         {Team.Black, Color.black },
         {Team.Blue, Color.blue },
-        {Team.Yellow, Color.yellow },
-        {Team.Neutral, Color.white }
+        {Team.Yellow, Color.yellow }
     };
 
         public class Coordinate

@@ -68,6 +68,7 @@ public class InputController : MonoBehaviour
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
+        //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
 	    if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
 	    {
 	        if (selectedConveyorPipe != null)

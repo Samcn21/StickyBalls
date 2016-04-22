@@ -8,8 +8,9 @@ public class ColorAssign : MonoBehaviour {
     public Material playerNeutral;
     public GameData.Team color;
     public GamePad.Index controllerIndex;
-    private bool colorPicked = false;
+    public bool colorPicked = false;
     public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
+
     
     void Start () {
         myColor = GetComponent<Renderer>();
@@ -35,6 +36,10 @@ public class ColorAssign : MonoBehaviour {
 
                 controllerIndex = InputController.index;
                 other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
+
+
+                playerColorAssign.Add(controllerIndex,color);
+                colorPicked = false;
             }
             else if (InputController.team == GameData.Team.Neutral && controllerIndex == GamePad.Index.Any) {
                 other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
