@@ -3,6 +3,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
+using System.Linq;
+
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
@@ -50,9 +52,62 @@ public class InputController : MonoBehaviour
 	    pipeMan = GameController.Instance.PipeMan;
 	    gridController = GameController.Instance.GridController;
 
+        GameObject GO = GameObject.Find("_SCRIPT");
+        if ((Application.loadedLevelName.ToString() != "PlayerColorAssign") && (GO == null))
+        {
+            Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
+            {
+                {GamePad.Index.One, GameData.Team.Red},
+                {GamePad.Index.Two, GameData.Team.Blue},
+                {GamePad.Index.Three, GameData.Team.Yellow},
+                {GamePad.Index.Four, GameData.Team.Black},
+            };
 
+            foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
+            {
+                if (eachPlayer.Key == index)
+                {
+                    Initialize(eachPlayer.Value, index);
+                }
+
+            }
+        }
+        else if (Application.loadedLevelName.ToString() == "PlayerColorAssign") {
+            Initialize(GameData.Team.Neutral, index);
+        }
+        else if (Application.loadedLevelName.ToString() != "PlayerColorAssign" && (GO != null))
+        {
+                PlayerColorManager PlayerColorManager = GO.GetComponent<PlayerColorManager>();
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in PlayerColorManager.playerIndexColor)
+                {
+                    Debug.Log(eachPlayer.Key + " ----- " + eachPlayer.Value);
+                    if (eachPlayer.Key == index)
+                    {
+                        Initialize(eachPlayer.Value, index);
+                    }
+
+                }
+        }
+        //else if (Application.loadedLevelName.ToString() != "PlayerColorAssign" && GO != null)
+        //{
+        //    Debug.Log(Application.loadedLevelName + 1);
+            
+        //    PlayerColorManager PlayerColorManager = GO.GetComponent<PlayerColorManager>();
+        //    foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in PlayerColorManager.playerIndexColor)
+        //    {
+        //        if (eachPlayer.Key == index)
+        //        {
+        //            Initialize(eachPlayer.Value, index);
+        //        }
+
+        //    }
+        //}
+
+        //PlayerColorManager.playerIndexColor;
         //TEST
-        Initialize(GameData.Team.Neutral, index);
+
+        //Initialize(GameData.Team.Neutral, index);
+
 	}
 
     void FixedUpdate()
