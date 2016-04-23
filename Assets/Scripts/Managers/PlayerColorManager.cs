@@ -82,8 +82,9 @@ public class PlayerColorManager : MonoBehaviour
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
                 {
                     Debug.Log(player.Key + " - " + player.Value);
+                    PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                 }
-                //Application.LoadLevel("Level01");
+                Application.LoadLevel("Level01");
             }
         }
     }

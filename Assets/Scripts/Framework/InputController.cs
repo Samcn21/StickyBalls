@@ -8,12 +8,17 @@ using System.Linq;
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
-    [SerializeField] private float stickSensivity = 0.25f;
+    [SerializeField]
+    private float stickSensivity = 0.25f;
     public GamePad.Index index;
     public GameData.Team team;
+    public Material redMat;
+    public Material blueMat;
+    public Material yellowMat;
+    public Material blackMat;
     private Player player;
     private GamepadState gamepadState;
-    public GamePad.Index gamepadIndex;
+    private GamePad.Index gamepadIndex;
     private PipeMan pipeMan;
     private GridController gridController;
     private Rigidbody rigidbody;
@@ -30,9 +35,37 @@ public class InputController : MonoBehaviour
     public bool colorPickPermit = false;
 
 
-
-    public void Initialize (GameData.Team t, GamePad.Index padIndex)
+    public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
+        Renderer myMat = GetComponentInChildren<Renderer>();
+        GameObject redSpot = GameObject.Find("Red");
+        GameObject blueSpot = GameObject.Find("Blue");
+        GameObject yellowSpot = GameObject.Find("Yellow");
+        GameObject balckSpot = GameObject.Find("Black");
+
+        //change the color of the player in order to the gamePad index number and move the player
+        // to the related respawn spots (next to their source) that have the same color as the player
+        if (t.ToString().Contains("Red")) 
+        {
+            myMat.material = redMat;
+            transform.position = redSpot.transform.position;
+        }
+        else if (t.ToString().Contains("Blue")) 
+        {
+            myMat.material = blueMat;
+            transform.position = blueSpot.transform.position;
+        }
+        else if (t.ToString().Contains("Yellow"))
+        {
+            myMat.material = yellowMat;
+            transform.position = yellowSpot.transform.position;
+        }
+        else if (t.ToString().Contains("Black"))
+        {
+            myMat.material = blackMat;
+            transform.position = balckSpot.transform.position;
+        }
+
         team = t;
         gamepadIndex = padIndex;
         gamepadState = GamePad.GetState(gamepadIndex);
@@ -41,67 +74,101 @@ public class InputController : MonoBehaviour
         colorPicked = false;
     }
 
-	// Use this for initialization
-	void Start ()
-	{
-	    player = GetComponent<Player>();
-	    triggerCollider = GetComponent<SphereCollider>();
+    // Use this for initialization
+    void Start()
+    {
+        player = GetComponent<Player>();
+        triggerCollider = GetComponent<SphereCollider>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
         possibleRotationAngles = new List<int>();
-	    pipeMan = GameController.Instance.PipeMan;
-	    gridController = GameController.Instance.GridController;
-
+        pipeMan = GameController.Instance.PipeMan;
+        gridController = GameController.Instance.GridController;
+        AssignColorsToPlayers();
+    }
+    void AssignColorsToPlayers()
+    {
         //Gives default color to the players
         if ((Application.loadedLevelName.ToString() != "PlayerColorAssign"))
         {
-            //TODO: should read assigned colors from PlayerPrefs if index and colors come from PlayerColorAssign scene 
-            Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
-            {
-                {GamePad.Index.One, GameData.Team.Red},
-                {GamePad.Index.Two, GameData.Team.Yellow},
-                {GamePad.Index.Three, GameData.Team.Blue},
-                {GamePad.Index.Four, GameData.Team.Black},
-            };
 
-            foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
+            //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
+            //or this level provokes directly from PlayerColorAssign level
+            if (PlayerPrefs.GetString("One") != null)
             {
-                if (eachPlayer.Key == index)
+                string[] names = Enum.GetNames(typeof(GamePad.Index));
+                Dictionary<GamePad.Index, GameData.Team> playerPrefIndexColor = new Dictionary<GamePad.Index, GameData.Team>();
+                for (int i = 0; i < names.Length; i++)
                 {
-                    Initialize(eachPlayer.Value, index);
+                    if (names[i] != GamePad.Index.Any.ToString())
+                    {
+                        if (PlayerPrefs.GetString(names[i]) != null)
+                        {
+                            GameData.Team colorValue = (GameData.Team)Enum.Parse(typeof(GameData.Team), PlayerPrefs.GetString(names[i]));
+                            GamePad.Index indexValue = (GamePad.Index)Enum.Parse(typeof(GamePad.Index), names[i]);
+                            playerPrefIndexColor[indexValue] = colorValue;
+                        }
+                    }
                 }
 
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in playerPrefIndexColor)
+                {
+                    if (eachPlayer.Key == index)
+                    {
+                        Initialize(eachPlayer.Value, index);
+                    }
+                }
+            }
+            else
+            {
+                //if playerPrefs is null then assign this colors to the player
+                Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
+                {
+                    {GamePad.Index.One, GameData.Team.Red},
+                    {GamePad.Index.Two, GameData.Team.Yellow},
+                    {GamePad.Index.Three, GameData.Team.Blue},
+                    {GamePad.Index.Four, GameData.Team.Black},
+                };
+
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
+                {
+                    if (eachPlayer.Key == index)
+                    {
+                        Initialize(eachPlayer.Value, index);
+                    }
+                }
             }
         }
-        else if (Application.loadedLevelName.ToString() == "PlayerColorAssign")
+        else
         {
+            //in Player Color Assign page gives everybody Neutral color!
             Initialize(GameData.Team.Neutral, index);
         }
-	}
+    }
 
     void FixedUpdate()
     {
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
-        rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity  ) * player.moveSpeed);
+        rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
     }
-	// Update is called once per frame
-	void Update ()
-	{
-	    if (!initialized) return;
+
+    void Update()
+    {
+        if (!initialized) return;
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
-	    if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
-	    {
-	        if (selectedConveyorPipe != null)
-	        {
-	            player.PickupPipe(selectedConveyorPipe);
-	            closeConveyorPipes.Remove(selectedConveyorPipe);
+        if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
+        {
+            if (selectedConveyorPipe != null)
+            {
+                player.PickupPipe(selectedConveyorPipe);
+                closeConveyorPipes.Remove(selectedConveyorPipe);
                 Destroy(selectedConveyorPipe.gameObject);
                 selectedConveyorPipe = null;
-	        }
+            }
             else if (selectedPipeConnection != null)
             {
                 PlacePipe();
@@ -112,71 +179,74 @@ public class InputController : MonoBehaviour
             {
                 colorPicked = true;
             }
-	    }
+        }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
-	    if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
-	    {
-	        if (selectedPipeConnection != null)
-	        {
-	            rotationIndex++;
-	            if (rotationIndex > possibleRotationAngles.Count - 1)
-	                rotationIndex = 0;
+        if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
+        {
+            if (selectedPipeConnection != null)
+            {
+                rotationIndex++;
+                if (rotationIndex > possibleRotationAngles.Count - 1)
+                    rotationIndex = 0;
                 RotatePipe(possibleRotationAngles[rotationIndex]);
-	        }
-	    }
+            }
+        }
 
         //Select closest conveyor pipe out of all within the sphere collider
-	    if (closeConveyorPipes.Count > 0 && player.HeldPipeType == PipeData.PipeType.Void)
-	    {
-	        float shortestDistance = float.MaxValue;
-	        ConveyorPipe closestPipe = null;
+        if (closeConveyorPipes.Count > 0 && player.HeldPipeType == PipeData.PipeType.Void)
+        {
+            float shortestDistance = float.MaxValue;
+            ConveyorPipe closestPipe = null;
             List<ConveyorPipe> pipesToDelete = new List<ConveyorPipe>();
-	        foreach (ConveyorPipe pipe in closeConveyorPipes)
-	        {
-	            if (pipe == null)
-	            {
+            foreach (ConveyorPipe pipe in closeConveyorPipes)
+            {
+                if (pipe == null)
+                {
                     pipesToDelete.Add(pipe);
-	                continue;
-	            }
-	            float distance = Vector3.Distance(transform.position, pipe.transform.position);
-	            if (distance < shortestDistance)
-	            {
-	                shortestDistance = distance;
-	                closestPipe = pipe;
-	            }
-	        }
-	        foreach (ConveyorPipe pipe in pipesToDelete)
-	        {
-	            closeConveyorPipes.Remove(pipe);
-	        }
-	        if (selectedConveyorPipe != closestPipe)
-	        {
+                    continue;
+                }
+                float distance = Vector3.Distance(transform.position, pipe.transform.position);
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    closestPipe = pipe;
+                }
+            }
+            foreach (ConveyorPipe pipe in pipesToDelete)
+            {
+                closeConveyorPipes.Remove(pipe);
+            }
+            if (selectedConveyorPipe != closestPipe)
+            {
                 if (selectedConveyorPipe != null)
-	                selectedConveyorPipe.SetHightlight(false);
-	            selectedConveyorPipe = closestPipe;
-	            closestPipe.SetHightlight(true);
-	        }
-	    }
+                    selectedConveyorPipe.SetHightlight(false);
+                selectedConveyorPipe = closestPipe;
+                closestPipe.SetHightlight(true);
+            }
+        }
 
         //Select closest place to put a pipe out of all within the sphere collider
         else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void)
         {
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
-            foreach (GameData.Coordinate tile in closePipeConnections) {
+            foreach (GameData.Coordinate tile in closePipeConnections)
+            {
                 if (gridController.Grid[tile.x, tile.y].pipe != null || CalculatePossibleRotations(tile, player.HeldPipeType).Count == 0)
                     continue;
                 float distance = Vector3.Distance(transform.position, gridController.Grid[tile.x, tile.y].transform.position);
-                if (distance < shortestDistance) {
+                if (distance < shortestDistance)
+                {
                     shortestDistance = distance;
                     closestPipeConnection = tile;
                 }
             }
             //If the selected tile changes, destroy the previous placeholder and place a new.
-            if (selectedPipeConnection != closestPipeConnection) {
+            if (selectedPipeConnection != closestPipeConnection)
+            {
 
-                if (selectedPipePlaceholder != null) 
+                if (selectedPipePlaceholder != null)
                     Destroy(selectedPipePlaceholder.gameObject);
                 selectedPipeConnection = closestPipeConnection;
                 if (closestPipeConnection == null)
@@ -192,7 +262,7 @@ public class InputController : MonoBehaviour
                 RotatePipe(possibleRotationAngles[0]);
             }
         }
-	}
+    }
 
     void OnTriggerStay(Collider col)
     {
@@ -220,8 +290,10 @@ public class InputController : MonoBehaviour
             if (pipe == null) return;
             if (pipe.Team == GameData.Team.Neutral && !pipe.isCenterMachine)
                 return;
-            foreach (GameData.Coordinate c in pipe.connections) {
-                if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked) {
+            foreach (GameData.Coordinate c in pipe.connections)
+            {
+                if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
+                {
                     closePipeConnections.Add(c);
                 }
             }
@@ -233,8 +305,10 @@ public class InputController : MonoBehaviour
     void OnTriggerExit(Collider col)
     {
         ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
-        if (conveyorPipe != null) {
-            if (closeConveyorPipes.Contains(conveyorPipe)) {
+        if (conveyorPipe != null)
+        {
+            if (closeConveyorPipes.Contains(conveyorPipe))
+            {
                 closeConveyorPipes.Remove(conveyorPipe);
                 if (closeConveyorPipes.Count == 0)
                 {
@@ -246,7 +320,7 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-        
+
         Pipe pipe = col.GetComponent<Pipe>();
         if (pipe == null) return;
         foreach (GameData.Coordinate c in pipe.connections)
@@ -254,7 +328,8 @@ public class InputController : MonoBehaviour
             if (closePipeConnections.Contains(c))
             {
                 closePipeConnections.Remove(c);
-                if (closePipeConnections.Count == 0) {
+                if (closePipeConnections.Count == 0)
+                {
                     selectedPipeConnection = null;
                     if (selectedPipePlaceholder != null)
                         Destroy(selectedPipePlaceholder.gameObject);
@@ -271,25 +346,32 @@ public class InputController : MonoBehaviour
         List<int> rotationAngles = new List<int>();
         if (toPlace.x > 0)
         {
-            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null) {
+            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
+            {
                 if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
-                    rotations.Add(new Vector2(-1,0));
+                    rotations.Add(new Vector2(-1, 0));
             }
         }
-        if (toPlace.x < gridController.Grid.GetLength(0)-1) {
-            if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe != null) {
+        if (toPlace.x < gridController.Grid.GetLength(0) - 1)
+        {
+            if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe != null)
+            {
                 if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
-        if (toPlace.y > 0) {
-            if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe != null) {
+        if (toPlace.y > 0)
+        {
+            if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe != null)
+            {
                 if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
-        if (toPlace.y < gridController.Grid.GetLength(1) - 1) {
-            if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe != null) {
+        if (toPlace.y < gridController.Grid.GetLength(1) - 1)
+        {
+            if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe != null)
+            {
                 if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
@@ -298,7 +380,7 @@ public class InputController : MonoBehaviour
         List<Vector2> pipeConnections = pipeMan.pipeConnections[type];
         for (int i = 0; i < 4; i++)
         {
-            int rotationAngle = i*90;
+            int rotationAngle = i * 90;
             foreach (Vector2 v in pipeConnections)
             {
                 Vector2 rotated = Quaternion.Euler(0, 0, -rotationAngle) * v;
