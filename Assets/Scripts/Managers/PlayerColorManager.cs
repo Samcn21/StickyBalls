@@ -32,7 +32,7 @@ public class PlayerColorManager : MonoBehaviour
             }
         }
 
-        //start the game
+        //this part starts the game from PlayerColorAssign level!
         if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
         {
             if (playerIndexColor[GamePad.Index.One] != GameData.Team.Neutral)
@@ -81,7 +81,8 @@ public class PlayerColorManager : MonoBehaviour
                 }
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
                 {
-                    Debug.Log(player.Key + " - " + player.Value);
+                    //Debug.Log(player.Key + " - " + player.Value);
+                    //TODO: Show which game pad picked what color in a GUI
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                 }
                 Application.LoadLevel("Level01");
