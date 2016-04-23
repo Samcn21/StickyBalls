@@ -22,72 +22,70 @@ public class PlayerColorManager : MonoBehaviour
 
     void Update()
     {
-        if (Application.loadedLevelName == "PlayerColorAssign")
+        foreach (GameObject check in players)
         {
-            foreach (GameObject check in players)
+            InputController InputController;
+            InputController = check.gameObject.GetComponent<InputController>();
+            if (InputController.team != GameData.Team.Neutral)
             {
-                InputController InputController;
-                InputController = check.gameObject.GetComponent<InputController>();
-                if (InputController.team != GameData.Team.Neutral)
-                {
-                    playerIndexColor[InputController.index] = InputController.team;
-                }
+                playerIndexColor[InputController.index] = InputController.team;
             }
+        }
 
-            //start the game
-            if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
+        //start the game
+        if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
+        {
+            if (playerIndexColor[GamePad.Index.One] != GameData.Team.Neutral)
             {
-                if (playerIndexColor[GamePad.Index.One] != GameData.Team.Neutral)
-                {
-                    List<GameData.Team> colorList = new List<GameData.Team>(){
+                List<GameData.Team> colorList = new List<GameData.Team>(){
                                 GameData.Team.Yellow, 
                                 GameData.Team.Blue, 
                                 GameData.Team.Red, 
                                 GameData.Team.Black
                         };
-                    List<GameData.Team> impossibleColorList = new List<GameData.Team>();
-                    GamePad.Index[] indexList = new GamePad.Index[] {
+                List<GameData.Team> impossibleColorList = new List<GameData.Team>();
+                GamePad.Index[] indexList = new GamePad.Index[] {
                                 GamePad.Index.One,
                                 GamePad.Index.Two,
                                 GamePad.Index.Three,
                                 GamePad.Index.Four
                         };
 
-                    //make a list of colors that alredy picked by the player(s)
+                //make a list of colors that alredy picked by the player(s)
+                for (int index = 0; index < indexList.Length; index++)
+                {
+                    foreach (GameData.Team color in colorList)
+                    {
+                        if (playerIndexColor[indexList[index]] == color)
+                        {
+                            impossibleColorList.Add(color);
+                        }
+                    }
+                }
+
+                //make a list of available colors that hav't picked by the player(s)
+                List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
+
+                //assign the available colors to the players without color
+                foreach (GameData.Team possibleColor in possibleColorList)
+                {
+                    bool oneShot = true;
                     for (int index = 0; index < indexList.Length; index++)
                     {
-                        foreach (GameData.Team color in colorList)
+                        if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
                         {
-                            if (playerIndexColor[indexList[index]] == color)
-                            {
-                                impossibleColorList.Add(color);
-                            }
+                            playerIndexColor[indexList[index]] = possibleColor;
+                            oneShot = false;
                         }
                     }
-
-                    //make a list of available colors that hav't picked by the player(s)
-                    List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
-
-                    //assign the available colors to the players without color
-                    foreach (GameData.Team possibleColor in possibleColorList)
-                    {
-                        bool oneShot = true;
-                        for (int index = 0; index < indexList.Length; index++)
-                        {
-                            if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
-                            {
-                                playerIndexColor[indexList[index]] = possibleColor;
-                                oneShot = false;
-                            }
-                        }
-                    }
-                    foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
-                    {
-                        Debug.Log(player.Key + " - " + player.Value);
-                    }
-                    Application.LoadLevel("Level01");
                 }
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
+                {
+                    Debug.Log(player.Key + " - " + player.Value);
+                }
+                //Application.LoadLevel("Level01");
             }
         }
     }
+
 }

@@ -13,7 +13,7 @@ public class InputController : MonoBehaviour
     public GameData.Team team;
     private Player player;
     private GamepadState gamepadState;
-    private GamePad.Index gamepadIndex;
+    public GamePad.Index gamepadIndex;
     private PipeMan pipeMan;
     private GridController gridController;
     private Rigidbody rigidbody;
@@ -55,11 +55,12 @@ public class InputController : MonoBehaviour
         //Gives default color to the players
         if ((Application.loadedLevelName.ToString() != "PlayerColorAssign"))
         {
+            //TODO: should read assigned colors from PlayerPrefs if index and colors come from PlayerColorAssign scene 
             Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
             {
                 {GamePad.Index.One, GameData.Team.Red},
-                {GamePad.Index.Two, GameData.Team.Blue},
-                {GamePad.Index.Three, GameData.Team.Yellow},
+                {GamePad.Index.Two, GameData.Team.Yellow},
+                {GamePad.Index.Three, GameData.Team.Blue},
                 {GamePad.Index.Four, GameData.Team.Black},
             };
 
@@ -72,8 +73,9 @@ public class InputController : MonoBehaviour
 
             }
         }
-        else{
-            //TODO: should read assigned colors from PlayerPrefs 
+        else if (Application.loadedLevelName.ToString() == "PlayerColorAssign")
+        {
+            Initialize(GameData.Team.Neutral, index);
         }
 	}
 
@@ -110,7 +112,6 @@ public class InputController : MonoBehaviour
             {
                 colorPicked = true;
             }
-
 	    }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
