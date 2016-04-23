@@ -36,8 +36,7 @@ public class ColorAssign : MonoBehaviour {
 
                 controllerIndex = InputController.index;
                 other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
-
-
+                
                 playerColorAssign.Add(controllerIndex,color);
                 colorPicked = false;
             }

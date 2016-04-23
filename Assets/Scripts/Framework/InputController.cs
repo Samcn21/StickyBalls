@@ -52,8 +52,8 @@ public class InputController : MonoBehaviour
 	    pipeMan = GameController.Instance.PipeMan;
 	    gridController = GameController.Instance.GridController;
 
-        GameObject GO = GameObject.Find("_SCRIPT");
-        if ((Application.loadedLevelName.ToString() != "PlayerColorAssign") && (GO == null))
+        //Gives default color to the players
+        if ((Application.loadedLevelName.ToString() != "PlayerColorAssign"))
         {
             Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
             {
@@ -72,42 +72,9 @@ public class InputController : MonoBehaviour
 
             }
         }
-        else if (Application.loadedLevelName.ToString() == "PlayerColorAssign") {
-            Initialize(GameData.Team.Neutral, index);
+        else{
+            //TODO: should read assigned colors from PlayerPrefs 
         }
-        else if (Application.loadedLevelName.ToString() != "PlayerColorAssign" && (GO != null))
-        {
-                PlayerColorManager PlayerColorManager = GO.GetComponent<PlayerColorManager>();
-                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in PlayerColorManager.playerIndexColor)
-                {
-                    Debug.Log(eachPlayer.Key + " ----- " + eachPlayer.Value);
-                    if (eachPlayer.Key == index)
-                    {
-                        Initialize(eachPlayer.Value, index);
-                    }
-
-                }
-        }
-        //else if (Application.loadedLevelName.ToString() != "PlayerColorAssign" && GO != null)
-        //{
-        //    Debug.Log(Application.loadedLevelName + 1);
-            
-        //    PlayerColorManager PlayerColorManager = GO.GetComponent<PlayerColorManager>();
-        //    foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in PlayerColorManager.playerIndexColor)
-        //    {
-        //        if (eachPlayer.Key == index)
-        //        {
-        //            Initialize(eachPlayer.Value, index);
-        //        }
-
-        //    }
-        //}
-
-        //PlayerColorManager.playerIndexColor;
-        //TEST
-
-        //Initialize(GameData.Team.Neutral, index);
-
 	}
 
     void FixedUpdate()
@@ -138,6 +105,7 @@ public class InputController : MonoBehaviour
                 PlacePipe();
             }
 
+            //color pick 
             if (colorPickPermit && team == GameData.Team.Neutral)
             {
                 colorPicked = true;
