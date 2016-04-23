@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private GameObject playerPrefab;
-    [SerializeField] private GameObject textGUI;
+    public GameObject playerColorAssign;
 
     private static GameController instance;
     public static GameController Instance
@@ -31,8 +30,11 @@ public class GameController : MonoBehaviour
 
         gameRunning = true;
 
-        Text textGUI = GameObject.Find("WinningText").GetComponent<Text>();
-        textGUI.enabled = false;
+        playerColorAssign = GameObject.Find("WinningText");
+        if (playerColorAssign != null){
+            Text text = playerColorAssign.GetComponent<Text>();
+            text.enabled = false;
+        }
     }
 
     public void SpawnPlayer(GameData.Team team, GamePad.Index gamepadIndex)
@@ -44,12 +46,17 @@ public class GameController : MonoBehaviour
     {
         if (!gameRunning)
             return;
-            
-        Debug.Log(winningTeam.ToString() + " PLAYER WON!");
-        Text textGUI = GameObject.Find("WinningText").GetComponent<Text>();
-        textGUI.enabled = true;
-        textGUI.GetComponent<Text>().text = winningTeam.ToString() + " PLAYER WON!";
-        textGUI.GetComponent<Text>().color = GameData.TeamColors[winningTeam];
+
         gameRunning = false;
+
+        if (playerColorAssign != null)
+        {
+            Text text = playerColorAssign.GetComponent<Text>();
+            text.enabled = true;
+            text.GetComponent<Text>().text = winningTeam.ToString() + " PLAYER WON!";
+            text.GetComponent<Text>().color = GameData.TeamColors[winningTeam];
+           
+        }
+
     }
 }
