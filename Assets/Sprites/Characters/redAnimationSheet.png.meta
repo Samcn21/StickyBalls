@@ -1,0 +1,251 @@
+fileFormatVersion: 2
+guid: 52d90ab9df9d06042abe131eaec3aa33
+timeCreated: 1461489203
+licenseType: Free
+TextureImporter:
+  fileIDToRecycleName:
+    21300000: redAnimationSheet_0
+    21300002: redAnimationSheet_1
+    21300004: redAnimationSheet_2
+  serializedVersion: 2
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 1
+    linearTexture: 0
+    correctGamma: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+  isReadable: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 0
+  cubemapConvolution: 0
+  cubemapConvolutionSteps: 7
+  cubemapConvolutionExponent: 1.5
+  seamlessCubemap: 0
+  textureFormat: -1
+  maxTextureSize: 2048
+  textureSettings:
+    filterMode: -1
+    aniso: 16
+    mipBias: -1
+    wrapMode: 1
+  nPOTScale: 0
+  lightmap: 0
+  rGBM: 0
+  compressionQuality: 50
+  allowsAlphaSplitting: 0
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spritePixelsToUnits: 100
+  alphaIsTransparency: 1
+  textureType: 8
+  buildTargetSettings: []
+  spriteSheet:
+    sprites:
+    - name: redAnimationSheet_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 58, y: 99}
+        - {x: 36, y: 128}
+        - {x: -17, y: 128}
+        - {x: -17, y: 122}
+        - {x: -16, y: 119}
+        - {x: -16, y: 120}
+        - {x: -17, y: 117}
+        - {x: -23, y: 128}
+        - {x: -37, y: 128}
+        - {x: -73, y: 70}
+        - {x: -73, y: -22}
+        - {x: -80, y: -55}
+        - {x: -80, y: -108}
+        - {x: -65, y: -128}
+        - {x: 84, y: -128}
+        - {x: 84, y: -29}
+        - {x: 69, y: 82}
+      - - {x: 74, y: -34}
+        - {x: 71, y: -35}
+        - {x: 70, y: -43}
+        - {x: 71, y: -47}
+        - {x: 73, y: -49}
+        - {x: 75, y: -49}
+        - {x: 77, y: -48}
+        - {x: 77, y: -35}
+      - - {x: 67, y: 19}
+        - {x: 65, y: 17}
+        - {x: 65, y: 15}
+        - {x: 67, y: 13}
+        - {x: 70, y: 13}
+        - {x: 72, y: 15}
+        - {x: 72, y: 17}
+        - {x: 70, y: 19}
+      - - {x: -68, y: 89}
+        - {x: -68, y: 87}
+        - {x: -65, y: 84}
+        - {x: -58, y: 87}
+        - {x: -57, y: 91}
+        - {x: -59, y: 93}
+        - {x: -63, y: 93}
+      - - {x: 45, y: 113}
+        - {x: 43, y: 111}
+        - {x: 45, y: 106}
+        - {x: 49, y: 106}
+        - {x: 51, y: 108}
+        - {x: 51, y: 111}
+        - {x: 49, y: 113}
+      - - {x: -46, y: 122}
+        - {x: -50, y: 118}
+        - {x: -50, y: 116}
+        - {x: -48, y: 114}
+        - {x: -45, y: 114}
+        - {x: -43, y: 116}
+        - {x: -43, y: 120}
+        - {x: -45, y: 122}
+      - - {x: -42, y: 128}
+        - {x: -43, y: 127}
+        - {x: -42, y: 124}
+        - {x: -39, y: 124}
+        - {x: -37, y: 126}
+        - {x: -38, y: 128}
+    - name: redAnimationSheet_1
+      rect:
+        serializedVersion: 2
+        x: 256
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 77, y: 96}
+        - {x: 62, y: 128}
+        - {x: -33, y: 128}
+        - {x: -62, y: 63}
+        - {x: -62, y: -30}
+        - {x: -77, y: -80}
+        - {x: -77, y: -111}
+        - {x: -45, y: -128}
+        - {x: 47, y: -128}
+        - {x: 74, y: -115}
+        - {x: 88, y: -101}
+        - {x: 88, y: -30}
+      - - {x: 55, y: 114}
+        - {x: 53, y: 112}
+        - {x: 53, y: 109}
+        - {x: 55, y: 107}
+        - {x: 58, y: 107}
+        - {x: 61, y: 110}
+        - {x: 61, y: 111}
+        - {x: 58, y: 114}
+      - - {x: -37, y: 123}
+        - {x: -39, y: 119}
+        - {x: -39, y: 116}
+        - {x: -37, y: 115}
+        - {x: -34, y: 115}
+        - {x: -32, y: 119}
+        - {x: -32, y: 122}
+        - {x: -34, y: 123}
+      - - {x: -2, y: 128}
+        - {x: -7, y: 128}
+        - {x: -7, y: 121}
+        - {x: -2, y: 121}
+        - {x: -1, y: 123}
+        - {x: -1, y: 127}
+      - - {x: -33, y: 128}
+        - {x: -32, y: 125}
+        - {x: -29, y: 125}
+        - {x: -27, y: 127}
+        - {x: -27, y: 128}
+    - name: redAnimationSheet_2
+      rect:
+        serializedVersion: 2
+        x: 512
+        y: 0
+        width: 256
+        height: 256
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline:
+      - - {x: 70, y: 84}
+        - {x: 69, y: 81}
+        - {x: 69, y: 79}
+        - {x: 69, y: 91}
+        - {x: 66, y: 99}
+        - {x: 49, y: 128}
+        - {x: -20, y: 128}
+        - {x: -57, y: 76}
+        - {x: -73, y: -14}
+        - {x: -73, y: -113}
+        - {x: -26, y: -128}
+        - {x: 82, y: -128}
+        - {x: 95, y: -115}
+        - {x: 95, y: 9}
+        - {x: 80, y: 84}
+      - - {x: 55, y: 113}
+        - {x: 53, y: 111}
+        - {x: 53, y: 108}
+        - {x: 55, y: 106}
+        - {x: 57, y: 106}
+        - {x: 60, y: 109}
+        - {x: 60, y: 110}
+        - {x: 57, y: 113}
+      - - {x: -40, y: 121}
+        - {x: -42, y: 119}
+        - {x: -42, y: 116}
+        - {x: -40, y: 114}
+        - {x: -37, y: 114}
+        - {x: -34, y: 117}
+        - {x: -34, y: 120}
+        - {x: -36, y: 122}
+      - - {x: 61, y: 122}
+        - {x: 59, y: 120}
+        - {x: 59, y: 117}
+        - {x: 62, y: 114}
+        - {x: 66, y: 114}
+        - {x: 67, y: 116}
+        - {x: 67, y: 120}
+        - {x: 65, y: 121}
+      - - {x: -8, y: 127}
+        - {x: -9, y: 124}
+        - {x: -9, y: 122}
+        - {x: -8, y: 120}
+        - {x: -2, y: 120}
+        - {x: -2, y: 126}
+        - {x: -4, y: 127}
+      - - {x: -33, y: 128}
+        - {x: -34, y: 127}
+        - {x: -33, y: 124}
+        - {x: -30, y: 124}
+        - {x: -28, y: 126}
+        - {x: -29, y: 128}
+      - - {x: 54, y: 128}
+        - {x: 53, y: 127}
+        - {x: 54, y: 124}
+        - {x: 57, y: 124}
+        - {x: 59, y: 126}
+        - {x: 58, y: 128}
+    outline: []
+  spritePackingTag: 
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
