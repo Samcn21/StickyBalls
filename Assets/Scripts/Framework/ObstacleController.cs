@@ -18,7 +18,16 @@ public class ObstacleController : MonoBehaviour
     
     void Start()
     {
-
+        if ((obstacleHight.Length == obstacleWidth.Length) && (obstacleWidth.Length == obstacleMode.Length) &&  (obstacleMode.Length == obstacleType.Length)){
+            Debug.Log("We can start generation");
+            //TODO:
+            //1. find x and y in a loop 
+            //2. check if we in order to generation mode the obstacle will be in the board
+            //3. find the generated tile in the board
+            //4. copy found tile's position to initialized obstacle
+            //5. check the mode and generate obstacle to related position
+            //6. lock all the obstacle positions
+        }
     }
 
 }
