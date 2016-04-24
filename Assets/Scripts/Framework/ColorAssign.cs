@@ -34,6 +34,7 @@ public class ColorAssign : MonoBehaviour {
                 InputController.team = color;
                 InputController.colorPickPermit = false;
 
+                //TODO change color system to sprite animation
                 controllerIndex = InputController.index;
                 other.gameObject.GetComponentInChildren<Renderer>().material = myColor.material;
                 
