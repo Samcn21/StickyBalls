@@ -82,7 +82,7 @@ public class PlayerColorManager : MonoBehaviour
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
                 {
                     //Debug.Log(player.Key + " - " + player.Value);
-                    //TODO: Show which game pad picked what color in a GUI
+                    //TODO: Show which game pad picked what color in GUI
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                 }
                 Application.LoadLevel("Level01");
