@@ -110,7 +110,7 @@ public class InputController : MonoBehaviour
                 {
                     if (names[i] != GamePad.Index.Any.ToString())
                     {
-                        if (PlayerPrefs.GetString(names[i]) != null&&PlayerPrefs.GetString(names[i])!="")
+                        if (PlayerPrefs.GetString(names[i]) != null && PlayerPrefs.GetString(names[i])!="")
                         {
                             GameData.Team colorValue = (GameData.Team)Enum.Parse(typeof(GameData.Team), PlayerPrefs.GetString(names[i]));
                             GamePad.Index indexValue = (GamePad.Index)Enum.Parse(typeof(GamePad.Index), names[i]);
