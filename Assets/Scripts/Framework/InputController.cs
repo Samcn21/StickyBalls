@@ -12,10 +12,14 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     public GamePad.Index index;
     public GameData.Team team;
-    public Material redMat;
-    public Material blueMat;
-    public Material yellowMat;
-    public Material blackMat;
+    public RuntimeAnimatorController redAnim;
+    public RuntimeAnimatorController blueAnim;
+    public RuntimeAnimatorController yellowAnim;
+    public RuntimeAnimatorController blackAnim;
+    public Sprite redSprite;
+    public Sprite blueSprite;
+    public Sprite yellowSprite;
+    public Sprite blackSprite;
     private Player player;
     private GamepadState gamepadState;
     private GamePad.Index gamepadIndex;
@@ -37,7 +41,8 @@ public class InputController : MonoBehaviour
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
-        Renderer myMat = GetComponentInChildren<Renderer>();
+        Animator myAnim = GetComponentInChildren<Animator>();
+        SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
         GameObject redSpot = GameObject.Find("Red");
         GameObject blueSpot = GameObject.Find("Blue");
         GameObject yellowSpot = GameObject.Find("Yellow");
@@ -45,24 +50,28 @@ public class InputController : MonoBehaviour
 
         //change the color of the player in order to the gamePad index number and move the player
         // to the related respawn spots (next to their source) that have the same color as the player
-        if (t.ToString().Contains("Red")) 
+        if (t.ToString().Contains("Red"))
         {
-            myMat.material = redMat;
+            mySprite.sprite = redSprite;
+            myAnim.runtimeAnimatorController = redAnim;
             transform.position = redSpot.transform.position;
         }
-        else if (t.ToString().Contains("Blue")) 
+        else if (t.ToString().Contains("Blue"))
         {
-            myMat.material = blueMat;
+            mySprite.sprite = blueSprite;
+            myAnim.runtimeAnimatorController = blueAnim;
             transform.position = blueSpot.transform.position;
         }
         else if (t.ToString().Contains("Yellow"))
         {
-            myMat.material = yellowMat;
+            mySprite.sprite = yellowSprite;
+            myAnim.runtimeAnimatorController = yellowAnim;
             transform.position = yellowSpot.transform.position;
         }
         else if (t.ToString().Contains("Black"))
         {
-            myMat.material = blackMat;
+            mySprite.sprite = blackSprite;
+            myAnim.runtimeAnimatorController = blackAnim;
             transform.position = balckSpot.transform.position;
         }
 
@@ -91,7 +100,6 @@ public class InputController : MonoBehaviour
         //Gives default color to the players
         if ((Application.loadedLevelName.ToString() != "PlayerColorAssign"))
         {
-
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level provokes directly from PlayerColorAssign level
             if (PlayerPrefs.GetString("One") != null)
@@ -150,6 +158,11 @@ public class InputController : MonoBehaviour
     {
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
+        
+        float velocity = rigidbody.velocity.x + rigidbody.velocity.z;
+        Animator myAnim = GetComponentInChildren<Animator>();
+        myAnim.SetFloat("velocity", Mathf.Abs(velocity));
+
         rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
     }
 
