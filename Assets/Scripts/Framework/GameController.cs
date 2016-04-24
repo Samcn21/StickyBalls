@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject playerColorAssign;
+    public GameObject winningGUI;
 
     private static GameController instance;
     public static GameController Instance
@@ -30,9 +30,10 @@ public class GameController : MonoBehaviour
 
         gameRunning = true;
 
-        playerColorAssign = GameObject.Find("WinningText");
-        if (playerColorAssign != null){
-            Text text = playerColorAssign.GetComponent<Text>();
+        winningGUI = GameObject.Find("WinningText");
+        if (winningGUI != null)
+        {
+            Text text = winningGUI.GetComponent<Text>();
             text.enabled = false;
         }
     }
@@ -49,9 +50,9 @@ public class GameController : MonoBehaviour
 
         gameRunning = false;
 
-        if (playerColorAssign != null)
+        if (winningGUI != null)
         {
-            Text text = playerColorAssign.GetComponent<Text>();
+            Text text = winningGUI.GetComponent<Text>();
             text.enabled = true;
             text.GetComponent<Text>().text = winningTeam.ToString() + " PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[winningTeam];

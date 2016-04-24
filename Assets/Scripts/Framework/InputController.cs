@@ -102,7 +102,7 @@ public class InputController : MonoBehaviour
         {
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level provokes directly from PlayerColorAssign level
-            if (PlayerPrefs.GetString("One") != null)
+            if (PlayerPrefs.GetInt("isDataSaved") == 1)
             {
                 string[] names = Enum.GetNames(typeof(GamePad.Index));
                 Dictionary<GamePad.Index, GameData.Team> playerPrefIndexColor = new Dictionary<GamePad.Index, GameData.Team>();
@@ -110,7 +110,7 @@ public class InputController : MonoBehaviour
                 {
                     if (names[i] != GamePad.Index.Any.ToString())
                     {
-                        if (PlayerPrefs.GetString(names[i]) != null&&PlayerPrefs.GetString(names[i])!="")
+                        if (PlayerPrefs.GetString(names[i]) != null)
                         {
                             GameData.Team colorValue = (GameData.Team)Enum.Parse(typeof(GameData.Team), PlayerPrefs.GetString(names[i]));
                             GamePad.Index indexValue = (GamePad.Index)Enum.Parse(typeof(GamePad.Index), names[i]);
@@ -129,7 +129,7 @@ public class InputController : MonoBehaviour
             }
             else
             {
-                //if playerPrefs is null then assign this colors to the player
+                //if playerPrefs is null then assign this colors to the players
                 Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
                 {
                     {GamePad.Index.One, GameData.Team.Red},

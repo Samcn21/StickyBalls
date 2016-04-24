@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.IO;
 
-internal class CreateDefaultFolders
+internal class StickyBallsManager
 {
 	[MenuItem("Sticky Balls/Create Default Folders")]
 	private static void CreateFolders()
@@ -45,4 +45,14 @@ internal class CreateDefaultFolders
 			Directory.CreateDirectory(path);
 		}
 	}
+}
+internal class DeleteAllPlayerPrefs
+{
+    // ***IMPORTANT***
+    // This script deletes all PlayerPref storage so, use it one time and run the scene
+    [MenuItem("Sticky Balls/Delete All PlayerPrefs")]
+    private static void DeleteAll()
+    {
+        PlayerPrefs.DeleteAll();
+    }
 }
