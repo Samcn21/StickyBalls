@@ -17,7 +17,6 @@ public class PlayerColorManager : MonoBehaviour
 
     void Start()
     {
-        Debug.Log(PlayerPrefs.GetInt("isDataSaved"));
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
@@ -86,9 +85,8 @@ public class PlayerColorManager : MonoBehaviour
                     //TODO: Show which game pad picked what color in GUI
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                     PlayerPrefs.SetInt("isDataSaved", 1);
-                    Debug.Log(PlayerPrefs.GetInt("isDataSaved"));
                 }
-                //Application.LoadLevel("Level01");
+                Application.LoadLevel("Level01");
             }
         }
     }
