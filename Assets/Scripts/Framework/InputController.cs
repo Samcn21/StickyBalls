@@ -32,9 +32,10 @@ public class InputController : MonoBehaviour
     private List<GameData.Coordinate> closePipeConnections;
     private GameData.Coordinate selectedPipeConnection;
     private Transform selectedPipePlaceholder;
-    private List<int> possibleRotationAngles;
+    private List<bool> possibleRotationIndexes;
     private int rotationIndex = 0;
     private bool initialized = false;
+    private bool isLegalRotation = false;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
 
@@ -90,7 +91,7 @@ public class InputController : MonoBehaviour
         triggerCollider = GetComponent<SphereCollider>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
-        possibleRotationAngles = new List<int>();
+        possibleRotationIndexes = new List<bool>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
         AssignColorsToPlayers();
@@ -184,7 +185,8 @@ public class InputController : MonoBehaviour
             }
             else if (selectedPipeConnection != null)
             {
-                PlacePipe();
+                if (isLegalRotation)
+                    PlacePipe();
             }
 
             //color pick 
@@ -195,15 +197,9 @@ public class InputController : MonoBehaviour
         }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
-        if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
-        {
-            if (selectedPipeConnection != null)
-            {
-                rotationIndex++;
-                if (rotationIndex > possibleRotationAngles.Count - 1)
-                    rotationIndex = 0;
-                RotatePipe(possibleRotationAngles[rotationIndex]);
-            }
+        if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex)) {
+            if (player.HeldPipeType != PipeData.PipeType.Void) 
+                RotatePipe();
         }
 
         //Select closest conveyor pipe out of all within the sphere collider
@@ -264,15 +260,15 @@ public class InputController : MonoBehaviour
                 selectedPipeConnection = closestPipeConnection;
                 if (closestPipeConnection == null)
                     return;
-                GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, 0, 0)) as GameObject;
+                GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
                 selectedPipePlaceholder = placeholder.transform;
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material =
                     pipeMan.placeholderPipeTextures[player.HeldPipeType];
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
 
-                possibleRotationAngles = CalculatePossibleRotations(selectedPipeConnection, player.HeldPipeType);
-
-                RotatePipe(possibleRotationAngles[0]);
+                possibleRotationIndexes = CalculatePossibleRotations(selectedPipeConnection, player.HeldPipeType);
+                isLegalRotation = possibleRotationIndexes[rotationIndex];
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
             }
         }
     }
@@ -353,10 +349,10 @@ public class InputController : MonoBehaviour
 
     //Calculates the possible rotation that a pipe can have for a point in space. Looks for nearby pipes that are connected to that spot
     //and tries to see which rotations it has, that can fit them.
-    private List<int> CalculatePossibleRotations(GameData.Coordinate toPlace, PipeData.PipeType type)
+    private List<bool> CalculatePossibleRotations(GameData.Coordinate toPlace, PipeData.PipeType type)
     {
         List<Vector2> rotations = new List<Vector2>();
-        List<int> rotationAngles = new List<int>();
+        List<bool> rotationAngles = new List<bool>();
         if (toPlace.x > 0)
         {
             if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
@@ -399,26 +395,38 @@ public class InputController : MonoBehaviour
                 Vector2 rotated = Quaternion.Euler(0, 0, -rotationAngle) * v;
                 foreach (Vector2 rotation in rotations)
                 {
-                    if (rotation == rotated && !rotationAngles.Contains(rotationAngle))
-                        rotationAngles.Add(rotationAngle);
+                    rotationAngles.Add(rotation == rotated);
+                    goto outerLoop;
                 }
             }
+            outerLoop:
+            ;
+
         }
         return rotationAngles;
     }
 
-    private void RotatePipe(int rotationAngle)
+    private void RotatePipe()
     {
-        selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationAngle, 0);
+        rotationIndex++;
+        if (rotationIndex > 3)
+            rotationIndex = 0;
+        Debug.Log(possibleRotationIndexes.Count);
+        if (selectedPipeConnection == null)
+            return;
+        selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationIndex * 90, 0);
+
+        isLegalRotation = possibleRotationIndexes[rotationIndex];
+        selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
     }
 
     private void PlacePipe()
     {
         GameObject newPipe = Instantiate(pipeMan.pipePrefab,
                        gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
-                           Quaternion.Euler(90, possibleRotationAngles[rotationIndex], 0)) as GameObject;
+                           Quaternion.Euler(90,rotationIndex * 90, 0)) as GameObject;
         Pipe pipe = newPipe.GetComponent<Pipe>();
-        pipe.Initialize(player.HeldPipeType, selectedPipeConnection, possibleRotationAngles[rotationIndex]);
+        pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
         player.PlacePipe();
         selectedPipeConnection = null;
         closePipeConnections.Remove(selectedPipeConnection);
