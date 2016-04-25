@@ -113,6 +113,8 @@ public class ObstacleController : MonoBehaviour
     }
 
     public bool ObstacleTileValidator() {
+        int middleX = Mathf.FloorToInt(gridX / 2);
+        int middleY = Mathf.FloorToInt(gridY / 2);
 
         if (obstaclesMode.Length != obstacleTiles.Count)
         {
@@ -136,6 +138,12 @@ public class ObstacleController : MonoBehaviour
                 Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
                 return false;
             }
+            if ((int)obstacleTiles[i].x == middleX || (int)obstacleTiles[i].y == middleY)
+            {
+
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
+                return false;
+            }
             if (!IsOnBoard(obstacleTiles[i]))
             {
                 Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y" );
@@ -157,7 +165,7 @@ public class ObstacleController : MonoBehaviour
         }
         else if (obstacleMode == GenerationMode.AddSingleTileLeft)
         {
-            if (IsAddSingleTileLeftValid(obstacleTile))
+            if (IsAddSingleTileAroundValid(obstacleTile, -1 , 0))
             {
                 AddToGenerationList(obstacleTile);
                 AddToGenerationList(new Vector2 (obstacleTile.x - 1 , obstacleTile.y));
@@ -165,8 +173,68 @@ public class ObstacleController : MonoBehaviour
             }
             return false;
         }
-        else if (obstacleMode.ToString().Contains(GenerationMode.AddSymmetryHeight.ToString())) {
-            return IsAddFourSidesValid(obstacleTile);
+        else if (obstacleMode == GenerationMode.AddSingleTileRight)
+        {
+            if (IsAddSingleTileAroundValid(obstacleTile , +1 , 0))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(new Vector2(obstacleTile.x + 1, obstacleTile.y));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode == GenerationMode.AddSingleTileTop)
+        {
+            if (IsAddSingleTileAroundValid(obstacleTile, 0 , +1))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(new Vector2(obstacleTile.x, obstacleTile.y + 1 ));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode == GenerationMode.AddSingleTileBottom)
+        {
+            if (IsAddSingleTileAroundValid(obstacleTile, 0, -1))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(new Vector2(obstacleTile.x, obstacleTile.y - 1));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode == GenerationMode.AddSymmetryWidth)
+        {
+            if (IsAddSymmetryValid(obstacleTile, true))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(GetSymmetryValue(obstacleTile, true));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode == GenerationMode.AddSymmetryHeight)
+        {
+            if (IsAddSymmetryValid(obstacleTile, false))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(GetSymmetryValue(obstacleTile, false));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode == GenerationMode.AddFourSides)
+        {
+            if (IsAddFourSidesValid(obstacleTile))
+            {
+                for (int i = 0; i < GetFourSidesValue(obstacleTile).Length; i++)
+                {
+                    AddToGenerationList(GetFourSidesValue(obstacleTile)[i]);
+                    //Debug.Log(GetFourSidesValue(obstacleTile)[i]);
+                }
+                return true;
+            }
+            return false;
         }
         return false;
     }
@@ -177,10 +245,55 @@ public class ObstacleController : MonoBehaviour
         obstacleTilesCompeleteList.Add(obstacleTile);
     }
 
-    //check if making a tile on the left side is valid and if it's valid add to the generation list
-    public bool IsAddSingleTileLeftValid(Vector2 obstacleTile)
+    //check if making a tile on the left,right,top and bottom side is valid
+    public bool IsAddSymmetryValid(Vector2 obstacleTile, bool XY)
     {
-        Vector2 value = new Vector2(obstacleTile.x - 1, obstacleTile.y);
+        //XY = true means check width
+        if (XY)
+        {
+            if (Mathf.Abs(gridX - 1 - obstacleTile.x) == obstacleTile.x || IsAlreadyChosen(new Vector2(Mathf.Abs(gridX - 1 - obstacleTile.x), obstacleTile.y)))
+            {
+                Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the X value");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        //XY = false means check height
+        else 
+        {
+            if (Mathf.Abs(gridY - 1 - obstacleTile.y) == obstacleTile.y || IsAlreadyChosen(new Vector2(obstacleTile.x, Mathf.Abs(gridY - 1 - obstacleTile.y))))
+            {
+                Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the Y value");
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+    }
+
+    public Vector2 GetSymmetryValue(Vector2 obstacleTile, bool XY) 
+    {
+        //XY = true means check width
+        if (XY)
+        {
+            return new Vector2(Mathf.Abs(gridX - 1 - obstacleTile.x ), obstacleTile.y);
+        }
+        //XY = false means check height
+        else
+        {
+            return new Vector2(obstacleTile.x, Mathf.Abs(gridY - 1 - obstacleTile.y));
+        }
+    }
+
+    //check if making a tile on the left,right,top and bottom side is valid
+    public bool IsAddSingleTileAroundValid(Vector2 obstacleTile, int vlaueX, int valueY)
+    {
+        Vector2 value = new Vector2(obstacleTile.x + vlaueX, obstacleTile.y + valueY);
         if (IsAlreadyChosen(value) || !IsOnBoard(value))
         {
             Debug.Log("Tile " + (int)value.x + " - " + (int)value.y + " doesn't have a valid value");
@@ -191,7 +304,23 @@ public class ObstacleController : MonoBehaviour
 
     //check if making four sides of the tile is valid and if it's valid add to the generation list
     public bool IsAddFourSidesValid(Vector2 obstacleTile) {
+        if (IsAddSymmetryValid(obstacleTile, false) && IsAddSymmetryValid(obstacleTile, true))
+        {
+            return true;
+        }
+        Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " cannot have 4 sides, please change the X or Y or both X and Y value");
         return false;
+    }
+
+    //check if making four sides of the tile is valid and if it's valid add to the generation list
+    public Vector2[] GetFourSidesValue(Vector2 obstacleTile) 
+    {
+        Vector2[] fourSidesTiles = new Vector2[4];
+        fourSidesTiles[0] = obstacleTile;
+        fourSidesTiles[1] = GetSymmetryValue(obstacleTile, false);
+        fourSidesTiles[2] = GetSymmetryValue(obstacleTile, true);
+        fourSidesTiles[3] = GetSymmetryValue(GetSymmetryValue(obstacleTile, false), true);
+        return fourSidesTiles;
     }
 
     //check if a tile is on the board
