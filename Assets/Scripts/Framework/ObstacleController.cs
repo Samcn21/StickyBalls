@@ -8,10 +8,14 @@ public class ObstacleController : MonoBehaviour
 
     public enum GenerationMode
     {
-        OneSide,
-        SymmetryWidth,
-        SymmetryHeight,
-        FourSides
+        SingleTile,
+        AddSingleTileTop,
+        AddSingleTileBottom,
+        AddSingleTileRight,
+        AddSingleTileLeft,
+        AddSymmetryWidth,
+        AddSymmetryHeight,
+        AddFourSides
     }
 
     [SerializeField]
@@ -19,7 +23,8 @@ public class ObstacleController : MonoBehaviour
     [SerializeField]
     GameObject obstacleType;
     public List<Vector2> obstacleTiles = new List<Vector2>();
-    public GenerationMode[] obstacleMode;
+    private List<Vector2> obstacleTilesCompeleteList = new List<Vector2>();
+    public GenerationMode[] obstaclesMode;
     public Tile[,] Grid;
     
     private int gridX;
@@ -35,8 +40,14 @@ public class ObstacleController : MonoBehaviour
 
         if (boardObject != null && ObstacleTileValidator())
         {
-            ObstacleGenerator(boardGenerationPoint.position, obstacleTiles);
+            ObstacleGenerator(boardGenerationPoint.position, obstacleTilesCompeleteList);
         }
+
+        for (int i = 0; i < obstacleTilesCompeleteList.Count; i++)
+        {
+            //Debug.Log(obstacleTilesCompeleteList[i].x + " - " + obstacleTilesCompeleteList[i].y);
+        }
+
     }
 
     public void LockTiles(List<Vector2> lockedTiles)
@@ -103,9 +114,9 @@ public class ObstacleController : MonoBehaviour
 
     public bool ObstacleTileValidator() {
 
-        if (obstacleMode.Length != obstacleTiles.Count)
+        if (obstaclesMode.Length != obstacleTiles.Count)
         {
-            Debug.Log("The number of obstacles and their Mode must be equal!!!");
+            Debug.Log("The number of obstacles and the number of mode must be equal!!!");
             return false;
         }
         if (obstacleTiles.GroupBy(n => n).Any(c => c.Count() > 1) || obstacleTiles.Any(par => (int)par.x == 0) || obstacleTiles.Any(par => (int)par.y == 0))
@@ -115,20 +126,94 @@ public class ObstacleController : MonoBehaviour
         }
         for (int i = 0; i < obstacleTiles.Count; i++ )
         {
-            if (lockedTilesList.Contains(obstacleTiles[i])) {
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already choosen, please change it to something else");
+            if (IsAlreadyChosen(obstacleTiles[i]))
+            {
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already chosen, please change it to something else");
                 return false;
             }
+            if ((int)obstacleTiles[i].x <= 0 || (int)obstacleTiles[i].y <= 0)
+            {
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
+                return false;
+            }
+            if (!IsOnBoard(obstacleTiles[i]))
+            {
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y" );
+                return false;                
+            }
+            if (IsValid(obstacleTiles[i], obstaclesMode[i])){
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a valid value and valid generation mode ");
+            }
         }
+        return true;
+    }
+    
+    //check if the tile is valid in order to its Generation Mode
+    public bool IsValid(Vector2 obstacleTile, GenerationMode obstacleMode) 
+    {
+        if (obstacleMode == GenerationMode.SingleTile) {
+            AddToGenerationList(obstacleTile);
+            return true;
+        }
+        else if (obstacleMode == GenerationMode.AddSingleTileLeft)
+        {
+            if (IsAddSingleTileLeftValid(obstacleTile))
+            {
+                AddToGenerationList(obstacleTile);
+                AddToGenerationList(new Vector2 (obstacleTile.x - 1 , obstacleTile.y));
+                return true;
+            }
+            return false;
+        }
+        else if (obstacleMode.ToString().Contains(GenerationMode.AddSymmetryHeight.ToString())) {
+            return IsAddFourSidesValid(obstacleTile);
+        }
+        return false;
+    }
 
-        //TODO:
-        //0. first step is to generate 1x1 block!!!
-        //1. find x and y in a loop 
-        //2. check if we in order to generation mode the obstacle will be in the board
+    //add the tile to the final generation list
+    public void AddToGenerationList(Vector2 obstacleTile)
+    {
+        obstacleTilesCompeleteList.Add(obstacleTile);
+    }
 
+    //check if making a tile on the left side is valid and if it's valid add to the generation list
+    public bool IsAddSingleTileLeftValid(Vector2 obstacleTile)
+    {
+        Vector2 value = new Vector2(obstacleTile.x - 1, obstacleTile.y);
+        if (IsAlreadyChosen(value) || !IsOnBoard(value))
+        {
+            Debug.Log("Tile " + (int)value.x + " - " + (int)value.y + " doesn't have a valid value");
+            return false;
+        }
         return true;
     }
 
+    //check if making four sides of the tile is valid and if it's valid add to the generation list
+    public bool IsAddFourSidesValid(Vector2 obstacleTile) {
+        return false;
+    }
+
+    //check if a tile is on the board
+    public bool IsOnBoard(Vector2 obstacleTile)
+    {
+        if ((int)obstacleTile.x > gridX || (int)obstacleTile.y > gridY)
+        {
+            return false;
+        }
+        return true;
+    }
+    //check the tile is one of chosen 
+    public bool IsAlreadyChosen(Vector2 obstacleTile)
+    {
+        if (!lockedTilesList.Contains(obstacleTile))
+        {
+            return false;
+        }
+        return true;
+    }
+
+    //generates the obstacle from obstacleTilesCompeleteList and lock them
     public void ObstacleGenerator(Vector3 originPoint, List<Vector2> obstacleTiles)
     {
         for (int i = 0; i < obstacleTiles.Count; i++)
