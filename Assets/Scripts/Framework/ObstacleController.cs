@@ -86,7 +86,7 @@ public class ObstacleController : MonoBehaviour
         for (int i = 0; i < lockedPosObstacle.Count; i++)
         {
             Grid[(int)lockedPosObstacle[i].x, (int)lockedPosObstacle[i].y].locked = true;
-            Debug.Log(lockedPosObstacle[i].x + " - " + lockedPosObstacle[i].y);
+            //Debug.Log("Tile: " + lockedPosObstacle[i].x + " - " + lockedPosObstacle[i].y + " is locked!");
         }
 
         for (int i = 0; i < lockedPosObstacle.Count; i++)
