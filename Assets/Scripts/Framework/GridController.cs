@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class GridController : MonoBehaviour
 {
@@ -12,10 +13,10 @@ public class GridController : MonoBehaviour
 
     public int GridWidth { get; private set; }
     public int GridHeight { get; private set; }
-
     public Tile[,] Grid;
-	// Use this for initialization
-	void Start ()
+    public List<Vector2> lockedPos = new List<Vector2>(); 
+	
+    void Start ()
 	{
 	    Grid = new Tile[gridWidth, gridHeight];
         GameObject boardObject = GameObject.Find("BOARDGENERATIONPOINT");
@@ -26,13 +27,11 @@ public class GridController : MonoBehaviour
         
 	    GridWidth = gridWidth;
 	    GridHeight = gridHeight;
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
+        ObstacleController ObstacleController = GetComponent<ObstacleController>();
+        ObstacleController.Initialize(lockedPos);
+	}
+	
     public void GenerateGrid(Vector3 originPoint)
     {
         for (int x = 0; x < gridWidth; x++)
@@ -47,37 +46,41 @@ public class GridController : MonoBehaviour
             }
         }
 
+        
         int middleX = Mathf.FloorToInt(gridWidth / 2);
         int middleY = Mathf.FloorToInt(gridHeight / 2);
 
+        lockedPos.Add(new Vector2(middleX - 2, middleY + 2));
+        lockedPos.Add(new Vector2(middleX - 1, middleY + 2));
+        lockedPos.Add(new Vector2(middleX + 1, middleY + 2));
+        lockedPos.Add(new Vector2(middleX + 2, middleY + 2));
 
-        Grid[middleX - 2, middleY + 2].locked = true;
-        Grid[middleX - 1, middleY + 2].locked = true;
-        Grid[middleX + 1, middleY + 2].locked = true;
-        Grid[middleX + 2, middleY + 2].locked = true;
+        lockedPos.Add(new Vector2(middleX - 2, middleY + 1));
+        lockedPos.Add(new Vector2(middleX - 1, middleY + 1));
+        lockedPos.Add(new Vector2(middleX    , middleY + 1));
+        lockedPos.Add(new Vector2(middleX + 1, middleY + 1));
+        lockedPos.Add(new Vector2(middleX + 2, middleY + 1));
 
-        Grid[middleX - 2, middleY + 1].locked = true;
-        Grid[middleX - 1, middleY + 1].locked = true;
-        Grid[middleX, middleY + 1].locked = true;
-        Grid[middleX + 1, middleY + 1].locked = true;
-        Grid[middleX + 2, middleY + 1].locked = true;
+        lockedPos.Add(new Vector2(middleX - 1, middleY    ));
+        lockedPos.Add(new Vector2(middleX    , middleY    ));
+        lockedPos.Add(new Vector2(middleX + 1, middleY    ));
 
-        Grid[middleX - 1, middleY].locked = true;
-        Grid[middleX, middleY].locked = true;
-        Grid[middleX + 1, middleY].locked = true;
+        lockedPos.Add(new Vector2(middleX - 2, middleY - 1));
+        lockedPos.Add(new Vector2(middleX - 1, middleY - 1));
+        lockedPos.Add(new Vector2(middleX    , middleY - 1));
+        lockedPos.Add(new Vector2(middleX + 1, middleY - 1));
+        lockedPos.Add(new Vector2(middleX + 2, middleY - 1));
+
+        lockedPos.Add(new Vector2(middleX - 2, middleY - 2));
+        lockedPos.Add(new Vector2(middleX - 1, middleY - 2));
+        lockedPos.Add(new Vector2(middleX + 1, middleY - 2));
+        lockedPos.Add(new Vector2(middleX + 2, middleY - 2));
+
+        //not necessary to lock here! it will send this list to obstacleController and there it will lock all locklist!
+        for (int i = 0; i < lockedPos.Count; i++)
+        {
+            Grid[(int)lockedPos[i].x, (int)lockedPos[i].y].locked = true;
+        }
         
-        Grid[middleX - 2, middleY - 1].locked = true;
-        Grid[middleX - 1, middleY - 1].locked = true;
-        Grid[middleX, middleY - 1].locked = true;
-        Grid[middleX + 1, middleY - 1].locked = true;
-        Grid[middleX + 2, middleY - 1].locked = true;
-
-        Grid[middleX - 2, middleY - 2].locked = true;
-        Grid[middleX - 1, middleY - 2].locked = true;
-        Grid[middleX + 1, middleY - 2].locked = true;
-        Grid[middleX + 2, middleY - 2].locked = true;
-
-
-
     }
 }
