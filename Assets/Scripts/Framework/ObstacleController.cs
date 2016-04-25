@@ -245,7 +245,14 @@ public class ObstacleController : MonoBehaviour
     //add the tile to the final generation list
     public void AddToGenerationList(Vector2 obstacleTile)
     {
-        obstacleTilesCompeleteList.Add(obstacleTile);
+        if (!obstacleTilesCompeleteList.Contains(obstacleTile))
+        {
+            obstacleTilesCompeleteList.Add(obstacleTile);
+        }
+        else
+        {
+            Debug.Log(problemPlace + "Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " is already in the obstacle list, check elements and their generation mode!!!");
+        }
     }
 
     //check if making a tile on the left,right,top and bottom side is valid
