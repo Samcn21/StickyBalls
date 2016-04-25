@@ -30,7 +30,7 @@ public class ObstacleController : MonoBehaviour
     private int gridX;
     private int gridY;
     private int numberOfInvoke = 0;
-
+    private string problemPlace = "CHECK OBSTACLE CONTROLLER: ";
 
     private List<Vector2> lockedTilesList = new List<Vector2>();
     void Start()
@@ -118,35 +118,35 @@ public class ObstacleController : MonoBehaviour
 
         if (obstaclesMode.Length != obstacleTiles.Count)
         {
-            Debug.Log("The number of obstacles and the number of mode must be equal!!!");
+            Debug.Log(problemPlace + " The number of obstacles and the number of mode must be equal!");
             return false;
         }
         if (obstacleTiles.GroupBy(n => n).Any(c => c.Count() > 1) || obstacleTiles.Any(par => (int)par.x == 0) || obstacleTiles.Any(par => (int)par.y == 0))
         {
-            Debug.Log("There is(are) duplication of obstacles' position or some positions have 0 value");
+            Debug.Log(problemPlace + "There is(are) duplication of obstacles' position or some positions have 0 value");
             return false;
         }
         for (int i = 0; i < obstacleTiles.Count; i++ )
         {
             if (IsAlreadyChosen(obstacleTiles[i]))
             {
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already chosen, please change it to something else");
+                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already chosen, please change it to something else");
                 return false;
             }
             if ((int)obstacleTiles[i].x <= 0 || (int)obstacleTiles[i].y <= 0)
             {
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
+                Debug.Log(problemPlace + " Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
                 return false;
             }
             if ((int)obstacleTiles[i].x == middleX || (int)obstacleTiles[i].y == middleY)
             {
 
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
+                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
                 return false;
             }
             if (!IsOnBoard(obstacleTiles[i]))
             {
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y" );
+                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y");
                 return false;                
             }
             if (IsValid(obstacleTiles[i], obstaclesMode[i])){
@@ -253,7 +253,7 @@ public class ObstacleController : MonoBehaviour
         {
             if (Mathf.Abs(gridX - 1 - obstacleTile.x) == obstacleTile.x || IsAlreadyChosen(new Vector2(Mathf.Abs(gridX - 1 - obstacleTile.x), obstacleTile.y)))
             {
-                Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the X value");
+                Debug.Log(problemPlace + "Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the X value");
                 return false;
             }
             else
@@ -266,7 +266,7 @@ public class ObstacleController : MonoBehaviour
         {
             if (Mathf.Abs(gridY - 1 - obstacleTile.y) == obstacleTile.y || IsAlreadyChosen(new Vector2(obstacleTile.x, Mathf.Abs(gridY - 1 - obstacleTile.y))))
             {
-                Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the Y value");
+                Debug.Log(problemPlace + "Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " has a symmetry value on itself or already chosen, please change the Y value");
                 return false;
             }
             else
@@ -296,7 +296,7 @@ public class ObstacleController : MonoBehaviour
         Vector2 value = new Vector2(obstacleTile.x + vlaueX, obstacleTile.y + valueY);
         if (IsAlreadyChosen(value) || !IsOnBoard(value))
         {
-            Debug.Log("Tile " + (int)value.x + " - " + (int)value.y + " doesn't have a valid value");
+            Debug.Log(problemPlace + "Tile " + (int)value.x + " - " + (int)value.y + " doesn't have a valid value");
             return false;
         }
         return true;
@@ -308,7 +308,7 @@ public class ObstacleController : MonoBehaviour
         {
             return true;
         }
-        Debug.Log("Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " cannot have 4 sides, please change the X or Y or both X and Y value");
+        Debug.Log(problemPlace + "Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " cannot have 4 sides, please change the X or Y or both X and Y value");
         return false;
     }
 

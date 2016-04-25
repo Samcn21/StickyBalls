@@ -76,7 +76,8 @@ public class GridController : MonoBehaviour
         lockedTiles.Add(new Vector2(middleX + 1, middleY - 2));
         lockedTiles.Add(new Vector2(middleX + 2, middleY - 2));
 
-        //not necessary to lock here! it will send this list to obstacleController and there it will lock all locklist!
+        //it's not necessary to lock here! it will send this list to obstacleController class and obstacle controller 
+        //will also lock all locklist (including central machine , sources and obstacles if there are any)
         for (int i = 0; i < lockedTiles.Count; i++)
         {
             Grid[(int)lockedTiles[i].x, (int)lockedTiles[i].y].locked = true;
