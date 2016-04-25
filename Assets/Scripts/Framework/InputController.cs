@@ -177,6 +177,7 @@ public class InputController : MonoBehaviour
         {
             if (selectedConveyorPipe != null)
             {
+                //TODO Animation and sound for pipe pickup
                 player.PickupPipe(selectedConveyorPipe);
                 closeConveyorPipes.Remove(selectedConveyorPipe);
                 Destroy(selectedConveyorPipe.gameObject);
