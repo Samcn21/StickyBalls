@@ -3,22 +3,25 @@ using System.Collections;
 
 public class ObstacleController : MonoBehaviour
 {
+
     public enum GenerationMode
     {
-        Single,
-        FourSides,
+        OneSide,
         SymmetryWidth,
-        SymmetryHeight
+        SymmetryHeight,
+        FourSides
     }
 
-    public int[] obstacleWidth;
-    public int[] obstacleHight;
-    public GameObject[] obstacleType;
+    public Vector2[] obstaclePos;
+    [SerializeField] GameObject obstacleType;
+
     public GenerationMode[] obstacleMode;
+
     
     void Start()
     {
-        if ((obstacleHight.Length == obstacleWidth.Length) && (obstacleWidth.Length == obstacleMode.Length) &&  (obstacleMode.Length == obstacleType.Length)){
+        if (obstacleMode.Length == obstaclePos.Length)
+        {
             Debug.Log("We can start generation");
             //TODO:
             //0. first step is to generate 1x1 block!!!
