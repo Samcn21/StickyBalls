@@ -15,41 +15,62 @@ public class ObstacleController : MonoBehaviour
     }
 
     [SerializeField]
+    private Transform boardGenerationPoint;
+    [SerializeField]
     GameObject obstacleType;
-    public List<Vector2> obstaclePos = new List<Vector2>();
+    public List<Vector2> obstacleTiles = new List<Vector2>();
     public GenerationMode[] obstacleMode;
     public Tile[,] Grid;
     
+    private int gridX;
+    private int gridY;
+    private int numberOfInvoke = 0;
+
+
+    private List<Vector2> lockedTilesList = new List<Vector2>();
     void Start()
     {
+        LockSources();
+        GameObject boardObject = GameObject.Find("BOARDGENERATIONPOINT");
 
-
-        if (obstacleMode.Length == obstaclePos.Count)
+        if (boardObject != null && ObstacleTileValidator())
         {
-            //TODO:
-            //0. first step is to generate 1x1 block!!!
-            //1. find x and y in a loop 
-            //2. check if we in order to generation mode the obstacle will be in the board
-            //3. find the generated tile in the board
-            //4. copy found tile's position to initialized obstacle
-            //4.5 generating obstacles around the central machine and sources must be impossible
-            //5. check the mode and generate obstacle to related position
-            //6. lock all the obstacle positions
+            ObstacleGenerator(boardGenerationPoint.position, obstacleTiles);
         }
-
     }
-    public void Initialize(List<Vector2> lockedPos)
+
+    public void LockTiles(List<Vector2> lockedTiles)
     {
-        List<Vector2> lockedPosObstacle = new List<Vector2>();
-        lockedPosObstacle = lockedPos;
+
+        //Debug.Log(numberOfInvoke++);
+        lockedTilesList = lockedTiles;
 
         GridController GridController = GetComponent<GridController>();
-        int gridX = GridController.GridWidth;
-        int gridY = GridController.GridHeight;
+        gridX = GridController.GridWidth;
+        gridY = GridController.GridHeight;
+        Grid = new Tile[gridX, gridY];
 
-        Grid = new Tile[GridController.GridWidth, GridController.GridHeight];
+        for (int x = 0; x < gridX; x++)
+        {
+            for (int y = 0; y < gridY; y++)
+            {
+                GameObject tileGameObject = GameObject.Find(x + "," + y);
+                Tile tile = tileGameObject.GetComponent<Tile>();
+                Grid[x, y] = tile;
+            }
+        }
 
-        //find all tiles and their grid and also adds all source machines' tiles (3x3) to the list
+        //Locks all tiles that are soppused to be locked (Centeral Machine, Sources and Obstacles)
+        for (int i = 0; i < lockedTilesList.Count; i++)
+        {
+            Grid[(int)lockedTilesList[i].x, (int)lockedTilesList[i].y].locked = true;
+            //Debug.Log("Tile: " + lockedTilesList[i].x + " - " + lockedTilesList[i].y + " is locked!");
+        }
+    }
+
+    public void LockSources() { 
+        List<Vector2> lockTilesSource = new List<Vector2>();
+
         for (int x = 0; x < gridX; x++)
         {
             for (int y = 0; y < gridY; y++)
@@ -57,48 +78,64 @@ public class ObstacleController : MonoBehaviour
                 //adds the left bottom source machine to the locked list 
                 if (Enumerable.Range(0, 3).Contains(x) && Enumerable.Range(0, 3).Contains(y))
                 {
-                    lockedPosObstacle.Add(new Vector2(x,y));
+                    lockTilesSource.Add(new Vector2(x, y));
                 }
                 //adds the left top source machine to the locked list 
                 if (Enumerable.Range(0, 3).Contains(x) && Enumerable.Range(gridY - 3, gridY).Contains(y))
                 {
-                    lockedPosObstacle.Add(new Vector2(x, y));
+                    lockTilesSource.Add(new Vector2(x, y));
                 }
                 //adds the right bottom source machine to the locked list 
                 if (Enumerable.Range(gridX - 3, gridX).Contains(x) && Enumerable.Range(0, 3).Contains(y))
                 {
-                    lockedPosObstacle.Add(new Vector2(x, y));
+                    lockTilesSource.Add(new Vector2(x, y));
                 }
                 //adds the right top source machine to the locked list 
                 if (Enumerable.Range(gridX - 3, gridX).Contains(x) && Enumerable.Range(gridY - 3, gridY).Contains(y))
                 {
-                    lockedPosObstacle.Add(new Vector2(x, y));
+                    lockTilesSource.Add(new Vector2(x, y));
                 }
-
-                GameObject tileGameObject = GameObject.Find(x + "," + y);
-                Tile tile = tileGameObject.GetComponent<Tile>();
-                Grid[x, y] = tile;
-
             }
         }
 
-        //Locks all tiles that are soppused to be locked
-        for (int i = 0; i < lockedPosObstacle.Count; i++)
-        {
-            Grid[(int)lockedPosObstacle[i].x, (int)lockedPosObstacle[i].y].locked = true;
-            //Debug.Log("Tile: " + lockedPosObstacle[i].x + " - " + lockedPosObstacle[i].y + " is locked!");
-        }
-
-        for (int i = 0; i < lockedPosObstacle.Count; i++)
-        {
-            //Debug.Log(lockedPos[i].x + " - " + lockedPos[i].y);
-
-        }
-        if (obstaclePos.GroupBy(n => n).Any(c => c.Count() > 1) || obstaclePos.Any(par => (int)par.x == 0) || obstaclePos.Any(par => (int)par.y == 0))
-        {
-            Debug.Log("There is duplicate obstacle position or any position has 0");
-        }
+        LockTiles(lockTilesSource);
     }
 
+    public bool ObstacleTileValidator() {
 
+        if (obstacleMode.Length != obstacleTiles.Count)
+        {
+            Debug.Log("The number of obstacles and their Mode must be equal!!!");
+            return false;
+        }
+        if (obstacleTiles.GroupBy(n => n).Any(c => c.Count() > 1) || obstacleTiles.Any(par => (int)par.x == 0) || obstacleTiles.Any(par => (int)par.y == 0))
+        {
+            Debug.Log("There is(are) duplication of obstacles' position or some positions have 0 value");
+            return false;
+        }
+        for (int i = 0; i < obstacleTiles.Count; i++ )
+        {
+            if (lockedTilesList.Contains(obstacleTiles[i])) {
+                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already choosen, please change it to something else");
+                return false;
+            }
+        }
+
+        //TODO:
+        //0. first step is to generate 1x1 block!!!
+        //1. find x and y in a loop 
+        //2. check if we in order to generation mode the obstacle will be in the board
+
+        return true;
+    }
+
+    public void ObstacleGenerator(Vector3 originPoint, List<Vector2> obstacleTiles)
+    {
+        for (int i = 0; i < obstacleTiles.Count; i++)
+        {
+            GameObject tileGameObject = Instantiate(obstacleType, new Vector3(originPoint.x + obstacleTiles[i].x, originPoint.y , originPoint.z + obstacleTiles[i].y), Quaternion.Euler(90, 0, 0)) as GameObject;
+            //Debug.Log("Tile: " + lockedTilesList[i].x + " - " + lockedTilesList[i].y + " is locked!");
+        }
+        LockTiles(obstacleTiles);
+    }
 }
