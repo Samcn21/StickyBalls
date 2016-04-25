@@ -33,6 +33,8 @@ public class ObstacleController : MonoBehaviour
     private string problemPlace = "CHECK OBSTACLE CONTROLLER: ";
 
     private List<Vector2> lockedTilesList = new List<Vector2>();
+ 
+    //Unity start function
     void Start()
     {
         LockSources();
@@ -50,9 +52,9 @@ public class ObstacleController : MonoBehaviour
 
     }
 
+    //lock list of tiles 
     public void LockTiles(List<Vector2> lockedTiles)
     {
-
         //Debug.Log(numberOfInvoke++);
         lockedTilesList = lockedTiles;
 
@@ -79,6 +81,7 @@ public class ObstacleController : MonoBehaviour
         }
     }
 
+    //Lock all tiles that sources exsit, also this helps to have a list of occupited tiles that are not proper for obstacles
     public void LockSources() { 
         List<Vector2> lockTilesSource = new List<Vector2>();
 
@@ -112,6 +115,7 @@ public class ObstacleController : MonoBehaviour
         LockTiles(lockTilesSource);
     }
 
+    //Validator of Obstacle Controller values
     public bool ObstacleTileValidator() {
         int middleX = Mathf.FloorToInt(gridX / 2);
         int middleY = Mathf.FloorToInt(gridY / 2);
@@ -276,6 +280,7 @@ public class ObstacleController : MonoBehaviour
         }
     }
 
+    //Get the symmetry value of an obsticale tile
     public Vector2 GetSymmetryValue(Vector2 obstacleTile, bool XY) 
     {
         //XY = true means check width
@@ -332,6 +337,7 @@ public class ObstacleController : MonoBehaviour
         }
         return true;
     }
+
     //check the tile is one of chosen 
     public bool IsAlreadyChosen(Vector2 obstacleTile)
     {
