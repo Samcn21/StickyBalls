@@ -34,7 +34,6 @@ public class ObstacleController : MonoBehaviour
 
     private List<Vector2> lockedTilesList = new List<Vector2>();
  
-    //Unity start function
     void Start()
     {
         LockSources();
@@ -142,7 +141,7 @@ public class ObstacleController : MonoBehaviour
                 Debug.Log(problemPlace + " Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
                 return false;
             }
-            if ((int)obstacleTiles[i].x == middleX || (int)obstacleTiles[i].y == middleY)
+            if ((int)obstacleTiles[i].x == middleX && (int)obstacleTiles[i].y == middleY)
             {
 
                 Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
@@ -246,7 +245,14 @@ public class ObstacleController : MonoBehaviour
     //add the tile to the final generation list
     public void AddToGenerationList(Vector2 obstacleTile)
     {
-        obstacleTilesCompeleteList.Add(obstacleTile);
+        if (!obstacleTilesCompeleteList.Contains(obstacleTile))
+        {
+            obstacleTilesCompeleteList.Add(obstacleTile);
+        }
+        else
+        {
+            Debug.Log(problemPlace + "Tile " + (int)obstacleTile.x + " - " + (int)obstacleTile.y + " is already in the obstacle list, check elements and their generation mode!!!");
+        }
     }
 
     //check if making a tile on the left,right,top and bottom side is valid

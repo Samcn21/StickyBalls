@@ -170,14 +170,19 @@ public class InputController : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-
+        
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
         if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
         {
+            
             if (selectedConveyorPipe != null)
             {
+                //TODO Animation and sound for pipe pickup
+                Animator myAnim = GetComponentInChildren<Animator>();
+                myAnim.SetTrigger("grabPipe");
+
                 player.PickupPipe(selectedConveyorPipe);
                 closeConveyorPipes.Remove(selectedConveyorPipe);
                 Destroy(selectedConveyorPipe.gameObject);
@@ -188,6 +193,7 @@ public class InputController : MonoBehaviour
                 if (isLegalRotation)
                     PlacePipe();
             }
+
 
             //color pick 
             if (colorPickPermit && team == GameData.Team.Neutral)
