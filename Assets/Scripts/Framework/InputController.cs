@@ -25,6 +25,7 @@ public class InputController : MonoBehaviour
     private GamePad.Index gamepadIndex;
     private PipeMan pipeMan;
     private GridController gridController;
+    private GUIController guiController;
     private Rigidbody rigidbody;
     private SphereCollider triggerCollider;
     private List<ConveyorPipe> closeConveyorPipes;
@@ -92,6 +93,7 @@ public class InputController : MonoBehaviour
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
+        guiController = GameController.Instance.GUIController;
         AssignColorsToPlayers();
     }
     void AssignColorsToPlayers()
@@ -177,14 +179,7 @@ public class InputController : MonoBehaviour
             
             if (selectedConveyorPipe != null)
             {
-                //TODO Animation and sound for pipe pickup
-                Animator myAnim = GetComponentInChildren<Animator>();
-                myAnim.SetTrigger("grabPipe");
-
-                player.PickupPipe(selectedConveyorPipe);
-                closeConveyorPipes.Remove(selectedConveyorPipe);
-                Destroy(selectedConveyorPipe.gameObject);
-                selectedConveyorPipe = null;
+                PickUpPipe();
             }
             else if (selectedPipeConnection != null)
             {
@@ -413,6 +408,7 @@ public class InputController : MonoBehaviour
         selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationIndex * 90, 0);
         isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
         selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
+        guiController.ShowPipe(team, player.HeldPipeType, rotationIndex);
     }
 
     private void PlacePipe()
@@ -427,6 +423,20 @@ public class InputController : MonoBehaviour
         closePipeConnections.Remove(selectedPipeConnection);
         Destroy(selectedPipePlaceholder.gameObject);
         rotationIndex = 0;
+        guiController.HidePipe(team);
+    }
+
+    private void PickUpPipe()
+    {
+        //TODO Animation and sound for pipe pickup
+        Animator myAnim = GetComponentInChildren<Animator>();
+        myAnim.SetTrigger("grabPipe");
+
+        player.PickupPipe(selectedConveyorPipe);
+        guiController.ShowPipe(team, selectedConveyorPipe.PipeType, 0);
+        closeConveyorPipes.Remove(selectedConveyorPipe);
+        Destroy(selectedConveyorPipe.gameObject);
+        selectedConveyorPipe = null;
     }
 
 }
