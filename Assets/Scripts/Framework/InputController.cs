@@ -403,12 +403,12 @@ public class InputController : MonoBehaviour
         rotationIndex++;
         if (rotationIndex > 3)
             rotationIndex = 0;
+        guiController.ShowPipe(team, player.HeldPipeType, rotationIndex);
         if (selectedPipeConnection == null)
             return;
         selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationIndex * 90, 0);
         isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
         selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
-        guiController.ShowPipe(team, player.HeldPipeType, rotationIndex);
     }
 
     private void PlacePipe()
