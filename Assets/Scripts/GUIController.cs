@@ -16,17 +16,21 @@ public class GUIController : MonoBehaviour {
     private TeamPipeInfo[] teamsInfo;
 
     //X and Y padding towards the center. Needs to be positive
-    public float XPadding;
-    public float YPadding;
+    private float XPadding;
+    private float YPadding;
+
+    public float textureScaler;
     
     void Awake()
     {
         teamsInfo = new TeamPipeInfo[4];
+        XPadding = Screen.width * 5 / 100;
+        YPadding = Screen.height * 5 / 100;
         teamsInfo[0] = new TeamPipeInfo(GameData.Team.Black, XPadding,YPadding);
         teamsInfo[1] = new TeamPipeInfo(GameData.Team.Red, XPadding, YPadding);
         teamsInfo[2] = new TeamPipeInfo(GameData.Team.Yellow, XPadding, YPadding);
         teamsInfo[3] = new TeamPipeInfo(GameData.Team.Blue, XPadding, YPadding);
-         
+        
     }
 
 	void OnGUI()
@@ -35,11 +39,42 @@ public class GUIController : MonoBehaviour {
         foreach(TeamPipeInfo teamInfo in teamsInfo)
         {
             if (teamInfo.show)
-            {
+            {   
                 Texture t = getCorrectTextureBasedOnRotation(teamInfo.pipeInfo, teamInfo.rotationIndex);
-                GUI.DrawTexture(new Rect(teamInfo.posX, teamInfo.posY,t.width,t.height), t);
+                float textureWidth, textureHeight;
+                textureWidth = t.width / textureScaler;
+                textureHeight = t.height / textureScaler;
+                float[] offsetXY = GetOffsetXY(textureWidth,textureHeight, teamInfo.teamColor);
+                GUI.DrawTexture(new Rect(teamInfo.posX+ offsetXY[0], teamInfo.posY+offsetXY[1], textureWidth, textureHeight), t);
             }
         }
+    }
+
+    private float[] GetOffsetXY(float textureWidth,float textureHeight,GameData.Team color)
+    {
+        float[] offsetXY = new float[2];
+        offsetXY[0] = 0;
+        offsetXY[1] = 0;
+        switch (color)
+        {
+            case GameData.Team.Black:
+                offsetXY[0] -= textureWidth / 2;
+                offsetXY[1] -= textureHeight / 2;
+                break;
+            case GameData.Team.Blue:
+                offsetXY[0] += textureWidth / 2;
+                offsetXY[1] += textureHeight / 2;
+                break;
+            case GameData.Team.Red:
+                offsetXY[0] += textureWidth / 2;
+                offsetXY[1] -= textureHeight / 2;
+                break;
+            case GameData.Team.Yellow:
+                offsetXY[0] -= textureWidth/ 2;
+                offsetXY[1] += textureHeight / 2;
+                break;
+        }
+        return offsetXY;
     }
 
     /// <summary>
