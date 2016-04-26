@@ -32,7 +32,6 @@ public class InputController : MonoBehaviour
     private List<GameData.Coordinate> closePipeConnections;
     private GameData.Coordinate selectedPipeConnection;
     private Transform selectedPipePlaceholder;
-    private List<bool> possibleRotationIndexes;
     private int rotationIndex = 0;
     private bool initialized = false;
     private bool isLegalRotation = false;
@@ -91,7 +90,6 @@ public class InputController : MonoBehaviour
         triggerCollider = GetComponent<SphereCollider>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
-        possibleRotationIndexes = new List<bool>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
         AssignColorsToPlayers();
@@ -248,7 +246,7 @@ public class InputController : MonoBehaviour
             GameData.Coordinate closestPipeConnection = null;
             foreach (GameData.Coordinate tile in closePipeConnections)
             {
-                if (gridController.Grid[tile.x, tile.y].pipe != null || CalculatePossibleRotations(tile, player.HeldPipeType).Count == 0)
+                if (gridController.Grid[tile.x, tile.y].pipe != null)
                     continue;
                 float distance = Vector3.Distance(transform.position, gridController.Grid[tile.x, tile.y].transform.position);
                 if (distance < shortestDistance)
@@ -272,8 +270,7 @@ public class InputController : MonoBehaviour
                     pipeMan.placeholderPipeTextures[player.HeldPipeType];
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
 
-                possibleRotationIndexes = CalculatePossibleRotations(selectedPipeConnection, player.HeldPipeType);
-                isLegalRotation = possibleRotationIndexes[rotationIndex];
+                isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
             }
         }
@@ -355,10 +352,9 @@ public class InputController : MonoBehaviour
 
     //Calculates the possible rotation that a pipe can have for a point in space. Looks for nearby pipes that are connected to that spot
     //and tries to see which rotations it has, that can fit them.
-    private List<bool> CalculatePossibleRotations(GameData.Coordinate toPlace, PipeData.PipeType type)
+    private bool IsLegalRotation(GameData.Coordinate toPlace, PipeData.PipeType type)
     {
         List<Vector2> rotations = new List<Vector2>();
-        List<bool> rotationAngles = new List<bool>();
         if (toPlace.x > 0)
         {
             if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
@@ -393,23 +389,18 @@ public class InputController : MonoBehaviour
         }
 
         List<Vector2> pipeConnections = pipeMan.pipeConnections[type];
-        for (int i = 0; i < 4; i++)
-        {
-            int rotationAngle = i * 90;
-            foreach (Vector2 v in pipeConnections)
-            {
-                Vector2 rotated = Quaternion.Euler(0, 0, -rotationAngle) * v;
-                foreach (Vector2 rotation in rotations)
-                {
-                    rotationAngles.Add(rotation == rotated);
-                    goto outerLoop;
-                }
-            }
-            outerLoop:
-            ;
 
+        int rotationAngle = rotationIndex * 90;
+        foreach (Vector2 v in pipeConnections)
+        {
+            Vector2 rotated = Quaternion.Euler(0, 0, -rotationAngle) * v;
+            foreach (Vector2 rotation in rotations)
+            {
+                if (rotation == rotated)
+                    return true;
+            }
         }
-        return rotationAngles;
+        return false;
     }
 
     private void RotatePipe()
@@ -417,12 +408,10 @@ public class InputController : MonoBehaviour
         rotationIndex++;
         if (rotationIndex > 3)
             rotationIndex = 0;
-        Debug.Log(possibleRotationIndexes.Count);
         if (selectedPipeConnection == null)
             return;
         selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationIndex * 90, 0);
-
-        isLegalRotation = possibleRotationIndexes[rotationIndex];
+        isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
         selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
     }
 
