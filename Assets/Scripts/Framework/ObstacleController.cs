@@ -121,39 +121,38 @@ public class ObstacleController : MonoBehaviour
 
         if (obstaclesMode.Length != obstacleTiles.Count)
         {
-            Debug.Log(problemPlace + " The number of obstacles and the number of mode must be equal!");
+            Debug.LogError(problemPlace + " The number of obstacles and the number of mode must be equal!");
             return false;
         }
         if (obstacleTiles.GroupBy(n => n).Any(c => c.Count() > 1) || obstacleTiles.Any(par => (int)par.x == 0) || obstacleTiles.Any(par => (int)par.y == 0))
         {
-            Debug.Log(problemPlace + "There is(are) duplication of obstacles' position or some positions have 0 value");
+            Debug.LogError(problemPlace + "There is(are) duplication of obstacles' position or some positions have 0 value");
             return false;
         }
         for (int i = 0; i < obstacleTiles.Count; i++ )
         {
             if (IsAlreadyChosen(obstacleTiles[i]))
             {
-                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already chosen, please change it to something else");
+                Debug.LogError(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is already chosen, please change it to something else");
                 return false;
             }
             if ((int)obstacleTiles[i].x <= 0 || (int)obstacleTiles[i].y <= 0)
             {
-                Debug.Log(problemPlace + " Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
+                Debug.LogError(problemPlace + " Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a negative value in X or Y, please change it to something positive");
                 return false;
             }
             if ((int)obstacleTiles[i].x == middleX && (int)obstacleTiles[i].y == middleY)
             {
-
-                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
+                Debug.LogError(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " is in the center, please change the value of X or Y or both");
                 return false;
             }
             if (!IsOnBoard(obstacleTiles[i]))
             {
-                Debug.Log(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y");
+                Debug.LogError(problemPlace + "Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a value out of the board's width or height, please change it to something less than " + gridX + " for X and less than " + gridY + " for Y");
                 return false;                
             }
             if (IsValid(obstacleTiles[i], obstaclesMode[i])){
-                Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a valid value and valid generation mode ");
+                //Debug.Log("Tile " + (int)obstacleTiles[i].x + " - " + (int)obstacleTiles[i].y + " has a valid value and valid generation mode ");
             }
         }
         return true;
