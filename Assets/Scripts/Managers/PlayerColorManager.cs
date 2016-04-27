@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 public class PlayerColorManager : MonoBehaviour
 {
@@ -86,7 +87,7 @@ public class PlayerColorManager : MonoBehaviour
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                     PlayerPrefs.SetInt("isDataSaved", 1);
                 }
-                Application.LoadLevel("Level01");
+                SceneManager.LoadScene("Level01");
             }
         }
     }

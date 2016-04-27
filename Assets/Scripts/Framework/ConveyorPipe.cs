@@ -7,8 +7,6 @@ public class ConveyorPipe : MonoBehaviour
 
     [SerializeField]
     private float moveSpeed = 0.5f;
-    private MeshRenderer meshRender;
-    private PipeManager pipeManager;
     private ConveyorBelt conveyorBelt;
     private Transform prevTravelTarget;
     private float moveProgress = 0;
@@ -64,7 +62,6 @@ public class ConveyorPipe : MonoBehaviour
     {
         travelPointIndex = travelIndex;
         pipeMan = GameController.Instance.PipeMan;
-        meshRender = GetComponent<MeshRenderer>();
         PipeType = pipeType;
         conveyorBelt = belt;
         GetComponent<MeshRenderer>().material = pipeMan.pipeTextures[PipeType];

@@ -13,8 +13,7 @@ public class PipeGeneratorStealVersion : ConveyorBelt
     [SerializeField] private List<PipeData.PipeType> pipeQueueTemplate;
     [SerializeField] private float pipeSpawnInterval = 5;
     [SerializeField] private GameObject conveyorPipePrefab;
-
-    private Transform[] pipesOnBelt; 
+    
     private float _pipeSpawnIntervalRemaining = 0;
     private Queue<PipeData.PipeType> pipeQueue;
     private float counter = 0;

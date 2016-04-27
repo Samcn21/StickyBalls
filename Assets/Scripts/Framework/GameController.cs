@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
@@ -23,9 +24,11 @@ public class GameController : MonoBehaviour
     public GridController GridController;
     public List<Player> Players;
     public bool gameRunning { get; private set; }
+    public bool isPregame = false;
 
     void Start()
     {
+        isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         Players = new List<Player>();
 
         gameRunning = true;

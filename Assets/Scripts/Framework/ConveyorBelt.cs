@@ -11,17 +11,14 @@ public class ConveyorBelt : MonoBehaviour
     [SerializeField] private float pipeSpawnInterval = 5;
     [SerializeField] private GameObject conveyorPipePrefab;
 
-    public Transform[] pipesOnBelt { get; private set; }
+    public Transform[] pipesOnBelt { get; protected set; }
     private float _pipeSpawnIntervalRemaining = 0;
     private Queue<PipeData.PipeType> pipeQueue;
     private float counter = 0;
-    private PipeMan pipeMan;
 
 	void Start () {
         pipeQueue = new Queue<PipeData.PipeType>(pipeQueueTemplate.ToArray());
         pipesOnBelt = new Transform[travelPoints.Count];
-
-        pipeMan = GameController.Instance.PipeMan;
     }
 	
 	void Update ()

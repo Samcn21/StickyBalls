@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
+using UnityEngine.SceneManagement;
 
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
@@ -26,8 +27,7 @@ public class InputController : MonoBehaviour
     private PipeMan pipeMan;
     private GridController gridController;
     private GUIController guiController;
-    private Rigidbody rigidbody;
-    private SphereCollider triggerCollider;
+    private Rigidbody rigidBody;
     private List<ConveyorPipe> closeConveyorPipes;
     private ConveyorPipe selectedConveyorPipe;
     private List<GameData.Coordinate> closePipeConnections;
@@ -79,7 +79,7 @@ public class InputController : MonoBehaviour
         team = t;
         gamepadIndex = padIndex;
         gamepadState = GamePad.GetState(gamepadIndex);
-        rigidbody = GetComponent<Rigidbody>();
+        rigidBody = GetComponent<Rigidbody>();
         initialized = true;
         colorPicked = false;
     }
@@ -88,7 +88,6 @@ public class InputController : MonoBehaviour
     void Start()
     {
         player = GetComponent<Player>();
-        triggerCollider = GetComponent<SphereCollider>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
@@ -99,7 +98,7 @@ public class InputController : MonoBehaviour
     void AssignColorsToPlayers()
     {
         //Gives default color to the players
-        if ((Application.loadedLevelName.ToString() != "PlayerColorAssign"))
+        if ((SceneManager.GetActiveScene().name != "PlayerColorAssign"))
         {
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level invokes directly from PlayerColorAssign level
@@ -160,11 +159,11 @@ public class InputController : MonoBehaviour
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
         
-        float velocity = rigidbody.velocity.x + rigidbody.velocity.z;
+        float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
         Animator myAnim = GetComponentInChildren<Animator>();
         myAnim.SetFloat("velocity", Mathf.Abs(velocity));
 
-        rigidbody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+        rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
     }
 
     void Update()

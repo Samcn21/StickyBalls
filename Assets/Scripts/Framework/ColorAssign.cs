@@ -48,7 +48,7 @@ public class ColorAssign : MonoBehaviour {
     }
 
     void OnTriggerExit(Collider other) {
-        GameObject player = GameObject.FindGameObjectWithTag("Player");
+        //GameObject player = GameObject.FindGameObjectWithTag("Player");
 
         if (other.gameObject.tag == "Player")
         {

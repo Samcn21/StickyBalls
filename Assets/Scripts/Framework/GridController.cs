@@ -17,8 +17,10 @@ public class GridController : MonoBehaviour
     public List<Vector2> lockedTiles = new List<Vector2>(); 
 	
     void Start ()
-	{
-	    Grid = new Tile[gridWidth, gridHeight];
+    {
+        enabled = !GameController.Instance.isPregame;
+        if (!enabled) return;
+        Grid = new Tile[gridWidth, gridHeight];
         GameObject boardObject = GameObject.Find("BOARDGENERATIONPOINT");
 
         if (boardObject != null) {

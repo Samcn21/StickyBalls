@@ -29,13 +29,15 @@ public class ObstacleController : MonoBehaviour
     
     private int gridX;
     private int gridY;
-    private int numberOfInvoke = 0;
+   // private int numberOfInvoke = 0;
     private string problemPlace = "CHECK OBSTACLE CONTROLLER: ";
 
     private List<Vector2> lockedTilesList = new List<Vector2>();
  
     void Start()
     {
+        enabled = !GameController.Instance.isPregame; //Disable this script if people are picking colors
+        if (!enabled) return;
         LockSources();
         GameObject boardObject = GameObject.Find("BOARDGENERATIONPOINT");
 
@@ -358,7 +360,8 @@ public class ObstacleController : MonoBehaviour
     {
         for (int i = 0; i < obstacleTiles.Count; i++)
         {
-            GameObject tileGameObject = Instantiate(obstacleType, new Vector3(originPoint.x + obstacleTiles[i].x, originPoint.y , originPoint.z + obstacleTiles[i].y), Quaternion.Euler(90, 0, 0)) as GameObject;
+            Instantiate(obstacleType, new Vector3(originPoint.x + obstacleTiles[i].x, originPoint.y, originPoint.z + obstacleTiles[i].y), Quaternion.Euler(90, 0, 0));
+            //GameObject tileGameObject = Instantiate(obstacleType, new Vector3(originPoint.x + obstacleTiles[i].x, originPoint.y , originPoint.z + obstacleTiles[i].y), Quaternion.Euler(90, 0, 0)) as GameObject;
             //Debug.Log("Tile: " + lockedTilesList[i].x + " - " + lockedTilesList[i].y + " is locked!");
         }
         LockTiles(obstacleTiles);
