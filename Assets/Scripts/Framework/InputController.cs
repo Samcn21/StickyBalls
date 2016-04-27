@@ -49,33 +49,36 @@ public class InputController : MonoBehaviour
         GameObject yellowSpot = GameObject.Find("Yellow");
         GameObject balckSpot = GameObject.Find("Black");
 
-        //change the color of the player in order to the gamePad index number and move the player
-        // to the related respawn spots (next to their source) that have the same color as the player
-        if (t.ToString().Contains("Red"))
+        //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
+        if (mySprite != null)
         {
-            mySprite.sprite = redSprite;
-            myAnim.runtimeAnimatorController = redAnim;
-            transform.position = redSpot.transform.position;
+            //change the color of the player in order to the gamePad index number and move the player
+            // to the related respawn spots (next to their source) that have the same color as the player
+            if (t.ToString().Contains("Red"))
+            {
+                mySprite.sprite = redSprite;
+                myAnim.runtimeAnimatorController = redAnim;
+                transform.position = redSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Blue"))
+            {
+                mySprite.sprite = blueSprite;
+                myAnim.runtimeAnimatorController = blueAnim;
+                transform.position = blueSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Yellow"))
+            {
+                mySprite.sprite = yellowSprite;
+                myAnim.runtimeAnimatorController = yellowAnim;
+                transform.position = yellowSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Black"))
+            {
+                mySprite.sprite = blackSprite;
+                myAnim.runtimeAnimatorController = blackAnim;
+                transform.position = balckSpot.transform.position;
+            }
         }
-        else if (t.ToString().Contains("Blue"))
-        {
-            mySprite.sprite = blueSprite;
-            myAnim.runtimeAnimatorController = blueAnim;
-            transform.position = blueSpot.transform.position;
-        }
-        else if (t.ToString().Contains("Yellow"))
-        {
-            mySprite.sprite = yellowSprite;
-            myAnim.runtimeAnimatorController = yellowAnim;
-            transform.position = yellowSpot.transform.position;
-        }
-        else if (t.ToString().Contains("Black"))
-        {
-            mySprite.sprite = blackSprite;
-            myAnim.runtimeAnimatorController = blackAnim;
-            transform.position = balckSpot.transform.position;
-        }
-
         team = t;
         gamepadIndex = padIndex;
         gamepadState = GamePad.GetState(gamepadIndex);
@@ -158,10 +161,13 @@ public class InputController : MonoBehaviour
     {
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
-        
+
         float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
         Animator myAnim = GetComponentInChildren<Animator>();
-        myAnim.SetFloat("velocity", Mathf.Abs(velocity));
+        if (myAnim != null)
+        {
+            myAnim.SetFloat("velocity", Mathf.Abs(velocity));
+        }
 
         rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
     }
@@ -169,13 +175,13 @@ public class InputController : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-        
+
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
         if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
         {
-            
+
             if (selectedConveyorPipe != null)
             {
                 PickUpPipe();
@@ -195,8 +201,9 @@ public class InputController : MonoBehaviour
         }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
-        if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex)) {
-            if (player.HeldPipeType != PipeData.PipeType.Void) 
+        if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
+        {
+            if (player.HeldPipeType != PipeData.PipeType.Void)
                 RotatePipe();
         }
 
@@ -414,7 +421,7 @@ public class InputController : MonoBehaviour
     {
         GameObject newPipe = Instantiate(pipeMan.pipePrefab,
                        gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
-                           Quaternion.Euler(90,rotationIndex * 90, 0)) as GameObject;
+                           Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
         Pipe pipe = newPipe.GetComponent<Pipe>();
         pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
         player.PlacePipe();
