@@ -42,8 +42,6 @@ public class CharacterAnimation : MonoBehaviour
     private int[] pipePlaceRight    =           new int[2] { 43, 44 };
     private int[] pipePlaceLeft     =           new int[2] { 45, 46 };
 
-    private int animFrameCounter    =           0;
-
     //ANIMATION STATES
     private enum animState {
         IdleFront,
