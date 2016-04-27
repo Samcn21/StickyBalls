@@ -16,13 +16,12 @@ public class CharacterAnimation : MonoBehaviour
     public float fps = 10.0f;
     [SerializeField] private animState currentAnim = animState.IdleFront;
     [SerializeField] private animState previousAnim = animState.IdleFront;
+    private int iCount;
 
-    private int i;
-
-    [SerializeField] private float velocityX;
-    [SerializeField] private float velocityZ;
-    [SerializeField] private float velocityTotal;
-    [SerializeField] private float animThreshold = 0.1f;
+    private float velocityX;
+    private float velocityZ;
+    private float velocityTotal;
+    public float animThreshold = 0.1f;
 
     //ANIMATION FRAMES 
     private int[] idleFront         =           new int[3] { 1, 2, 3 };
@@ -176,11 +175,11 @@ public class CharacterAnimation : MonoBehaviour
         }
 
         framePosition.y = 1;
-        for (i = currentFrame; i > columns; i -= rows)
+        for (iCount = currentFrame; iCount > columns; iCount -= rows)
         {
             framePosition.y += 1;
         }
-        framePosition.x = i - 1;
+        framePosition.x = iCount - 1;
 
         frameSize = new Vector2(1.0f / columns, 1.0f / rows);
         frameOffset = new Vector2(framePosition.x / columns, 1.0f - (framePosition.y / rows));
