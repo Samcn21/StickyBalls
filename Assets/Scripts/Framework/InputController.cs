@@ -436,8 +436,10 @@ public class InputController : MonoBehaviour
     {
         //TODO Animation and sound for pipe pickup
         Animator myAnim = GetComponentInChildren<Animator>();
-        myAnim.SetTrigger("grabPipe");
 
+        if (myAnim != null){
+        myAnim.SetTrigger("grabPipe");
+        }
         player.PickupPipe(selectedConveyorPipe);
         guiController.ShowPipe(team, selectedConveyorPipe.PipeType, 0);
         closeConveyorPipes.Remove(selectedConveyorPipe);

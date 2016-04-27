@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CharacterAnimation : MonoBehaviour
 {
-    //SPRITE SHEET GRID
+    //SPRITE SHEET PROPERTIES
     public int columns = 8;
     public int rows = 8;
     private Vector2 framePosition;
@@ -12,12 +12,11 @@ public class CharacterAnimation : MonoBehaviour
 
     //ANIMATION CONTROL VARIABLES
     public int currentFrame = 1;
-    [SerializeField] private animState currentAnim = animState.IdleFront;
-    [SerializeField] private animState previousAnim = animState.IdleFront;
     public float animTime = 0.0f;
     public float fps = 10.0f;
+    [SerializeField] private animState currentAnim = animState.IdleFront;
+    [SerializeField] private animState previousAnim = animState.IdleFront;
 
-    //public bool explode = false;
     private int i;
 
     [SerializeField] private float velocityX;
@@ -76,19 +75,62 @@ public class CharacterAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FindAnimation();
+        FindAnimationState();
         PlayAnimation();
     }
 
-    void FindAnimation()
+    void FindAnimationState()
     {
         Rigidbody playerRigidbody = transform.parent.GetComponent<Rigidbody>();
         velocityX = playerRigidbody.velocity.x;
         velocityZ = playerRigidbody.velocity.z;
         velocityTotal = Mathf.Abs(velocityX + velocityZ);
-        
-        if (velocityTotal <= animThreshold){
-            currentAnim = animState.IdleFront;
+
+        if (velocityTotal <= animThreshold)
+        {
+            if (previousAnim.ToString().Contains("Front")){
+                previousAnim = currentAnim;
+                currentAnim = animState.IdleFront;
+            }
+            else if (previousAnim.ToString().Contains("Right"))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.IdleRight;
+            }
+            else if (previousAnim.ToString().Contains("Left"))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.IdleLeft;
+            }
+            else if (previousAnim.ToString().Contains("Back"))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.IdleBack;
+            }
+
+        }
+        else 
+        {
+            if (velocityX >= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.MovementRight;
+            }
+            else if (velocityZ >= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.MovementBack;
+            }
+            else if (velocityZ <= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.MovementFront;
+            }
+            else if (velocityX <= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+            {
+                previousAnim = currentAnim;
+                currentAnim = animState.MovementLeft;
+            }
         }
     }
 
@@ -104,11 +146,35 @@ public class CharacterAnimation : MonoBehaviour
         //LOOPING ANIMATIONS
         if (currentAnim == animState.IdleFront)
         {
-            currentFrame = Mathf.Clamp(currentFrame, idleFront[0], idleFront[idleFront.Length - 1] + 1);
-            if (currentFrame > idleFront[idleFront.Length - 1])
-                {
-                    currentFrame = idleFront[0];
-                }
+            LoopingAnimation(idleFront);
+        }
+        if (currentAnim == animState.IdleBack)
+        {
+            LoopingAnimation(idleBack);
+        }
+        if (currentAnim == animState.IdleRight)
+        {
+            LoopingAnimation(idleRight);
+        }
+        if (currentAnim == animState.IdleLeft)
+        {
+            LoopingAnimation(idleLeft);
+        }
+        if (currentAnim == animState.MovementRight)
+        {
+            LoopingAnimation(movementRight);
+        }
+        if (currentAnim == animState.MovementLeft)
+        {
+            LoopingAnimation(movementLeft);
+        }
+        if (currentAnim == animState.MovementFront)
+        {
+            LoopingAnimation(movementFront);
+        }
+        if (currentAnim == animState.MovementBack)
+        {
+            LoopingAnimation(movementBack);
         }
 
         framePosition.y = 1;
@@ -124,4 +190,15 @@ public class CharacterAnimation : MonoBehaviour
         GetComponent<Renderer>().material.SetTextureScale("_MainTex", frameSize);
         GetComponent<Renderer>().material.SetTextureOffset("_MainTex", frameOffset);
     }
+
+    private void LoopingAnimation(int[] frames) {
+
+        currentFrame = Mathf.Clamp(currentFrame, frames[0], frames[frames.Length - 1] + 1);
+        if (currentFrame > frames[frames.Length - 1])
+        {
+            currentFrame = frames[0];
+        }
+
+    }
 }
+
