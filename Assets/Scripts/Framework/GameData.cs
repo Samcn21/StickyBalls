@@ -31,14 +31,49 @@ using System.Collections.Generic;
         }
 
         public static Dictionary<Team, Color> TeamColors = new Dictionary<Team, Color>() 
-    {
+        {
 
-        {Team.Cyan,          new Color32(0, 255, 255 , 255) },
-        {Team.Purple,        new Color32(255, 0, 255 , 255) },
-        {Team.Yellow,        new Color32(255, 215, 0 , 255) },
-        {Team.Blue,          new Color32(0, 50, 200 , 255) },
-        {Team.Neutral,       new Color32(232, 232, 232 , 255) }
-    };
+            {Team.Cyan,          new Color32(0, 255, 255 , 255) },
+            {Team.Purple,        new Color32(255, 0, 255 , 255) },
+            {Team.Yellow,        new Color32(255, 215, 0 , 255) },
+            {Team.Blue,          new Color32(0, 50, 200 , 255) },
+            {Team.Neutral,       new Color32(232, 232, 232 , 255) }
+        };
+
+        public enum AnimationStates
+        {
+            //Character States
+            IdleFront,
+            MovementFront,
+            IdleBack,
+            MovementBack,
+            IdleRight,
+            MovementRight,
+            IdleLeft,
+            MovementLeft,
+            PipeGrabFront,
+            PipeGrabBack,
+            PipeGrabRight,
+            PipeGrabLeft,
+            PipePlaceFront,
+            PipePlaceBack,
+            PipePlaceRight,
+            PipePlaceLeft,
+
+            //Pipes States
+            EmptyTPipe,
+            EmptyCrossPipe,
+            EmptyStraightPipe,
+            EmptyCornerPipe,
+            FullTPipe,
+            FullCrossPipe,
+            FullStraightPipe,
+            FullCornerPipe,
+
+            //Sources and Central Machine
+            //...
+
+        }
 
         public class Coordinate
         {
