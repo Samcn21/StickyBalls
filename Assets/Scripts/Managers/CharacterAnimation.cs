@@ -14,14 +14,9 @@ public class CharacterAnimation : MonoBehaviour
     public int currentFrame = 1;
     public float animTime = 0.0f;
     public float fps = 10.0f;
-    [SerializeField] private animState currentAnim = animState.IdleFront;
-    [SerializeField] private animState previousAnim = animState.IdleFront;
+    public GameData.AnimationStates currentAnim = GameData.AnimationStates.IdleFront;
+    public GameData.AnimationStates previousAnim = GameData.AnimationStates.IdleFront;
     private int iCount;
-
-    private float velocityX;
-    private float velocityZ;
-    private float velocityTotal;
-    public float animThreshold = 0.1f;
 
     //ANIMATION FRAMES 
     private int[] idleFront         =           new int[3] { 1, 2, 3 };
@@ -41,29 +36,6 @@ public class CharacterAnimation : MonoBehaviour
     private int[] pipePlaceRight    =           new int[2] { 43, 44 };
     private int[] pipePlaceLeft     =           new int[2] { 45, 46 };
 
-    //ANIMATION STATES
-    private enum animState {
-        IdleFront,
-        MovementFront,
-        IdleBack,
-        MovementBack,
-        IdleRight,
-        MovementRight,
-        IdleLeft,
-        MovementLeft,
-        PipeGrabFront,
-        PipeGrabBack,
-        PipeGrabRight,
-        PipeGrabLeft,
-        PipePlaceFront,
-        PipePlaceBack,
-        PipePlaceRight,
-        PipePlaceLeft
-    }
-    public GameData.Direction characterFacing = GameData.Direction.South;
-
-
-
     // Use this for initialization
     void Start()
     {
@@ -73,68 +45,68 @@ public class CharacterAnimation : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        FindAnimationState();
+        //FindAnimationState();
         PlayAnimation();
     }
 
-    void FindAnimationState()
-    {
-        Rigidbody playerRigidbody = transform.parent.GetComponent<Rigidbody>();
-        velocityX = playerRigidbody.velocity.x;
-        velocityZ = playerRigidbody.velocity.z;
-        velocityTotal = Mathf.Abs(velocityX + velocityZ);
+    //void FindAnimationState()
+    //{
+    //    Rigidbody playerRigidbody = transform.parent.GetComponent<Rigidbody>();
+    //    velocityX = playerRigidbody.velocity.x;
+    //    velocityZ = playerRigidbody.velocity.z;
+    //    velocityTotal = Mathf.Abs(velocityX + velocityZ);
 
-        if (velocityTotal <= animThreshold)
-        {
-            if (previousAnim.ToString().Contains("Front")){
-                previousAnim = currentAnim;
-                currentAnim = animState.IdleFront;
-            }
-            else if (previousAnim.ToString().Contains("Right"))
-            {
-                previousAnim = currentAnim;
-                currentAnim = animState.IdleRight;
-            }
-            else if (previousAnim.ToString().Contains("Left"))
-            {
-                previousAnim = currentAnim;
-                currentAnim = animState.IdleLeft;
-            }
-            else if (previousAnim.ToString().Contains("Back"))
-            {
-                previousAnim = currentAnim;
-                currentAnim = animState.IdleBack;
-            }
+    //    if (velocityTotal <= animThreshold)
+    //    {
+    //        if (previousAnim.ToString().Contains("Front")){
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.IdleFront;
+    //        }
+    //        else if (previousAnim.ToString().Contains("Right"))
+    //        {
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.IdleRight;
+    //        }
+    //        else if (previousAnim.ToString().Contains("Left"))
+    //        {
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.IdleLeft;
+    //        }
+    //        else if (previousAnim.ToString().Contains("Back"))
+    //        {
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.IdleBack;
+    //        }
 
-        }
-        else 
-        {
-            if (velocityX >= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.East;
-                previousAnim = currentAnim;
-                currentAnim = animState.MovementRight;
-            }
-            else if (velocityZ >= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.North;
-                previousAnim = currentAnim;
-                currentAnim = animState.MovementBack;
-            }
-            else if (velocityZ <= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.South;
-                previousAnim = currentAnim;
-                currentAnim = animState.MovementFront;
-            }
-            else if (velocityX <= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.West;
-                previousAnim = currentAnim;
-                currentAnim = animState.MovementLeft;
-            }
-        }
-    }
+    //    }
+    //    else 
+    //    {
+    //        if (velocityX >= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+    //        {
+    //            characterFacing = GameData.Direction.East;
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.MovementRight;
+    //        }
+    //        else if (velocityZ >= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+    //        {
+    //            characterFacing = GameData.Direction.North;
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.MovementBack;
+    //        }
+    //        else if (velocityZ <= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+    //        {
+    //            characterFacing = GameData.Direction.South;
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.MovementFront;
+    //        }
+    //        else if (velocityX <= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+    //        {
+    //            characterFacing = GameData.Direction.West;
+    //            previousAnim = currentAnim;
+    //            currentAnim = animState.MovementLeft;
+    //        }
+    //    }
+    //}
 
     void PlayAnimation()
     {
@@ -146,35 +118,35 @@ public class CharacterAnimation : MonoBehaviour
         }
 
         //LOOPING ANIMATIONS
-        if (currentAnim == animState.IdleFront)
+        if (currentAnim == GameData.AnimationStates.IdleFront)
         {
             LoopingAnimation(idleFront);
         }
-        if (currentAnim == animState.IdleBack)
+        if (currentAnim == GameData.AnimationStates.IdleBack)
         {
             LoopingAnimation(idleBack);
         }
-        if (currentAnim == animState.IdleRight)
+        if (currentAnim == GameData.AnimationStates.IdleRight)
         {
             LoopingAnimation(idleRight);
         }
-        if (currentAnim == animState.IdleLeft)
+        if (currentAnim == GameData.AnimationStates.IdleLeft)
         {
             LoopingAnimation(idleLeft);
         }
-        if (currentAnim == animState.MovementRight)
+        if (currentAnim == GameData.AnimationStates.MovementRight)
         {
             LoopingAnimation(movementRight);
         }
-        if (currentAnim == animState.MovementLeft)
+        if (currentAnim == GameData.AnimationStates.MovementLeft)
         {
             LoopingAnimation(movementLeft);
         }
-        if (currentAnim == animState.MovementFront)
+        if (currentAnim == GameData.AnimationStates.MovementFront)
         {
             LoopingAnimation(movementFront);
         }
-        if (currentAnim == animState.MovementBack)
+        if (currentAnim == GameData.AnimationStates.MovementBack)
         {
             LoopingAnimation(movementBack);
         }

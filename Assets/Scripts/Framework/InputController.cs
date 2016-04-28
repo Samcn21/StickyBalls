@@ -13,6 +13,8 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     public GamePad.Index index;
     public GameData.Team team;
+
+    //TODO: Remove animation and sprite variables after instalation of new animation system
     public RuntimeAnimatorController redAnim;
     public RuntimeAnimatorController blueAnim;
     public RuntimeAnimatorController yellowAnim;
@@ -21,6 +23,8 @@ public class InputController : MonoBehaviour
     public Sprite blueSprite;
     public Sprite yellowSprite;
     public Sprite blackSprite;
+
+
     private Player player;
     private GamepadState gamepadState;
     private GamePad.Index gamepadIndex;
@@ -35,54 +39,27 @@ public class InputController : MonoBehaviour
     private int rotationIndex = 0;
     private bool initialized = false;
     private bool isLegalRotation = false;
+
+    public GameData.Direction characterFacing = GameData.Direction.South;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
+
     public CharacterAnimation CharacterAnimation { get; private set; }
+
+    //Checking the velocity of the player
+    private float velocityX;
+    private float velocityZ;
+    private float velocityTotal;
+    [SerializeField] private float velocityThreshold = 0.1f;
 
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
-        Animator myAnim = GetComponentInChildren<Animator>();
-        SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject redSpot = GameObject.Find("Purple");
-        GameObject blueSpot = GameObject.Find("Blue");
-        GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject balckSpot = GameObject.Find("Cyan");
-
-        //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
-        if (mySprite != null)
-        {
-            //change the color of the player in order to the gamePad index number and move the player
-            // to the related respawn spots (next to their source) that have the same color as the player
-            if (t.ToString().Contains("Purple"))
-            {
-                mySprite.sprite = redSprite;
-                myAnim.runtimeAnimatorController = redAnim;
-                transform.position = redSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Blue"))
-            {
-                mySprite.sprite = blueSprite;
-                myAnim.runtimeAnimatorController = blueAnim;
-                transform.position = blueSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Yellow"))
-            {
-                mySprite.sprite = yellowSprite;
-                myAnim.runtimeAnimatorController = yellowAnim;
-                transform.position = yellowSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Cyan"))
-            {
-                mySprite.sprite = blackSprite;
-                myAnim.runtimeAnimatorController = blackAnim;
-                transform.position = balckSpot.transform.position;
-            }
-        }
         team = t;
         gamepadIndex = padIndex;
         gamepadState = GamePad.GetState(gamepadIndex);
         rigidBody = GetComponent<Rigidbody>();
+        ColorInit(t);  //Color initialization 
         initialized = true;
         colorPicked = false;
     }
@@ -98,70 +75,22 @@ public class InputController : MonoBehaviour
         gridController = GameController.Instance.GridController;
         AssignColorsToPlayers();
     }
-    void AssignColorsToPlayers()
-    {
-        //Gives default color to the players
-        if ((SceneManager.GetActiveScene().name != "PlayerColorAssign"))
-        {
-            //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
-            //or this level invokes directly from PlayerColorAssign level
-            if (PlayerPrefs.GetInt("isDataSaved") == 1)
-            {
-                string[] names = Enum.GetNames(typeof(GamePad.Index));
-                Dictionary<GamePad.Index, GameData.Team> playerPrefIndexColor = new Dictionary<GamePad.Index, GameData.Team>();
-                for (int i = 0; i < names.Length; i++)
-                {
-                    if (names[i] != GamePad.Index.Any.ToString())
-                    {
-                        if (PlayerPrefs.GetString(names[i]) != null)
-                        {
-                            GameData.Team colorValue = (GameData.Team)Enum.Parse(typeof(GameData.Team), PlayerPrefs.GetString(names[i]));
-                            GamePad.Index indexValue = (GamePad.Index)Enum.Parse(typeof(GamePad.Index), names[i]);
-                            playerPrefIndexColor[indexValue] = colorValue;
-                        }
-                    }
-                }
 
-                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in playerPrefIndexColor)
-                {
-                    if (eachPlayer.Key == index)
-                    {
-                        Initialize(eachPlayer.Value, index);
-                    }
-                }
-            }
-            else
-            {
-                //if playerPrefs is null then assign this colors to the players
-                Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
-                {
-                    {GamePad.Index.One, GameData.Team.Cyan},
-                    {GamePad.Index.Two, GameData.Team.Yellow},
-                    {GamePad.Index.Three, GameData.Team.Blue},
-                    {GamePad.Index.Four, GameData.Team.Purple},
-                };
-
-                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
-                {
-                    if (eachPlayer.Key == index)
-                    {
-                        Initialize(eachPlayer.Value, index);
-                    }
-                }
-            }
-        }
-        else
-        {
-            //in Player Color Assign page gives everybody Neutral color!
-            Initialize(GameData.Team.Neutral, index);
-        }
-    }
 
     void FixedUpdate()
     {
+        Rigidbody playerRigidbody = GetComponent<Rigidbody>();
+        velocityX = playerRigidbody.velocity.x;
+        velocityZ = playerRigidbody.velocity.z;
+        velocityTotal = Mathf.Abs(velocityX + velocityZ);
+
+        //This method check player's states for animationa sound and player facing 
+        PlayerState();
+
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
 
+        //TODO: These lines muse be removed after adding new animation system
         float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
         Animator myAnim = GetComponentInChildren<Animator>();
         if (myAnim != null)
@@ -494,4 +423,159 @@ public class InputController : MonoBehaviour
         selectedConveyorPipe = null;
     }
 
+    private void PlayerState() {
+       
+        
+
+        if (velocityTotal <= velocityThreshold)
+        {
+            if (CharacterAnimation.previousAnim.ToString().Contains("Front"))
+            {
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleFront;
+            }
+            else if (CharacterAnimation.previousAnim.ToString().Contains("Right"))
+            {
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleRight;
+            }
+            else if (CharacterAnimation.previousAnim.ToString().Contains("Left"))
+            {
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleLeft;
+            }
+            else if (CharacterAnimation.previousAnim.ToString().Contains("Back"))
+            {
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleBack;
+            }
+
+        }
+        else
+        {
+            if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+            {
+                characterFacing = GameData.Direction.East;
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementRight;
+            }
+            else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+            {
+                characterFacing = GameData.Direction.North;
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementBack;
+            }
+            else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+            {
+                characterFacing = GameData.Direction.South;
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementFront;
+            }
+            else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+            {
+                characterFacing = GameData.Direction.West;
+                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
+                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementLeft;
+            }
+        }
+    }
+
+    void ColorInit(GameData.Team t) {
+        Animator myAnim = GetComponentInChildren<Animator>();
+        SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
+        GameObject redSpot = GameObject.Find("Purple");
+        GameObject blueSpot = GameObject.Find("Blue");
+        GameObject yellowSpot = GameObject.Find("Yellow");
+        GameObject balckSpot = GameObject.Find("Cyan");
+
+        //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
+        if (mySprite != null)
+        {
+            //change the color of the player in order to the gamePad index number and move the player
+            // to the related respawn spots (next to their source) that have the same color as the player
+            if (t.ToString().Contains("Purple"))
+            {
+                mySprite.sprite = redSprite;
+                myAnim.runtimeAnimatorController = redAnim;
+                transform.position = redSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Blue"))
+            {
+                mySprite.sprite = blueSprite;
+                myAnim.runtimeAnimatorController = blueAnim;
+                transform.position = blueSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Yellow"))
+            {
+                mySprite.sprite = yellowSprite;
+                myAnim.runtimeAnimatorController = yellowAnim;
+                transform.position = yellowSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Cyan"))
+            {
+                mySprite.sprite = blackSprite;
+                myAnim.runtimeAnimatorController = blackAnim;
+                transform.position = balckSpot.transform.position;
+            }
+        }
+    }
+
+    void AssignColorsToPlayers()
+    {
+        //Gives default color to the players
+        if ((SceneManager.GetActiveScene().name != "PlayerColorAssign"))
+        {
+            //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
+            //or this level invokes directly from PlayerColorAssign level
+            if (PlayerPrefs.GetInt("isDataSaved") == 1)
+            {
+                string[] names = Enum.GetNames(typeof(GamePad.Index));
+                Dictionary<GamePad.Index, GameData.Team> playerPrefIndexColor = new Dictionary<GamePad.Index, GameData.Team>();
+                for (int i = 0; i < names.Length; i++)
+                {
+                    if (names[i] != GamePad.Index.Any.ToString())
+                    {
+                        if (PlayerPrefs.GetString(names[i]) != null)
+                        {
+                            GameData.Team colorValue = (GameData.Team)Enum.Parse(typeof(GameData.Team), PlayerPrefs.GetString(names[i]));
+                            GamePad.Index indexValue = (GamePad.Index)Enum.Parse(typeof(GamePad.Index), names[i]);
+                            playerPrefIndexColor[indexValue] = colorValue;
+                        }
+                    }
+                }
+
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in playerPrefIndexColor)
+                {
+                    if (eachPlayer.Key == index)
+                    {
+                        Initialize(eachPlayer.Value, index);
+                    }
+                }
+            }
+            else
+            {
+                //if playerPrefs is null then assign this colors to the players
+                Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
+                {
+                    {GamePad.Index.One, GameData.Team.Cyan},
+                    {GamePad.Index.Two, GameData.Team.Yellow},
+                    {GamePad.Index.Three, GameData.Team.Blue},
+                    {GamePad.Index.Four, GameData.Team.Purple},
+                };
+
+                foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
+                {
+                    if (eachPlayer.Key == index)
+                    {
+                        Initialize(eachPlayer.Value, index);
+                    }
+                }
+            }
+        }
+        else
+        {
+            //in Player Color Assign page gives everybody Neutral color!
+            Initialize(GameData.Team.Neutral, index);
+        }
+    }
 }

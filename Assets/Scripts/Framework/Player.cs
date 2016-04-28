@@ -22,7 +22,7 @@ public class Player : MonoBehaviour
     void Update()
     {
         Vector3 heldPos = Vector3.zero;
-        switch (InputController.CharacterAnimation.characterFacing)
+        switch (InputController.characterFacing)
         {
             case GameData.Direction.East:
                 heldPos = new Vector3(1, 0.5f, 0);
