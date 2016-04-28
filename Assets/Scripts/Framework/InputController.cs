@@ -455,20 +455,31 @@ public class InputController : MonoBehaviour
     {
         Vector3 pipeOffset = new Vector3(0, 1, 0);
         Vector3 dynamiteOffset = new Vector3(0, 2, 0);
-        Vector3 offset=pipeOffset;
-        if (player.HeldPipeType == PipeData.PipeType.Dynamite)
-            offset = dynamiteOffset;
-        GameObject newPipe = Instantiate(pipeMan.pipePrefab,
-                       gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
-                           Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
-        Pipe pipe = newPipe.GetComponent<Pipe>();
-        pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
-        player.PlacePipe();
-        selectedPipeConnection = null;
-        closePipeConnections.Remove(selectedPipeConnection);
-        Destroy(selectedPipePlaceholder.gameObject);
-        rotationIndex = 0;
-        guiController.HidePipe(team);
+        Vector3 offset= dynamiteOffset;
+        if (player.HeldPipeType != PipeData.PipeType.Dynamite)
+        {
+            offset = pipeOffset;
+            GameObject newPipe = Instantiate(pipeMan.pipePrefab,
+                           gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
+                               Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
+            Pipe pipe = newPipe.GetComponent<Pipe>();
+            pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
+            player.PlacePipe();
+            selectedPipeConnection = null;
+            closePipeConnections.Remove(selectedPipeConnection);
+            Destroy(selectedPipePlaceholder.gameObject);
+            rotationIndex = 0;
+            guiController.HidePipe(team);
+        }
+        else
+        {
+            offset = pipeOffset;
+            GameObject newPipe = Instantiate(pipeMan.dynamitePrefab,
+                           gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
+                               Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;       
+            Destroy(selectedPipePlaceholder.gameObject);
+            guiController.HidePipe(team);
+        }
     }
 
     private void PickUpPipe()
