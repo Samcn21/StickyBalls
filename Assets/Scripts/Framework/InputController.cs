@@ -274,7 +274,39 @@ public class InputController : MonoBehaviour
                 isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
             }
-        }
+        }else if (player.HeldPipeType==PipeData.PipeType.Dynamite)
+        {
+            float shortestDistance = float.MaxValue;
+            GameData.Coordinate closestPipeConnection = null;
+            for(int x=0;x<gridController.GridWidth;x++)
+            {
+                for(int y = 0; y < gridController.GridHeight; y++)
+                {
+                    GameData.Coordinate tile=new GameData.Coordinate(x, y);
+                    float distance = Vector3.Distance(transform.position, gridController.Grid[x, y].transform.position);
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        closestPipeConnection = tile;
+                    }
+                }
+                
+            }
+            if (selectedPipeConnection != closestPipeConnection)
+            {
+                if (selectedPipePlaceholder != null)
+                    Destroy(selectedPipePlaceholder.gameObject);
+                selectedPipeConnection = closestPipeConnection;
+                if (closestPipeConnection == null)
+                    return;
+                GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
+                selectedPipePlaceholder = placeholder.transform;
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material =
+                    pipeMan.placeholderPipeTextures[player.HeldPipeType];
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
+                isLegalRotation = true;
+            }
+            }
     }
 
     void OnTriggerStay(Collider col)
@@ -419,6 +451,11 @@ public class InputController : MonoBehaviour
 
     private void PlacePipe()
     {
+        Vector3 pipeOffset = new Vector3(0, 1, 0);
+        Vector3 dynamiteOffset = new Vector3(0, 2, 0);
+        Vector3 offset=pipeOffset;
+        if (player.HeldPipeType == PipeData.PipeType.Dynamite)
+            offset = dynamiteOffset;
         GameObject newPipe = Instantiate(pipeMan.pipePrefab,
                        gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
                            Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;

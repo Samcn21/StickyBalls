@@ -8,7 +8,8 @@ public class PipeData {
         Corner,
         Straight,
         Cross,
-        T
+        T,
+        Dynamite
     }
 
     public static Dictionary<PipeType, int> numberOfConnections = new Dictionary<PipeType, int>()
@@ -17,7 +18,8 @@ public class PipeData {
         {PipeType.Corner, 2 },
         {PipeType.Cross, 4 },
         {PipeType.Straight, 2 },
-        {PipeType.T, 3 }
+        {PipeType.T, 3 },
+        {PipeType.Dynamite, 0 }
     };
 
     public static Dictionary<PipeType, List<GameData.Direction>> defaultConnectionOrientation = new Dictionary<PipeType, List<GameData.Direction>>()
@@ -26,6 +28,7 @@ public class PipeData {
         {PipeType.Corner, new List<GameData.Direction>() {GameData.Direction.North, GameData.Direction.East} },
         {PipeType.Cross, new List<GameData.Direction>() {GameData.Direction.East, GameData.Direction.North, GameData.Direction.South, GameData.Direction.West} },
         {PipeType.Straight, new List<GameData.Direction>() {GameData.Direction.North, GameData.Direction.South} },
-        {PipeType.T, new List<GameData.Direction>() {GameData.Direction.West, GameData.Direction.East, GameData.Direction.South} }
+        {PipeType.T, new List<GameData.Direction>() {GameData.Direction.West, GameData.Direction.East, GameData.Direction.South} },
+        {PipeType.Dynamite, new List<GameData.Direction>() { } }
     };
 }
