@@ -444,6 +444,7 @@ public class InputController : MonoBehaviour
         if (rotationIndex > 3)
             rotationIndex = 0;
         guiController.ShowPipe(team, player.HeldPipeType, rotationIndex);
+        player.RotatePipe(rotationIndex * 90);
         if (selectedPipeConnection == null)
             return;
         selectedPipePlaceholder.rotation = Quaternion.Euler(90, rotationIndex * 90, 0);
