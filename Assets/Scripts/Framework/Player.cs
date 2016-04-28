@@ -10,16 +10,34 @@ public class Player : MonoBehaviour
     private MeshRenderer heldPipeRenderer;
     private PipeData.PipeType heldPipeType;
     private PipeMan pipeMan;
+    private InputController InputController;
 
     void Start()
     {
         pipeMan = GameController.Instance.PipeMan;
         heldPipeRenderer = heldPipe.GetComponent<MeshRenderer>();
+        InputController = GetComponent<InputController>();
     }
 
     void Update()
     {
-        
+        Vector3 heldPos = Vector3.zero;
+        switch (InputController.CharacterAnimation.characterFacing)
+        {
+            case GameData.Direction.East:
+                heldPos = new Vector3(1, 0.5f, 0);
+            break;
+            case GameData.Direction.North:
+                heldPos = new Vector3(0, 0.5f, 1);
+                break;
+            case GameData.Direction.West:
+                heldPos = new Vector3(-1, 0.5f, 0);
+                break;
+            case GameData.Direction.South:
+                heldPos = new Vector3(0, 0.5f, -1);
+                break;
+        }
+        heldPipeContainer.localPosition = heldPos;
     }
 
 

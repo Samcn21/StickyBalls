@@ -60,7 +60,7 @@ public class CharacterAnimation : MonoBehaviour
         PipePlaceRight,
         PipePlaceLeft
     }
-    public GameData.Direction characterFacing;
+    public GameData.Direction characterFacing = GameData.Direction.South;
 
 
 
