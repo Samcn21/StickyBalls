@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
     {
         HeldPipeType = PipeData.PipeType.Void;
     }
-
+    
     public void RotatePipe(int angle)
     {
         heldPipe.rotation = Quaternion.Euler(90, angle, 0);

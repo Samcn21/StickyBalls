@@ -7,10 +7,10 @@ using System.Collections.Generic;
 
         public enum Team
         {
-            Red,
+            Purple,
             Blue,
             Yellow,
-            Black,
+            Cyan,
             Neutral
         }
 
@@ -33,11 +33,11 @@ using System.Collections.Generic;
         public static Dictionary<Team, Color> TeamColors = new Dictionary<Team, Color>() 
     {
 
-        {Team.Red, Color.red },
-        {Team.Black, Color.black },
-        {Team.Blue, Color.blue },
-        {Team.Yellow, Color.yellow },
-        {Team.Neutral, Color.white }
+        {Team.Cyan,          new Color32(0, 255, 255 , 1) },
+        {Team.Purple,        new Color32(255, 0, 255 , 1) },
+        {Team.Yellow,        new Color32(255, 215, 0 , 1) },
+        {Team.Blue,          new Color32(0, 50, 200 , 1) },
+        {Team.Neutral,       new Color32(232, 232, 232 , 1) }
     };
 
         public class Coordinate

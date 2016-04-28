@@ -38,23 +38,24 @@ public class InputController : MonoBehaviour
     private bool isLegalRotation = false;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
+    public CharacterAnimation CharacterAnimation { get; private set; }
 
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
         Animator myAnim = GetComponentInChildren<Animator>();
         SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject redSpot = GameObject.Find("Red");
+        GameObject redSpot = GameObject.Find("Purple");
         GameObject blueSpot = GameObject.Find("Blue");
         GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject balckSpot = GameObject.Find("Black");
+        GameObject balckSpot = GameObject.Find("Cyan");
 
         //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
         if (mySprite != null)
         {
             //change the color of the player in order to the gamePad index number and move the player
             // to the related respawn spots (next to their source) that have the same color as the player
-            if (t.ToString().Contains("Red"))
+            if (t.ToString().Contains("Purple"))
             {
                 mySprite.sprite = redSprite;
                 myAnim.runtimeAnimatorController = redAnim;
@@ -72,7 +73,7 @@ public class InputController : MonoBehaviour
                 myAnim.runtimeAnimatorController = yellowAnim;
                 transform.position = yellowSpot.transform.position;
             }
-            else if (t.ToString().Contains("Black"))
+            else if (t.ToString().Contains("Cyan"))
             {
                 mySprite.sprite = blackSprite;
                 myAnim.runtimeAnimatorController = blackAnim;
@@ -90,6 +91,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        CharacterAnimation = GetComponentInChildren<CharacterAnimation>();
         player = GetComponent<Player>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
@@ -135,10 +137,10 @@ public class InputController : MonoBehaviour
                 //if playerPrefs is null then assign this colors to the players
                 Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
                 {
-                    {GamePad.Index.One, GameData.Team.Red},
+                    {GamePad.Index.One, GameData.Team.Cyan},
                     {GamePad.Index.Two, GameData.Team.Yellow},
                     {GamePad.Index.Three, GameData.Team.Blue},
-                    {GamePad.Index.Four, GameData.Team.Black},
+                    {GamePad.Index.Four, GameData.Team.Purple},
                 };
 
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
@@ -274,7 +276,39 @@ public class InputController : MonoBehaviour
                 isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
             }
-        }
+        }else if (player.HeldPipeType==PipeData.PipeType.Dynamite)
+        {
+            float shortestDistance = float.MaxValue;
+            GameData.Coordinate closestPipeConnection = null;
+            for(int x=0;x<gridController.GridWidth;x++)
+            {
+                for(int y = 0; y < gridController.GridHeight; y++)
+                {
+                    GameData.Coordinate tile=new GameData.Coordinate(x, y);
+                    float distance = Vector3.Distance(transform.position, gridController.Grid[x, y].transform.position);
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        closestPipeConnection = tile;
+                    }
+                }
+                
+            }
+            if (selectedPipeConnection != closestPipeConnection)
+            {
+                if (selectedPipePlaceholder != null)
+                    Destroy(selectedPipePlaceholder.gameObject);
+                selectedPipeConnection = closestPipeConnection;
+                if (closestPipeConnection == null)
+                    return;
+                GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
+                selectedPipePlaceholder = placeholder.transform;
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material =
+                    pipeMan.placeholderPipeTextures[player.HeldPipeType];
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
+                isLegalRotation = true;
+            }
+            }
     }
 
     void OnTriggerStay(Collider col)
@@ -419,6 +453,11 @@ public class InputController : MonoBehaviour
 
     private void PlacePipe()
     {
+        Vector3 pipeOffset = new Vector3(0, 1, 0);
+        Vector3 dynamiteOffset = new Vector3(0, 2, 0);
+        Vector3 offset=pipeOffset;
+        if (player.HeldPipeType == PipeData.PipeType.Dynamite)
+            offset = dynamiteOffset;
         GameObject newPipe = Instantiate(pipeMan.pipePrefab,
                        gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
                            Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
