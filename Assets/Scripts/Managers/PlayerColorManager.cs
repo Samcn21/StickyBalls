@@ -41,8 +41,8 @@ public class PlayerColorManager : MonoBehaviour
                 List<GameData.Team> colorList = new List<GameData.Team>(){
                                 GameData.Team.Yellow, 
                                 GameData.Team.Blue, 
-                                GameData.Team.Red, 
-                                GameData.Team.Black
+                                GameData.Team.Purple, 
+                                GameData.Team.Cyan
                         };
                 List<GameData.Team> impossibleColorList = new List<GameData.Team>();
                 GamePad.Index[] indexList = new GamePad.Index[] {

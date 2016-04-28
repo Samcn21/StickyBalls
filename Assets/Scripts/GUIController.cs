@@ -26,8 +26,8 @@ public class GUIController : MonoBehaviour {
         teamsInfo = new TeamPipeInfo[4];
         XPadding = Screen.width * 5 / 100;
         YPadding = Screen.height * 5 / 100;
-        teamsInfo[0] = new TeamPipeInfo(GameData.Team.Black, XPadding,YPadding);
-        teamsInfo[1] = new TeamPipeInfo(GameData.Team.Red, XPadding, YPadding);
+        teamsInfo[0] = new TeamPipeInfo(GameData.Team.Purple, XPadding,YPadding);
+        teamsInfo[1] = new TeamPipeInfo(GameData.Team.Cyan, XPadding, YPadding);
         teamsInfo[2] = new TeamPipeInfo(GameData.Team.Yellow, XPadding, YPadding);
         teamsInfo[3] = new TeamPipeInfo(GameData.Team.Blue, XPadding, YPadding);
         
@@ -57,7 +57,7 @@ public class GUIController : MonoBehaviour {
         offsetXY[1] = 0;
         switch (color)
         {
-            case GameData.Team.Black:
+            case GameData.Team.Purple:
                 offsetXY[0] -= textureWidth / 2;
                 offsetXY[1] -= textureHeight / 2;
                 break;
@@ -65,7 +65,7 @@ public class GUIController : MonoBehaviour {
                 offsetXY[0] += textureWidth / 2;
                 offsetXY[1] += textureHeight / 2;
                 break;
-            case GameData.Team.Red:
+            case GameData.Team.Cyan:
                 offsetXY[0] += textureWidth / 2;
                 offsetXY[1] -= textureHeight / 2;
                 break;
@@ -151,7 +151,7 @@ public class GUIController : MonoBehaviour {
             rotationIndex = 0;
             switch (teamColor)
             {
-                case GameData.Team.Black:
+                case GameData.Team.Purple:
                     posX = xPadding;
                     posY = yPadding;
                     break;
@@ -159,7 +159,7 @@ public class GUIController : MonoBehaviour {
                     posX = Screen.width-xPadding;
                     posY = Screen.height-yPadding;
                     break;
-                case GameData.Team.Red:
+                case GameData.Team.Cyan:
                     posX = xPadding;
                     posY = Screen.height-yPadding;
                     break;

@@ -34,7 +34,7 @@ public class PlayerSource : Pipe
                 gridController.Grid[0, 2].locked = true;
                 gridController.Grid[2, 0].locked = true;
                 gridController.Grid[2, 2].locked = true;
-                Team = GameData.Team.Red;
+                Team = GameData.Team.Purple;
 
                 break;
             case GameData.PlayerSourceDirection.BottomRight:
@@ -63,7 +63,7 @@ public class PlayerSource : Pipe
                 gridController.Grid[1, gridController.Grid.GetLength(1) - 2].locked = true;
                 gridController.Grid[2, gridController.Grid.GetLength(1) - 1].locked = true;
                 gridController.Grid[2, gridController.Grid.GetLength(1) - 3].locked = true;
-                Team = GameData.Team.Black;
+                Team = GameData.Team.Cyan;
                 break;
             case GameData.PlayerSourceDirection.TopRight:
                 me = new GameData.Coordinate(gridController.Grid.GetLength(0)-3, gridController.Grid.GetLength(1)-2);

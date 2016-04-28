@@ -44,17 +44,17 @@ public class InputController : MonoBehaviour
     {
         Animator myAnim = GetComponentInChildren<Animator>();
         SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject redSpot = GameObject.Find("Red");
+        GameObject redSpot = GameObject.Find("Purple");
         GameObject blueSpot = GameObject.Find("Blue");
         GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject balckSpot = GameObject.Find("Black");
+        GameObject balckSpot = GameObject.Find("Cyan");
 
         //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
         if (mySprite != null)
         {
             //change the color of the player in order to the gamePad index number and move the player
             // to the related respawn spots (next to their source) that have the same color as the player
-            if (t.ToString().Contains("Red"))
+            if (t.ToString().Contains("Purple"))
             {
                 mySprite.sprite = redSprite;
                 myAnim.runtimeAnimatorController = redAnim;
@@ -72,7 +72,7 @@ public class InputController : MonoBehaviour
                 myAnim.runtimeAnimatorController = yellowAnim;
                 transform.position = yellowSpot.transform.position;
             }
-            else if (t.ToString().Contains("Black"))
+            else if (t.ToString().Contains("Cyan"))
             {
                 mySprite.sprite = blackSprite;
                 myAnim.runtimeAnimatorController = blackAnim;
@@ -135,10 +135,10 @@ public class InputController : MonoBehaviour
                 //if playerPrefs is null then assign this colors to the players
                 Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
                 {
-                    {GamePad.Index.One, GameData.Team.Red},
+                    {GamePad.Index.One, GameData.Team.Cyan},
                     {GamePad.Index.Two, GameData.Team.Yellow},
                     {GamePad.Index.Three, GameData.Team.Blue},
-                    {GamePad.Index.Four, GameData.Team.Black},
+                    {GamePad.Index.Four, GameData.Team.Purple},
                 };
 
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
