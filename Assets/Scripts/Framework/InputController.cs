@@ -26,7 +26,6 @@ public class InputController : MonoBehaviour
     private GamePad.Index gamepadIndex;
     private PipeMan pipeMan;
     private GridController gridController;
-    private GUIController guiController;
     private Rigidbody rigidBody;
     private List<ConveyorPipe> closeConveyorPipes;
     private ConveyorPipe selectedConveyorPipe;
@@ -97,7 +96,6 @@ public class InputController : MonoBehaviour
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
-        guiController = GameController.Instance.GUIController;
         AssignColorsToPlayers();
     }
     void AssignColorsToPlayers()
@@ -243,7 +241,7 @@ public class InputController : MonoBehaviour
         }
 
         //Select closest place to put a pipe out of all within the sphere collider
-        else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void)
+        else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void&&player.HeldPipeType!=PipeData.PipeType.Dynamite)
         {
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
@@ -303,8 +301,7 @@ public class InputController : MonoBehaviour
                     return;
                 GameObject placeholder = Instantiate(pipeMan.placeholderPrefab, gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position, Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
                 selectedPipePlaceholder = placeholder.transform;
-                selectedPipePlaceholder.GetComponent<MeshRenderer>().material =
-                    pipeMan.placeholderPipeTextures[player.HeldPipeType];
+                selectedPipePlaceholder.GetComponent<MeshRenderer>().material = pipeMan.placeholderPipeTextures[player.HeldPipeType];
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
                 isLegalRotation = true;
             }
@@ -443,7 +440,6 @@ public class InputController : MonoBehaviour
         rotationIndex++;
         if (rotationIndex > 3)
             rotationIndex = 0;
-        guiController.ShowPipe(team, player.HeldPipeType, rotationIndex);
         player.RotatePipe(rotationIndex * 90);
         if (selectedPipeConnection == null)
             return;
@@ -470,16 +466,17 @@ public class InputController : MonoBehaviour
             closePipeConnections.Remove(selectedPipeConnection);
             Destroy(selectedPipePlaceholder.gameObject);
             rotationIndex = 0;
-            guiController.HidePipe(team);
         }
         else
         {
             offset = pipeOffset;
-            GameObject newPipe = Instantiate(pipeMan.dynamitePrefab,
+            GameObject newDynamite = Instantiate(pipeMan.dynamitePrefab,
                            gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
-                               Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;       
+                               Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
+            Dynamite dynamite = newDynamite.GetComponent<Dynamite>();
+            dynamite.Initialize(selectedPipeConnection,rotationIndex*90);
+            player.PlacePipe();
             Destroy(selectedPipePlaceholder.gameObject);
-            guiController.HidePipe(team);
         }
     }
 
@@ -492,7 +489,6 @@ public class InputController : MonoBehaviour
         myAnim.SetTrigger("grabPipe");
         }
         player.PickupPipe(selectedConveyorPipe);
-        guiController.ShowPipe(team, selectedConveyorPipe.PipeType, 0);
         closeConveyorPipes.Remove(selectedConveyorPipe);
         Destroy(selectedConveyorPipe.gameObject);
         selectedConveyorPipe = null;

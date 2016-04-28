@@ -19,7 +19,6 @@ public class GameController : MonoBehaviour
             return instance;
         }
     }
-    public GUIController GUIController;
     public PipeMan PipeMan;
     public GridController GridController;
     public List<Player> Players;
@@ -39,8 +38,6 @@ public class GameController : MonoBehaviour
             Text text = winningGUI.GetComponent<Text>();
             text.enabled = false;
         }
-        if (GUIController == null)
-            GUIController = GetComponent<GUIController>();
     }
 
     public void SpawnPlayer(GameData.Team team, GamePad.Index gamepadIndex)
