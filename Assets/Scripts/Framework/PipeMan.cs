@@ -18,6 +18,7 @@ public class PipeMan : MonoBehaviour {
     [SerializeField] private Material placeholder_tPipeMat;
  
     public GameObject pipePrefab;
+    public GameObject dynamitePrefab;
     public GameObject placeholderPrefab;
     public Dictionary<PipeData.PipeType, Material> pipeTextures;
     public Dictionary<PipeData.PipeType, Material> placeholderPipeTextures;
