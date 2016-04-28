@@ -38,6 +38,7 @@ public class InputController : MonoBehaviour
     private bool isLegalRotation = false;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
+    public CharacterAnimation CharacterAnimation { get; private set; }
 
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
@@ -90,6 +91,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        CharacterAnimation = GetComponentInChildren<CharacterAnimation>();
         player = GetComponent<Player>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
