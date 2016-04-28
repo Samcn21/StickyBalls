@@ -44,7 +44,7 @@ public class InputController : MonoBehaviour
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
 
-    public CharacterAnimation CharacterAnimation { get; private set; }
+    public AnimationManager AnimationManager { get; private set; }
 
     //Checking the velocity of the player
     private float velocityX;
@@ -67,7 +67,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        CharacterAnimation = GetComponentInChildren<CharacterAnimation>();
+        AnimationManager = GetComponentInChildren<AnimationManager>();
         player = GetComponent<Player>();
         closeConveyorPipes = new List<ConveyorPipe>();
         closePipeConnections = new List<GameData.Coordinate>();
@@ -429,25 +429,25 @@ public class InputController : MonoBehaviour
 
         if (velocityTotal <= velocityThreshold)
         {
-            if (CharacterAnimation.previousAnim.ToString().Contains("Front"))
+            if (AnimationManager.previousAnim.ToString().Contains("Front"))
             {
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleFront;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.IdleFront;
             }
-            else if (CharacterAnimation.previousAnim.ToString().Contains("Right"))
+            else if (AnimationManager.previousAnim.ToString().Contains("Right"))
             {
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleRight;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.IdleRight;
             }
-            else if (CharacterAnimation.previousAnim.ToString().Contains("Left"))
+            else if (AnimationManager.previousAnim.ToString().Contains("Left"))
             {
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleLeft;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.IdleLeft;
             }
-            else if (CharacterAnimation.previousAnim.ToString().Contains("Back"))
+            else if (AnimationManager.previousAnim.ToString().Contains("Back"))
             {
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.IdleBack;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.IdleBack;
             }
 
         }
@@ -456,26 +456,26 @@ public class InputController : MonoBehaviour
             if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
             {
                 characterFacing = GameData.Direction.East;
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementRight;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.MovementRight;
             }
             else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
             {
                 characterFacing = GameData.Direction.North;
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementBack;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.MovementBack;
             }
             else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
             {
                 characterFacing = GameData.Direction.South;
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementFront;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.MovementFront;
             }
             else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
             {
                 characterFacing = GameData.Direction.West;
-                CharacterAnimation.previousAnim = CharacterAnimation.currentAnim;
-                CharacterAnimation.currentAnim = GameData.AnimationStates.MovementLeft;
+                AnimationManager.previousAnim = AnimationManager.currentAnim;
+                AnimationManager.currentAnim = GameData.AnimationStates.MovementLeft;
             }
         }
     }
