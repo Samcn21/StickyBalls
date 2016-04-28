@@ -60,6 +60,7 @@ public class CharacterAnimation : MonoBehaviour
         PipePlaceRight,
         PipePlaceLeft
     }
+    public GameData.Direction characterFacing;
 
 
 
@@ -110,21 +111,25 @@ public class CharacterAnimation : MonoBehaviour
         {
             if (velocityX >= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
             {
+                characterFacing = GameData.Direction.East;
                 previousAnim = currentAnim;
                 currentAnim = animState.MovementRight;
             }
             else if (velocityZ >= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
             {
+                characterFacing = GameData.Direction.North;
                 previousAnim = currentAnim;
                 currentAnim = animState.MovementBack;
             }
             else if (velocityZ <= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
             {
+                characterFacing = GameData.Direction.South;
                 previousAnim = currentAnim;
                 currentAnim = animState.MovementFront;
             }
             else if (velocityX <= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
             {
+                characterFacing = GameData.Direction.West;
                 previousAnim = currentAnim;
                 currentAnim = animState.MovementLeft;
             }
