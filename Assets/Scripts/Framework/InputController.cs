@@ -50,7 +50,8 @@ public class InputController : MonoBehaviour
     private float velocityX;
     private float velocityZ;
     private float velocityTotal;
-    [SerializeField] private float velocityThreshold = 0.1f;
+    [SerializeField]
+    private float velocityThreshold = 0.1f;
 
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
@@ -84,13 +85,13 @@ public class InputController : MonoBehaviour
         velocityZ = playerRigidbody.velocity.z;
         velocityTotal = Mathf.Abs(velocityX + velocityZ);
 
-        //This method check player's states for animationa sound and player facing 
+        //This method check player's states for movement animation sound and player facing 
         PlayerState();
 
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
 
-        //TODO: These lines muse be removed after adding new animation system
+        //TODO: These lines must be removed after adding new animation system
         float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
         Animator myAnim = GetComponentInChildren<Animator>();
         if (myAnim != null)
@@ -170,7 +171,7 @@ public class InputController : MonoBehaviour
         }
 
         //Select closest place to put a pipe out of all within the sphere collider
-        else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void&&player.HeldPipeType!=PipeData.PipeType.Dynamite)
+        else if (closePipeConnections.Count > 0 && player.HeldPipeType != PipeData.PipeType.Void && player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
@@ -203,15 +204,16 @@ public class InputController : MonoBehaviour
                 isLegalRotation = IsLegalRotation(selectedPipeConnection, player.HeldPipeType);
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = isLegalRotation ? Color.green : Color.red;
             }
-        }else if (player.HeldPipeType==PipeData.PipeType.Dynamite)
+        }
+        else if (player.HeldPipeType == PipeData.PipeType.Dynamite)
         {
             float shortestDistance = float.MaxValue;
             GameData.Coordinate closestPipeConnection = null;
-            for(int x=0;x<gridController.GridWidth;x++)
+            for (int x = 0; x < gridController.GridWidth; x++)
             {
-                for(int y = 0; y < gridController.GridHeight; y++)
+                for (int y = 0; y < gridController.GridHeight; y++)
                 {
-                    GameData.Coordinate tile=new GameData.Coordinate(x, y);
+                    GameData.Coordinate tile = new GameData.Coordinate(x, y);
                     float distance = Vector3.Distance(transform.position, gridController.Grid[x, y].transform.position);
                     if (distance < shortestDistance)
                     {
@@ -219,7 +221,7 @@ public class InputController : MonoBehaviour
                         closestPipeConnection = tile;
                     }
                 }
-                
+
             }
             if (selectedPipeConnection != closestPipeConnection)
             {
@@ -234,7 +236,7 @@ public class InputController : MonoBehaviour
                 selectedPipePlaceholder.GetComponent<MeshRenderer>().material.color = Color.green;
                 isLegalRotation = true;
             }
-            }
+        }
     }
 
     void OnTriggerStay(Collider col)
@@ -379,9 +381,11 @@ public class InputController : MonoBehaviour
 
     private void PlacePipe()
     {
+        AnimationManager.FindPlacePipeAnimation();
+
         Vector3 pipeOffset = new Vector3(0, 1, 0);
         Vector3 dynamiteOffset = new Vector3(0, 2, 0);
-        Vector3 offset= dynamiteOffset;
+        Vector3 offset = dynamiteOffset;
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             offset = pipeOffset;
@@ -403,7 +407,7 @@ public class InputController : MonoBehaviour
                            gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
             Dynamite dynamite = newDynamite.GetComponent<Dynamite>();
-            dynamite.Initialize(selectedPipeConnection,rotationIndex*90);
+            dynamite.Initialize(selectedPipeConnection, rotationIndex * 90);
             player.PlacePipe();
             Destroy(selectedPipePlaceholder.gameObject);
         }
@@ -414,73 +418,72 @@ public class InputController : MonoBehaviour
         //TODO Animation and sound for pipe pickup
         Animator myAnim = GetComponentInChildren<Animator>();
 
-        if (myAnim != null){
-        myAnim.SetTrigger("grabPipe");
+        if (myAnim != null)
+        {
+            myAnim.SetTrigger("grabPipe");
         }
+
+        AnimationManager.FindGrabPipeAnimation();
+
         player.PickupPipe(selectedConveyorPipe);
         closeConveyorPipes.Remove(selectedConveyorPipe);
         Destroy(selectedConveyorPipe.gameObject);
         selectedConveyorPipe = null;
     }
 
-    private void PlayerState() {
-       
-        
-
-        if (velocityTotal <= velocityThreshold)
+    private void PlayerState()
+    {
+        if (AnimationManager.hasMovementPermit)
         {
-            if (AnimationManager.previousAnim.ToString().Contains("Front"))
-            {
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.IdleFront;
-            }
-            else if (AnimationManager.previousAnim.ToString().Contains("Right"))
-            {
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.IdleRight;
-            }
-            else if (AnimationManager.previousAnim.ToString().Contains("Left"))
-            {
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.IdleLeft;
-            }
-            else if (AnimationManager.previousAnim.ToString().Contains("Back"))
-            {
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.IdleBack;
-            }
+            AnimationManager.previousAnim = AnimationManager.currentAnim;
 
-        }
-        else
-        {
-            if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+            if (velocityTotal <= velocityThreshold)
             {
-                characterFacing = GameData.Direction.East;
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.MovementRight;
+                if (AnimationManager.previousAnim.ToString().Contains("Front"))
+                {
+                    AnimationManager.currentAnim = GameData.AnimationStates.IdleFront;
+                }
+                else if (AnimationManager.previousAnim.ToString().Contains("Right"))
+                {
+                    AnimationManager.currentAnim = GameData.AnimationStates.IdleRight;
+                }
+                else if (AnimationManager.previousAnim.ToString().Contains("Left"))
+                {
+                    AnimationManager.currentAnim = GameData.AnimationStates.IdleLeft;
+                }
+                else if (AnimationManager.previousAnim.ToString().Contains("Back"))
+                {
+                    AnimationManager.currentAnim = GameData.AnimationStates.IdleBack;
+                }
             }
-            else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+            else
             {
-                characterFacing = GameData.Direction.North;
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.MovementBack;
-            }
-            else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.South;
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.MovementFront;
-            }
-            else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
-            {
-                characterFacing = GameData.Direction.West;
-                AnimationManager.previousAnim = AnimationManager.currentAnim;
-                AnimationManager.currentAnim = GameData.AnimationStates.MovementLeft;
+                if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+                {
+                    characterFacing = GameData.Direction.East;
+                    AnimationManager.currentAnim = GameData.AnimationStates.MovementRight;
+                }
+                else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+                {
+                    characterFacing = GameData.Direction.North;
+                    AnimationManager.currentAnim = GameData.AnimationStates.MovementBack;
+                }
+                else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
+                {
+                    characterFacing = GameData.Direction.South;
+                    AnimationManager.currentAnim = GameData.AnimationStates.MovementFront;
+                }
+                else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
+                {
+                    characterFacing = GameData.Direction.West;
+                    AnimationManager.currentAnim = GameData.AnimationStates.MovementLeft;
+                }
             }
         }
     }
 
-    void ColorInit(GameData.Team t) {
+    void ColorInit(GameData.Team t)
+    {
         Animator myAnim = GetComponentInChildren<Animator>();
         SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
         GameObject redSpot = GameObject.Find("Purple");

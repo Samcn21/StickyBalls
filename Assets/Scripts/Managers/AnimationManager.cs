@@ -16,6 +16,7 @@ public class AnimationManager : MonoBehaviour
     public float fps = 10.0f;
     public GameData.AnimationStates currentAnim = GameData.AnimationStates.IdleFront;
     public GameData.AnimationStates previousAnim = GameData.AnimationStates.IdleFront;
+    public bool hasMovementPermit = true;
     private int iCount;
 
     //ANIMATION FRAMES 
@@ -36,77 +37,55 @@ public class AnimationManager : MonoBehaviour
     private int[] pipePlaceRight    =           new int[2] { 43, 44 };
     private int[] pipePlaceLeft     =           new int[2] { 45, 46 };
 
-    // Use this for initialization
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
     void Update()
     {
-        //FindAnimationState();
         PlayAnimation();
     }
 
-    //void FindAnimationState()
-    //{
-    //    Rigidbody playerRigidbody = transform.parent.GetComponent<Rigidbody>();
-    //    velocityX = playerRigidbody.velocity.x;
-    //    velocityZ = playerRigidbody.velocity.z;
-    //    velocityTotal = Mathf.Abs(velocityX + velocityZ);
+    public void FindGrabPipeAnimation()
+    {
+        hasMovementPermit = false;
+        previousAnim = currentAnim;
+        if (previousAnim.ToString().Contains("Front"))
+        {
+            currentAnim = GameData.AnimationStates.PipeGrabFront;
+        }
+        else if (previousAnim.ToString().Contains("Right"))
+        {
+            currentAnim = GameData.AnimationStates.PipeGrabRight;
+        }
+        else if (previousAnim.ToString().Contains("Left"))
+        {
+            currentAnim = GameData.AnimationStates.PipeGrabLeft;
+        }
+        else if (previousAnim.ToString().Contains("Back"))
+        {
+            currentAnim = GameData.AnimationStates.PipeGrabBack;
+        }
+    }
 
-    //    if (velocityTotal <= animThreshold)
-    //    {
-    //        if (previousAnim.ToString().Contains("Front")){
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.IdleFront;
-    //        }
-    //        else if (previousAnim.ToString().Contains("Right"))
-    //        {
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.IdleRight;
-    //        }
-    //        else if (previousAnim.ToString().Contains("Left"))
-    //        {
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.IdleLeft;
-    //        }
-    //        else if (previousAnim.ToString().Contains("Back"))
-    //        {
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.IdleBack;
-    //        }
-
-    //    }
-    //    else 
-    //    {
-    //        if (velocityX >= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
-    //        {
-    //            characterFacing = GameData.Direction.East;
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.MovementRight;
-    //        }
-    //        else if (velocityZ >= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
-    //        {
-    //            characterFacing = GameData.Direction.North;
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.MovementBack;
-    //        }
-    //        else if (velocityZ <= animThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
-    //        {
-    //            characterFacing = GameData.Direction.South;
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.MovementFront;
-    //        }
-    //        else if (velocityX <= animThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
-    //        {
-    //            characterFacing = GameData.Direction.West;
-    //            previousAnim = currentAnim;
-    //            currentAnim = animState.MovementLeft;
-    //        }
-    //    }
-    //}
+    public void FindPlacePipeAnimation()
+    {
+        hasMovementPermit = false;
+        previousAnim = currentAnim;
+        if (previousAnim.ToString().Contains("Front"))
+        {
+            currentAnim = GameData.AnimationStates.PipePlaceFront;
+        }
+        else if (previousAnim.ToString().Contains("Right"))
+        {
+            currentAnim = GameData.AnimationStates.PipePlaceRight;
+        }
+        else if (previousAnim.ToString().Contains("Left"))
+        {
+            currentAnim = GameData.AnimationStates.PipePlaceLeft;
+        }
+        else if (previousAnim.ToString().Contains("Back"))
+        {
+            currentAnim = GameData.AnimationStates.PipePlaceBack;
+        }
+    }
 
     void PlayAnimation()
     {
@@ -117,37 +96,89 @@ public class AnimationManager : MonoBehaviour
             animTime += 1.0f / fps;
         }
 
+        //ONE SHOT ANIMATIONS
+        if (currentAnim == GameData.AnimationStates.PipeGrabFront)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipeGrabFront);
+        }
+        if (currentAnim == GameData.AnimationStates.PipeGrabBack)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipeGrabBack);
+        }
+        if (currentAnim == GameData.AnimationStates.PipeGrabLeft)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipeGrabLeft);
+        }
+        if (currentAnim == GameData.AnimationStates.PipeGrabRight)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipeGrabRight);
+        }
+
+        if (currentAnim == GameData.AnimationStates.PipePlaceFront)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipePlaceFront);
+        }
+        if (currentAnim == GameData.AnimationStates.PipePlaceBack)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipePlaceBack);
+        }
+        if (currentAnim == GameData.AnimationStates.PipePlaceLeft)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipePlaceLeft);
+        }
+        if (currentAnim == GameData.AnimationStates.PipePlaceRight)
+        {
+            fps = 6;
+            CharacterOneShotAnimation(pipePlaceRight);
+        }
+
+
         //LOOPING ANIMATIONS
         if (currentAnim == GameData.AnimationStates.IdleFront)
         {
+            fps = 6;
             LoopingAnimation(idleFront);
         }
         if (currentAnim == GameData.AnimationStates.IdleBack)
         {
+            fps = 6;
             LoopingAnimation(idleBack);
         }
         if (currentAnim == GameData.AnimationStates.IdleRight)
         {
+            fps = 6;
             LoopingAnimation(idleRight);
         }
         if (currentAnim == GameData.AnimationStates.IdleLeft)
         {
+            fps = 6;
             LoopingAnimation(idleLeft);
         }
         if (currentAnim == GameData.AnimationStates.MovementRight)
         {
+            fps = 12;
             LoopingAnimation(movementRight);
         }
         if (currentAnim == GameData.AnimationStates.MovementLeft)
         {
+            fps = 12;
             LoopingAnimation(movementLeft);
         }
         if (currentAnim == GameData.AnimationStates.MovementFront)
         {
+            fps = 12;
             LoopingAnimation(movementFront);
         }
         if (currentAnim == GameData.AnimationStates.MovementBack)
         {
+            fps = 12;
             LoopingAnimation(movementBack);
         }
 
@@ -171,6 +202,17 @@ public class AnimationManager : MonoBehaviour
         if (currentFrame > frames[frames.Length - 1])
         {
             currentFrame = frames[0];
+        }
+
+    }
+    private void CharacterOneShotAnimation(int[] frames)
+    {
+
+        currentFrame = Mathf.Clamp(currentFrame, frames[0], frames[frames.Length - 1] + 1);
+        if (currentFrame > frames[frames.Length - 1])
+        {
+            currentAnim = previousAnim;
+            hasMovementPermit = true;
         }
 
     }
