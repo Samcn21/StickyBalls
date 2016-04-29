@@ -13,7 +13,12 @@ public class AnimationManager : MonoBehaviour
     //ANIMATION CONTROL VARIABLES
     public int currentFrame = 1;
     public float animTime = 0.0f;
-    public float fps = 10.0f;
+    [SerializeField] private float fps = 10.0f;
+    public float fpsIdle = 4;
+    public float fpsMovement = 15;
+    public float fpsPipeGrab = 6;
+    public float fpsPipePlace = 6;
+
     public GameData.AnimationStates currentAnim = GameData.AnimationStates.IdleFront;
     public GameData.AnimationStates previousAnim = GameData.AnimationStates.IdleFront;
     public bool hasMovementPermit = true;
@@ -41,6 +46,7 @@ public class AnimationManager : MonoBehaviour
     void Update()
     {
         PlayAnimation();
+        ReadSpriteSheet();
     }
 
     public void FindGrabPipeAnimation()
@@ -96,92 +102,95 @@ public class AnimationManager : MonoBehaviour
             animTime += 1.0f / fps;
         }
 
-        //ONE SHOT ANIMATIONS
-        if (currentAnim == GameData.AnimationStates.PipeGrabFront)
+        switch (currentAnim)
         {
-            fps = 6;
-            CharacterOneShotAnimation(pipeGrabFront);
-        }
-        if (currentAnim == GameData.AnimationStates.PipeGrabBack)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipeGrabBack);
-        }
-        if (currentAnim == GameData.AnimationStates.PipeGrabLeft)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipeGrabLeft);
-        }
-        if (currentAnim == GameData.AnimationStates.PipeGrabRight)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipeGrabRight);
-        }
+            //character pipe grab animations
+            case GameData.AnimationStates.PipeGrabFront:
+                fps = fpsPipeGrab;
+                CharacterOneShotAnimation(pipeGrabFront);
+                break;
 
-        if (currentAnim == GameData.AnimationStates.PipePlaceFront)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipePlaceFront);
-        }
-        if (currentAnim == GameData.AnimationStates.PipePlaceBack)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipePlaceBack);
-        }
-        if (currentAnim == GameData.AnimationStates.PipePlaceLeft)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipePlaceLeft);
-        }
-        if (currentAnim == GameData.AnimationStates.PipePlaceRight)
-        {
-            fps = 6;
-            CharacterOneShotAnimation(pipePlaceRight);
-        }
+            case GameData.AnimationStates.PipeGrabBack:
+                fps = fpsPipeGrab;
+                CharacterOneShotAnimation(pipeGrabBack);
+                break;
 
+            case GameData.AnimationStates.PipeGrabLeft:
+                fps = fpsPipeGrab;
+                CharacterOneShotAnimation(pipeGrabLeft);
+                break;
 
-        //LOOPING ANIMATIONS
-        if (currentAnim == GameData.AnimationStates.IdleFront)
-        {
-            fps = 6;
-            LoopingAnimation(idleFront);
-        }
-        if (currentAnim == GameData.AnimationStates.IdleBack)
-        {
-            fps = 6;
-            LoopingAnimation(idleBack);
-        }
-        if (currentAnim == GameData.AnimationStates.IdleRight)
-        {
-            fps = 6;
-            LoopingAnimation(idleRight);
-        }
-        if (currentAnim == GameData.AnimationStates.IdleLeft)
-        {
-            fps = 6;
-            LoopingAnimation(idleLeft);
-        }
-        if (currentAnim == GameData.AnimationStates.MovementRight)
-        {
-            fps = 12;
-            LoopingAnimation(movementRight);
-        }
-        if (currentAnim == GameData.AnimationStates.MovementLeft)
-        {
-            fps = 12;
-            LoopingAnimation(movementLeft);
-        }
-        if (currentAnim == GameData.AnimationStates.MovementFront)
-        {
-            fps = 12;
-            LoopingAnimation(movementFront);
-        }
-        if (currentAnim == GameData.AnimationStates.MovementBack)
-        {
-            fps = 12;
-            LoopingAnimation(movementBack);
-        }
+            case GameData.AnimationStates.PipeGrabRight:
+                fps = fpsPipeGrab;
+                CharacterOneShotAnimation(pipeGrabRight);
+                break;
 
+            //character pipe place animations
+            case GameData.AnimationStates.PipePlaceFront:
+                fps = fpsPipePlace;
+                CharacterOneShotAnimation(pipePlaceFront);
+                break;
+
+            case GameData.AnimationStates.PipePlaceBack:
+                fps = fpsPipePlace;
+                CharacterOneShotAnimation(pipePlaceBack);
+                break;
+
+            case GameData.AnimationStates.PipePlaceLeft:
+                fps = fpsPipePlace;
+                CharacterOneShotAnimation(pipePlaceLeft);
+                break;
+
+            case GameData.AnimationStates.PipePlaceRight:
+                fps = fpsPipePlace;
+                CharacterOneShotAnimation(pipePlaceRight);
+                break;
+
+            //character idle animations
+            case GameData.AnimationStates.IdleFront:
+                fps = fpsIdle;
+                LoopingAnimation(idleFront);
+                break;
+
+            case GameData.AnimationStates.IdleBack:
+                fps = fpsIdle;
+                LoopingAnimation(idleBack);
+                break;
+
+            case GameData.AnimationStates.IdleRight:
+                fps = fpsIdle;
+                LoopingAnimation(idleRight);
+                break;
+
+            case GameData.AnimationStates.IdleLeft:
+                fps = fpsIdle;
+                LoopingAnimation(idleLeft);
+                break;
+
+            //character movemnt animations
+            case GameData.AnimationStates.MovementFront:
+                fps = fpsMovement;
+                LoopingAnimation(movementFront);
+                break;
+
+            case GameData.AnimationStates.MovementBack:
+                fps = fpsMovement;
+                LoopingAnimation(movementBack);
+                break;
+
+            case GameData.AnimationStates.MovementRight:
+                fps = fpsMovement;
+                LoopingAnimation(movementRight);
+                break;
+
+            case GameData.AnimationStates.MovementLeft:
+                fps = fpsMovement;
+                LoopingAnimation(movementLeft);
+                break;
+        }
+    }
+
+    private void ReadSpriteSheet() { 
         framePosition.y = 1;
         for (iCount = currentFrame; iCount > columns; iCount -= rows)
         {
@@ -205,6 +214,7 @@ public class AnimationManager : MonoBehaviour
         }
 
     }
+
     private void CharacterOneShotAnimation(int[] frames)
     {
 
