@@ -24,7 +24,7 @@ public class InputController : MonoBehaviour
     public Sprite yellowSprite;
     public Sprite blackSprite;
 
-
+    private AudioManager AudioManager;
     private Player player;
     private GamepadState gamepadState;
     private GamePad.Index gamepadIndex;
@@ -68,6 +68,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
         AnimationManager = GetComponentInChildren<AnimationManager>();
         player = GetComponent<Player>();
         closeConveyorPipes = new List<ConveyorPipe>();
@@ -368,6 +369,9 @@ public class InputController : MonoBehaviour
 
     private void RotatePipe()
     {
+        //SFX
+        AudioManager.PlayOneShot(GameData.AudioClipState.RotatePipe);
+
         rotationIndex++;
         if (rotationIndex > 3)
             rotationIndex = 0;
@@ -381,7 +385,11 @@ public class InputController : MonoBehaviour
 
     private void PlacePipe()
     {
+        //Animation
         AnimationManager.FindPlacePipeAnimation();
+
+        //SFX
+        AudioManager.PlayOneShot(GameData.AudioClipState.PlacePipe);
 
         Vector3 pipeOffset = new Vector3(0, 1, 0);
         Vector3 dynamiteOffset = new Vector3(0, 2, 0);
@@ -423,7 +431,11 @@ public class InputController : MonoBehaviour
             myAnim.SetTrigger("grabPipe");
         }
 
+        //Animation
         AnimationManager.FindGrabPipeAnimation();
+
+        //SFX
+        AudioManager.PlayOneShot(GameData.AudioClipState.PickupPipe);
 
         player.PickupPipe(selectedConveyorPipe);
         closeConveyorPipes.Remove(selectedConveyorPipe);

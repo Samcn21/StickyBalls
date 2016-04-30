@@ -1,7 +1,13 @@
 fileFormatVersion: 2
+<<<<<<< HEAD:Assets/Audio/SFX.meta
+guid: 2ad3c92e7113b91449b67c8f41973f06
+folderAsset: yes
+timeCreated: 1460044530
+=======
 guid: 80b14a863e226c349a6f59b53b73b79a
 folderAsset: yes
 timeCreated: 1462014821
+>>>>>>> origin/Development:Assets/Audio/SFX.meta
 licenseType: Free
 DefaultImporter:
   userData: 
