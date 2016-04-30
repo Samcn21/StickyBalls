@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
         pipeMan = GameController.Instance.PipeMan;
         heldPipeRenderer = heldPipe.GetComponent<MeshRenderer>();
         InputController = GetComponent<InputController>();
+        heldPipe.parent = null;
     }
 
     void Update()
@@ -38,6 +39,7 @@ public class Player : MonoBehaviour
                 break;
         }
         heldPipeContainer.localPosition = heldPos;
+        heldPipe.position = heldPipeContainer.position;
     }
 
 
