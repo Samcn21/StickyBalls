@@ -75,6 +75,16 @@ using System.Collections.Generic;
 
         }
 
+        public enum AudioClipState 
+        {
+            Music,
+            PickupPipe,
+            PlacePipe,
+            Explosion,
+            Winning,
+            RotatePipe
+        }
+
         public class Coordinate
         {
             public int x;
