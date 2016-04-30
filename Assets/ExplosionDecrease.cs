@@ -20,7 +20,7 @@ public class ExplosionDecrease : MonoBehaviour {
     {
         timer -= Time.deltaTime;
         explosionMat._alpha = timer / timerDecay;
-        if (timer <= timerDecay / 2)
+        if (timer <= timerDecay -0.1)
             GetComponent<DynamiteLogic>().Explode();
 
             if(timer<=0)
