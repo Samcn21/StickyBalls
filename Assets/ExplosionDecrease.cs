@@ -20,7 +20,7 @@ public class ExplosionDecrease : MonoBehaviour {
     {
         timer -= Time.deltaTime;
         explosionMat._alpha = timer / timerDecay;
-        if (timer == 0)
+        if (timer <= 0)
             dynamiteLogic.Explode();
     } 
 }
