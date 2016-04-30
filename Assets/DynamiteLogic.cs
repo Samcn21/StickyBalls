@@ -12,10 +12,15 @@ public class DynamiteLogic : MonoBehaviour {
 
     void OnTriggerStay(Collider col)
     {
-        if (gameObject.tag == "Pipe")
+
+        if (col.gameObject.tag == "Pipe")
         {
             pipeToPhysicallyAffect.Add(col.gameObject);
-            Debug.Log("I detected the pipe " + col.gameObject.name);
         }
+    }
+
+    public void Explode()
+    {
+
     }
 }
