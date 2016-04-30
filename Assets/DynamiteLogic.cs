@@ -24,17 +24,16 @@ public class DynamiteLogic : MonoBehaviour {
 
     public void Explode()
     {
-        Debug.Log("I am exploding");
         foreach(GameObject g in pipeToPhysicallyAffect)
         {
             AffectWithExplosion(g);
+            g.GetComponent<Pipe>().DestroyPipe();
         }
         Destroy(gameObject);
     }
 
     private void AffectWithExplosion(GameObject g)
     {
-        Debug.Log("I am applying forces");
         Rigidbody body = g.GetComponent<Rigidbody>();
         body.isKinematic = false;
         g.GetComponent<Collider>().isTrigger = false;
