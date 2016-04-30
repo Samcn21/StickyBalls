@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 
 public class Pipe : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class Pipe : MonoBehaviour
 
     private GameData.Team team;
     public GameData.Team Team {
-        protected set
+        set
         {
             team = value;
             if (isSource)
@@ -38,11 +39,20 @@ public class Pipe : MonoBehaviour
     public bool isCenterMachine { get; protected set; }
     public bool isSource { get; protected set; }
     
-    private List<GameData.Coordinate> visited; 
+    private List<GameData.Coordinate> visited;
+    private List<Pipe> connectedPipes;
 
     protected MeshRenderer meshRenderer;
     protected PipeMan pipeMan;
     protected GridController gridController;
+
+    //TODO: REMOVE TEST
+    public bool todestroy = false;
+
+    void Update()
+    {
+        if (todestroy) DestroyPipe();
+    }
 
     public void Initialize(PipeData.PipeType pipeType, GameData.Coordinate coord, int rotationAngle) {
         pipeMan = GameController.Instance.PipeMan;
@@ -60,11 +70,11 @@ public class Pipe : MonoBehaviour
             if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0) - 1 && conCoord.y >= 0 &&
                 conCoord.y <= gridController.Grid.GetLength(1) - 1) {
                 connections.Add(conCoord);
-                    if (gridController.Grid[conCoord.x, conCoord.y].pipe != null)
-                    {
-                        if (gridController.Grid[conCoord.x, conCoord.y].pipe.team != GameData.Team.Neutral) 
-                            connectedTeams.Add(gridController.Grid[conCoord.x, conCoord.y].pipe.team);
-                    }
+                if (gridController.Grid[conCoord.x, conCoord.y].pipe != null)
+                {
+                    if (!connectedTeams.Contains(gridController.Grid[conCoord.x, conCoord.y].pipe.team))
+                        connectedTeams.Add(gridController.Grid[conCoord.x, conCoord.y].pipe.team);
+                }
             }
         }
         gridController.Grid[coord.x, coord.y].SetPipe(this);
@@ -76,8 +86,13 @@ public class Pipe : MonoBehaviour
                 Team = t;
                 break;
             }
+            else if (connectedTeams.Count == 2 && connectedTeams.Contains(GameData.Team.Neutral))
+            {
+                TurnConnectedPipesToTeam(connectedTeams.First(x => x != GameData.Team.Neutral));
+            }
             else
             {
+                //TODO: ADD FUNCTIONALITY FOR MULTIPLE TEAMS CONNECTED TO SAME PIPE
                 Team = t;
                 break;
             }
@@ -85,17 +100,20 @@ public class Pipe : MonoBehaviour
 
     }
 
-    public void DestroyPipe()
-    {
+    public void DestroyPipe() {
+        gridController.Grid[positionCoordinate.x, positionCoordinate.y].SetPipe(null);
         foreach (GameData.Coordinate c in connections)
         {
             Pipe connectedPipe = gridController.Grid[c.x, c.y].pipe;
             if (connectedPipe != null)
             {
-                visited = new List<GameData.Coordinate>();
-               Debug.Log(isConnectedToSource(c));
+                if (!connectedPipe.CheckSourceConnection())
+                {
+                    connectedPipe.TurnConnectedPipesToTeam(GameData.Team.Neutral);
+                }
             }
         }
+        Destroy(gameObject);
     }
 
     public bool CheckSourceConnection()
@@ -106,6 +124,8 @@ public class Pipe : MonoBehaviour
 
     private bool isConnectedToSource(GameData.Coordinate coord)
     {
+        if (isSource) return true;
+        if (isCenterMachine) return false;
         List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
         visited.Add(coord);
         foreach (GameData.Coordinate c in cons)
@@ -119,6 +139,34 @@ public class Pipe : MonoBehaviour
             if (isConnectedToSource(c)) return true;
         }
         return false;
+    }
+
+    public void TurnConnectedPipesToTeam(GameData.Team newTeam)
+    {
+        visited = new List<GameData.Coordinate>();
+        connectedPipes = new List<Pipe>();
+        connectedPipes.Add(this);
+        GetConnectedPipes(positionCoordinate);
+        foreach (Pipe pipe in connectedPipes)
+        {
+            pipe.Team = newTeam;
+        }
+    }
+
+    private void GetConnectedPipes(GameData.Coordinate coord)
+    {
+        List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
+        visited.Add(coord);
+        foreach (GameData.Coordinate c in cons) {
+            if (c == coord) continue;
+            if (gridController.Grid[c.x, c.y].pipe == null) continue;
+            if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
+            if (visited.Contains(c)) continue;
+
+            connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
+            GetConnectedPipes(c);
+        }
+        return;
     }
     
 }

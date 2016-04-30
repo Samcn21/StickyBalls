@@ -52,6 +52,7 @@ public class GridController : MonoBehaviour
         int middleX = Mathf.FloorToInt(gridWidth / 2);
         int middleY = Mathf.FloorToInt(gridHeight / 2);
 
+        //Lock center tiles
         lockedTiles.Add(new Vector2(middleX - 2, middleY + 2));
         lockedTiles.Add(new Vector2(middleX - 1, middleY + 2));
         lockedTiles.Add(new Vector2(middleX + 1, middleY + 2));
