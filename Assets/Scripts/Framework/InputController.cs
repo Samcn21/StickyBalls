@@ -370,7 +370,7 @@ public class InputController : MonoBehaviour
     private void RotatePipe()
     {
         //SFX
-        AudioManager.PlayOneShot(GameData.AudioClipState.RotatePipe);
+        //AudioManager.PlayOneShotPlayer(GameData.AudioClipState.RotatePipe, index, true);
 
         rotationIndex++;
         if (rotationIndex > 3)
@@ -389,7 +389,7 @@ public class InputController : MonoBehaviour
         AnimationManager.FindPlacePipeAnimation();
 
         //SFX
-        AudioManager.PlayOneShot(GameData.AudioClipState.PlacePipe);
+        AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
 
         Vector3 pipeOffset = new Vector3(0, 1, 0);
         Vector3 dynamiteOffset = new Vector3(0, 2, 0);
@@ -435,7 +435,7 @@ public class InputController : MonoBehaviour
         AnimationManager.FindGrabPipeAnimation();
 
         //SFX
-        AudioManager.PlayOneShot(GameData.AudioClipState.PickupPipe);
+        AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PickupPipe, index, true);
 
         player.PickupPipe(selectedConveyorPipe);
         closeConveyorPipes.Remove(selectedConveyorPipe);

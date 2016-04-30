@@ -1,7 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
-public class AudioManager : MonoBehaviour {
+public class AudioManager : MonoBehaviour
+{
 
     public AudioClip MusicClip;
     public AudioClip pickupPipeClip;
@@ -10,12 +12,13 @@ public class AudioManager : MonoBehaviour {
     public AudioClip winSoundClip;
     public AudioClip rotatePipeClip;
 
-    public AudioSource audioControllerSFX;                   
-    public AudioSource audioControllerMusic;                 
-    public static AudioManager instantiate = null;                      
-    
-    public float lowPitchRange = .95f;                       
-    public float highPitchRange = 1.05f;                     
+
+    public AudioSource audioControllerSFX;
+    public AudioSource audioControllerMusic;
+    public static AudioManager instantiate = null;
+
+    public float[] pitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
+    [SerializeField] private float pitchRange = 1;
 
 
     void Awake()
@@ -29,10 +32,11 @@ public class AudioManager : MonoBehaviour {
     }
 
 
-    public void PlayOneShot(GameData.AudioClipState state)
+
+    public void PlayOneShotPlayer(GameData.AudioClipState state, GamePad.Index playerNumber, bool needsPitch)
     {
         switch (state)
-        { 
+        {
             case GameData.AudioClipState.PickupPipe:
                 audioControllerSFX.clip = pickupPipeClip;
                 break;
@@ -44,9 +48,35 @@ public class AudioManager : MonoBehaviour {
             case GameData.AudioClipState.RotatePipe:
                 audioControllerSFX.clip = rotatePipeClip;
                 break;
-       }
+        }
 
-       audioControllerSFX.Play();
+        if (needsPitch)
+        {
+            switch (playerNumber)
+            {
+                case GamePad.Index.One:
+                    pitchRange = pitchRanges[1];
+                    break;
+
+                case GamePad.Index.Two:
+                    pitchRange = pitchRanges[2];
+                    break;
+
+                case GamePad.Index.Three:
+                    pitchRange = pitchRanges[3];
+                    break;
+
+                case GamePad.Index.Four:
+                    pitchRange = pitchRanges[4];
+                    break;
+            }
+        }
+        else
+        {
+            pitchRange = pitchRanges[0];
+        }
+        audioControllerSFX.pitch = pitchRange;
+        audioControllerSFX.Play();
     }
 
 }
