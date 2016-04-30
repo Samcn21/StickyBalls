@@ -6,8 +6,9 @@ public class PipeCollisionDetection : MonoBehaviour {
     {
         if(col.gameObject.tag=="Pipe")
         {
-            Pipe pipeConnection = col.gameObject.GetComponent<Pipe>();
-            pipeConnection.DestroyPipe();
+            col.gameObject.GetComponent<Pipe>().DestroyPipe();
+            GetComponent<Rigidbody>().isKinematic = false;
+            col.gameObject.GetComponent<Rigidbody>().isKinematic = false;   
         }
     }
 }
