@@ -29,7 +29,7 @@ public class DynamiteLogic : MonoBehaviour {
         {
             AffectWithExplosion(g);
         }
-        Destroy(gameObject);
+       
     }
 
     private void AffectWithExplosion(GameObject g)
@@ -38,6 +38,7 @@ public class DynamiteLogic : MonoBehaviour {
         Rigidbody body = g.GetComponent<Rigidbody>();
         body.isKinematic = false;
         g.GetComponent<Collider>().isTrigger = false;
-        body.AddExplosionForce(explosionForce, transform.position, explosionRadiusCollider.radius);
+        float d = Mathf.Abs(Vector3.Distance(transform.position, g.transform.position));
+        body.AddForce((g.transform.position-transform.position)*explosionForce*d/explosionRadiusCollider.radius,ForceMode.Force);
     }
 }
