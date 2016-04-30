@@ -8,19 +8,22 @@ public class ExplosionDecrease : MonoBehaviour {
 
     private float timer;
     private ExplosionMat explosionMat;
-    private DynamiteLogic dynamiteLogic;
     void Awake()
     {
         explosionMat = GetComponent<ExplosionMat>();
         timer = timerDecay;
-        dynamiteLogic = GetComponent<DynamiteLogic>();
+        
     }
+
 
     void Update()
     {
         timer -= Time.deltaTime;
         explosionMat._alpha = timer / timerDecay;
-        if (timer == 0)
-            dynamiteLogic.Explode();
+        if (timer <= timerDecay -0.1)
+            GetComponent<DynamiteLogic>().Explode();
+
+            if(timer<=0)
+            Destroy(gameObject);
     } 
 }
