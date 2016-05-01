@@ -25,6 +25,7 @@ public class PipeMan : MonoBehaviour {
     public Dictionary<PipeData.PipeType, List<Vector2>> pipeConnections;  
     // Use this for initialization
     void Start () {
+
         pipeTextures = new Dictionary<PipeData.PipeType, Material>()
             {
             {PipeData.PipeType.Void, voidPipeMat},
