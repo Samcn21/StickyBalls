@@ -75,7 +75,10 @@ public class Pipe : MonoBehaviour
                 {
                     if (!connectedTeams.Contains(gridController.Grid[conCoord.x, conCoord.y].pipe.team))
                         connectedTeams.Add(gridController.Grid[conCoord.x, conCoord.y].pipe.team);
-                    Vector3 sparkPos = Vector3.Lerp(transform.position, gridController.Grid[conCoord.x, conCoord.y].pipe.transform.position, 0.5f);
+                    float x = 0.5f;
+                    if (gridController.Grid[conCoord.x, conCoord.y].pipe.isSource)
+                        x = 0.25f;
+                    Vector3 sparkPos = Vector3.Lerp(transform.position, gridController.Grid[conCoord.x, conCoord.y].pipe.transform.position, x);
                     GameObject sparks = Instantiate(WeldSparkParticleSystemPrefab, new Vector3(sparkPos.x, 0.5f, sparkPos.z) , Quaternion.Euler(-48.3f, 152.4f, 0)) as GameObject;
                     WeldsparksParticleSystem sparksParticleSystem = sparks.GetComponent<WeldsparksParticleSystem>();
                     bool isHorizontalWeld = false;
