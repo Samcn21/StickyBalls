@@ -71,8 +71,10 @@ using System.Collections.Generic;
             FullCornerPipe,
 
             //Sources and Central Machine
-            //...
-
+            SourceMachineCyan,
+            SourceMachineBlue,
+            SourceMachinePurple,
+            SourceMachineYellow
         }
 
         public enum AudioClipState 

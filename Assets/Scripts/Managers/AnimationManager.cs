@@ -71,6 +71,7 @@ public class AnimationManager : MonoBehaviour
         }
     }
 
+    
     public void FindPlacePipeAnimation()
     {
         hasMovementPermit = false;
