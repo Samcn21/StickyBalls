@@ -5,6 +5,8 @@ using System.Linq;
 
 public class Pipe : MonoBehaviour
 {
+    [SerializeField] private GameObject WeldSparkParticleSystemPrefab;
+
     private PipeData.PipeType pipeType;
     public PipeData.PipeType PipeType
     {
@@ -67,13 +69,21 @@ public class Pipe : MonoBehaviour
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
             GameData.Coordinate conCoord = new GameData.Coordinate(positionCoordinate.x + Mathf.RoundToInt(rotatedVector.x), positionCoordinate.y + Mathf.RoundToInt(rotatedVector.y));
-            if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0) - 1 && conCoord.y >= 0 &&
-                conCoord.y <= gridController.Grid.GetLength(1) - 1) {
+            if (conCoord.x >= 0 && conCoord.x <= gridController.Grid.GetLength(0) - 1 && conCoord.y >= 0 && conCoord.y <= gridController.Grid.GetLength(1) - 1) {
                 connections.Add(conCoord);
                 if (gridController.Grid[conCoord.x, conCoord.y].pipe != null)
                 {
                     if (!connectedTeams.Contains(gridController.Grid[conCoord.x, conCoord.y].pipe.team))
                         connectedTeams.Add(gridController.Grid[conCoord.x, conCoord.y].pipe.team);
+                    Vector3 sparkPos = Vector3.Lerp(transform.position, gridController.Grid[conCoord.x, conCoord.y].pipe.transform.position, 0.5f);
+                    GameObject sparks = Instantiate(WeldSparkParticleSystemPrefab, new Vector3(sparkPos.x, 0.5f, sparkPos.z) , Quaternion.Euler(-48.3f, 152.4f, 0)) as GameObject;
+                    WeldsparksParticleSystem sparksParticleSystem = sparks.GetComponent<WeldsparksParticleSystem>();
+                    bool isHorizontalWeld = false;
+                    if (rotatedVector.x > 0.5f || rotatedVector.x < -0.5f)
+                        isHorizontalWeld = true;
+                    else if (rotatedVector.y > 0.5f || rotatedVector.y < -0.5f)
+                        isHorizontalWeld = false;
+                    sparksParticleSystem.Initialize(isHorizontalWeld);
                 }
             }
         }
@@ -98,6 +108,7 @@ public class Pipe : MonoBehaviour
             }
         }
 
+        
     }
 
     public void DestroyPipe() {
