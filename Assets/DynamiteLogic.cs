@@ -15,7 +15,6 @@ public class DynamiteLogic : MonoBehaviour {
 
     void OnTriggerStay(Collider col)
     {
-
         if (col.gameObject.tag == "Pipe")
         {
             pipeToPhysicallyAffect.Add(col.gameObject);
@@ -26,8 +25,8 @@ public class DynamiteLogic : MonoBehaviour {
     {
         foreach(GameObject g in pipeToPhysicallyAffect)
         {
-            AffectWithExplosion(g);
             g.GetComponent<Pipe>().DestroyPipe();
+            AffectWithExplosion(g);
         }
         Destroy(gameObject);
     }
@@ -39,7 +38,7 @@ public class DynamiteLogic : MonoBehaviour {
         g.GetComponent<Collider>().isTrigger = false;
         float d = Mathf.Abs(Vector3.Distance(transform.position, g.transform.position));
         Vector3 direction = g.transform.position - transform.position;
-        direction.y = 0;
+        direction.x = 0;
         body.AddForce(direction*explosionForce*d/(explosionRadiusCollider.radius*transform.localScale.x),ForceMode.Force);
     }
 }

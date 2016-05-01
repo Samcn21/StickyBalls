@@ -19,7 +19,7 @@ public class PushMechanic : MonoBehaviour {
         if(col.gameObject.tag=="Player")
         {
             Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
-            if (opponentBody.velocity.normalized.magnitude < body.velocity.normalized.magnitude)
+            if (opponentBody.velocity.normalized.magnitude >= body.velocity.normalized.magnitude)
             {
                 Vector3 direction = (transform.position - col.contacts[0].point);
                 direction.y = 0;

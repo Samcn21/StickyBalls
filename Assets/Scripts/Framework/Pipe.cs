@@ -113,7 +113,7 @@ public class Pipe : MonoBehaviour
                 }
             }
         }
-       // Destroy(gameObject);
+        Destroy(gameObject);
     }
 
     public bool CheckSourceConnection()
