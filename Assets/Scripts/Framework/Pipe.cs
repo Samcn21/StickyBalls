@@ -6,7 +6,6 @@ using System.Linq;
 public class Pipe : MonoBehaviour
 {
     [SerializeField] private GameObject WeldSparkParticleSystemPrefab;
-
     private PipeData.PipeType pipeType;
     public PipeData.PipeType PipeType
     {

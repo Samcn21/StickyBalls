@@ -5,11 +5,16 @@ using System.Collections.Generic;
 //The corner piece. It extends Pipe, so that you can connect to it, but it is own, so it can be checked against for win conditions.
 public class PlayerSource : Pipe
 {
-    [SerializeField] private GameData.PlayerSourceDirection sourceLocation;
+    public GameData.PlayerSourceDirection sourceLocation
+    {
+        get; private set;
+    }
 
+    public GameData.Coordinate[] coordinateOfOutingPoints { get; private set; }
     // Use this for initialization
     void Start ()
     {
+        coordinateOfOutingPoints = new GameData.Coordinate[2];
         gridController = GameController.Instance.GridController;
 	    connections = new List<GameData.Coordinate>();
         meshRenderer = GetComponent<MeshRenderer>();
@@ -82,8 +87,11 @@ public class PlayerSource : Pipe
         }
         connections.Add(con);
         connections.Add(con2);
+        coordinateOfOutingPoints[0] = new GameData.Coordinate(me.x, me.y);
+        coordinateOfOutingPoints[1] = new GameData.Coordinate(me2.x, me2.y);
         gridController.Grid[me.x, me.y].SetPipe(this);
         gridController.Grid[me2.x, me2.y].SetPipe(this);
+        
     }
 	
 	// Update is called once per frame

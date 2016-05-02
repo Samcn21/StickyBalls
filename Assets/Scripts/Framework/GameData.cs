@@ -160,7 +160,8 @@ using System.Collections.Generic;
                 // Return true if the fields match:
                 return (x == c.x) && (y == c.y);
             }
-        }
+
+    }
 
 
     }

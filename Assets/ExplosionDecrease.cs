@@ -1,7 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
 [RequireComponent(typeof(ExplosionMat))]
-[RequireComponent(typeof(DynamiteLogic))]
 public class ExplosionDecrease : MonoBehaviour {
     [SerializeField]
     private float timerDecay;
@@ -9,10 +8,9 @@ public class ExplosionDecrease : MonoBehaviour {
     private float timer;
     private ExplosionMat explosionMat;
     void Awake()
-    {
-        explosionMat = GetComponent<ExplosionMat>();
+    {        
         timer = timerDecay;
-        
+        explosionMat = GetComponent<ExplosionMat>();
     }
 
 
@@ -20,9 +18,6 @@ public class ExplosionDecrease : MonoBehaviour {
     {
         timer -= Time.deltaTime;
         explosionMat._alpha = timer / timerDecay;
-        if (timer <= timerDecay -0.1)
-            GetComponent<DynamiteLogic>().Explode();
-
             if(timer<=0)
             Destroy(gameObject);
     } 

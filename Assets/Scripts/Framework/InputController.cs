@@ -35,11 +35,12 @@ public class InputController : MonoBehaviour
     private ConveyorPipe selectedConveyorPipe;
     private List<GameData.Coordinate> closePipeConnections;
     private GameData.Coordinate selectedPipeConnection;
+    private PipeStatus pipeStatus;
     private Transform selectedPipePlaceholder;
     private int rotationIndex = 0;
     private bool initialized = false;
     private bool isLegalRotation = false;
-
+    private List<Pipe> closePipes;
     public GameData.Direction characterFacing = GameData.Direction.South;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
@@ -53,6 +54,8 @@ public class InputController : MonoBehaviour
     [SerializeField]
     private float velocityThreshold = 0.1f;
 
+    public bool isPressingDelete { get; private set; }
+
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -63,6 +66,7 @@ public class InputController : MonoBehaviour
         ColorInit(t);  //Color initialization 
         initialized = true;
         colorPicked = false;
+        isPressingDelete = false;
     }
 
     // Use this for initialization
@@ -75,7 +79,9 @@ public class InputController : MonoBehaviour
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
+        pipeStatus = GameController.Instance.PipeStatus;
         AssignColorsToPlayers();
+        closePipes = new List<Pipe>();
     }
 
 
@@ -137,6 +143,11 @@ public class InputController : MonoBehaviour
                 colorPicked = true;
             }
         }
+
+        if (GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+            isPressingDelete = true;
+        else
+            isPressingDelete = false;
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
         if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
@@ -256,6 +267,9 @@ public class InputController : MonoBehaviour
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
+        if (col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team && isPressingDelete) 
+            pipeStatus.DestroyPipeOfPlayer(team,col.gameObject.GetComponent<Pipe>());
+
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -275,10 +289,14 @@ public class InputController : MonoBehaviour
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
             {
+
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
                 {
+                    if (!closePipes.Contains(pipe))
+                        closePipes.Add(pipe);
                     closePipeConnections.Add(c);
                 }
+                
             }
         }
     }
@@ -310,9 +328,12 @@ public class InputController : MonoBehaviour
         {
             if (closePipeConnections.Contains(c))
             {
-                closePipeConnections.Remove(c);
+
+            closePipeConnections.Remove(c);
+                
                 if (closePipeConnections.Count == 0)
                 {
+                   
                     selectedPipeConnection = null;
                     if (selectedPipePlaceholder != null)
                         Destroy(selectedPipePlaceholder.gameObject);
@@ -409,6 +430,22 @@ public class InputController : MonoBehaviour
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
             Pipe pipe = newPipe.GetComponent<Pipe>();
             pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
+
+            bool found = false;
+            foreach (Pipe father in closePipes)
+            {
+                found = false;
+                if (father.connections.Contains(selectedPipeConnection)&&father.PipeType!=PipeData.PipeType.Void)
+                {
+                    found = true;
+                    pipeStatus.AddPipeToTeam(team, pipe, father);
+                    closePipes = new List<Pipe>();
+                    break;
+                }
+            }
+            if(!found)
+                pipeStatus.AddFirstPipe(team, pipe);
+            Debug.Log(found);
             player.PlacePipe();
             selectedPipeConnection = null;
             closePipeConnections.Remove(selectedPipeConnection);

@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
     }
     public PipeMan PipeMan;
     public GridController GridController;
+    public PipeStatus PipeStatus;
     public List<Player> Players;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
