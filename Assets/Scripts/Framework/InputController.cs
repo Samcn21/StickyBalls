@@ -113,13 +113,6 @@ public class InputController : MonoBehaviour
     {
         if (!initialized) return;
 
-        if (GamePad.GetButtonDown(GamePad.Button.Y, gamepadIndex)){
-            GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
-            foreach (GameObject pipe in allPipes){
-                pipe.GetComponent<AnimationManager>().FindWinnerPipes(GameData.Team.Purple);
-            }
-        }
-
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
@@ -438,13 +431,13 @@ public class InputController : MonoBehaviour
                 if (father.connections.Contains(selectedPipeConnection)&&father.PipeType!=PipeData.PipeType.Void)
                 {
                     found = true;
-                    pipeStatus.AddPipeToTeam(team, pipe, father);
+                    pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
                     closePipes = new List<Pipe>();
                     break;
                 }
             }
             if(!found)
-                pipeStatus.AddFirstPipe(team, pipe);
+                pipeStatus.AddFirstPipe(pipe.Team, pipe);
             Debug.Log(found);
             player.PlacePipe();
             selectedPipeConnection = null;

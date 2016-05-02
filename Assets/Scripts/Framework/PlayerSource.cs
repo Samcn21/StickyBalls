@@ -5,10 +5,7 @@ using System.Collections.Generic;
 //The corner piece. It extends Pipe, so that you can connect to it, but it is own, so it can be checked against for win conditions.
 public class PlayerSource : Pipe
 {
-    public GameData.PlayerSourceDirection sourceLocation
-    {
-        get; private set;
-    }
+    public GameData.PlayerSourceDirection sourceLocation;
 
     public GameData.Coordinate[] coordinateOfOutingPoints { get; private set; }
     // Use this for initialization

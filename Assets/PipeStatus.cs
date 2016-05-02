@@ -7,7 +7,7 @@ public class PipeStatus : MonoBehaviour {
     private Dictionary<GameData.Team, RecursivePipe> pipesPerPlayer;
     private List<RecursivePipe> neutralPipes;
     [SerializeField]
-    private bool destroyAllPlayerPipesWhenDestroyButtonIsPushed;
+    private bool destroyAllThePipes;
 
     private bool destroyAllPipes = false;
     [SerializeField]
@@ -27,8 +27,11 @@ public class PipeStatus : MonoBehaviour {
         RecursivePipe voidList = new RecursivePipe();
         pipesPerPlayer = new Dictionary<GameData.Team, RecursivePipe>();
         pipesPerPlayer.Add(GameData.Team.Blue, voidList);
+        voidList = new RecursivePipe();
         pipesPerPlayer.Add(GameData.Team.Cyan, voidList);
+        voidList = new RecursivePipe();
         pipesPerPlayer.Add(GameData.Team.Purple, voidList);
+        voidList = new RecursivePipe();
         pipesPerPlayer.Add(GameData.Team.Yellow, voidList);
         teamsToDestroy = new List<GameData.Team>();
         neutralPipes = new List<RecursivePipe>();
@@ -74,9 +77,8 @@ public class PipeStatus : MonoBehaviour {
 
     public void DestroyPipesOfPlayer(GameData.Team team)
     {
-        
         destroyAllPipes = true;
-        if (!destroyAllPlayerPipesWhenDestroyButtonIsPushed)
+        if (!destroyAllThePipes)
         {
             if (!teamsToDestroy.Contains(team))
                 teamsToDestroy.Add(team);
@@ -92,8 +94,6 @@ public class PipeStatus : MonoBehaviour {
             if (!teamsToDestroy.Contains(GameData.Team.Yellow))
                 teamsToDestroy.Add(GameData.Team.Yellow);
         }
-            
-
     }
 
     public void DestroyPipeOfPlayer(GameData.Team team,Pipe pipe)
