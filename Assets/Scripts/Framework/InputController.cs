@@ -107,6 +107,13 @@ public class InputController : MonoBehaviour
     {
         if (!initialized) return;
 
+        if (GamePad.GetButtonDown(GamePad.Button.Y, gamepadIndex)){
+            GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+            foreach (GameObject pipe in allPipes){
+                pipe.GetComponent<AnimationManager>().FindWinnerPipes(GameData.Team.Purple);
+            }
+        }
+
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color

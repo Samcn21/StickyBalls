@@ -47,10 +47,15 @@ public class Pipe : MonoBehaviour
     protected MeshRenderer meshRenderer;
     protected PipeMan pipeMan;
     protected GridController gridController;
+    private AnimationManager AnimationManager;
+
 
     //TODO: REMOVE TEST
     public bool todestroy = false;
 
+    void Start() {
+        AnimationManager = GameObject.FindObjectOfType<AnimationManager>();
+    }
     void Update()
     {
         if (todestroy) DestroyPipe();
@@ -61,6 +66,9 @@ public class Pipe : MonoBehaviour
         gridController = GameController.Instance.GridController;
         meshRenderer = GetComponent<MeshRenderer>();
         connections = new List<GameData.Coordinate>();
+
+
+
         PipeType = pipeType;
         positionCoordinate = coord;
         List<GameData.Team> connectedTeams = new List<GameData.Team>();
@@ -111,7 +119,9 @@ public class Pipe : MonoBehaviour
             }
         }
 
-        
+        //Animation SpriteSheet Setup
+        AnimationManager = GetComponent<AnimationManager>();
+        AnimationManager.FindPipeStatus(pipeType, Team);
     }
 
     public void DestroyPipe() {

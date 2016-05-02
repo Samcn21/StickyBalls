@@ -24,9 +24,11 @@ public class GameController : MonoBehaviour
     public List<Player> Players;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
+    private AnimationManager AnimationManager;
 
     void Start()
     {
+        AnimationManager = GameObject.FindObjectOfType<AnimationManager>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         Players = new List<Player>();
 
@@ -50,16 +52,31 @@ public class GameController : MonoBehaviour
         if (!gameRunning)
             return;
 
+        GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+        foreach (GameObject pipe in allPipes)
+        {
+            pipe.GetComponent<AnimationManager>().FindWinnerPipes(winningTeam);
+        }
+
         gameRunning = false;
+
+        StartCoroutine(ShowWinnerGUI(winningTeam));
+
+
+
+    }
+
+    IEnumerator ShowWinnerGUI(GameData.Team  color)
+    {
+        yield return new WaitForSeconds(5);
 
         if (winningGUI != null)
         {
             Text text = winningGUI.GetComponent<Text>();
             text.enabled = true;
-            text.GetComponent<Text>().text = winningTeam.ToString() + " PLAYER WON!";
-            text.GetComponent<Text>().color = GameData.TeamColors[winningTeam];
-           
-        }
+            text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
+            text.GetComponent<Text>().color = GameData.TeamColors[color];
 
+        }
     }
 }

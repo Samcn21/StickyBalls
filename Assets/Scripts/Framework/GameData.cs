@@ -40,6 +40,7 @@ using System.Collections.Generic;
             {Team.Neutral,       new Color32(232, 232, 232 , 255) }
         };
 
+
         public enum AnimationStates
         {
             //Character States
@@ -61,20 +62,63 @@ using System.Collections.Generic;
             PipePlaceLeft,
 
             //Pipes States
-            EmptyTPipe,
-            EmptyCrossPipe,
-            EmptyStraightPipe,
-            EmptyCornerPipe,
-            FullTPipe,
-            FullCrossPipe,
-            FullStraightPipe,
-            FullCornerPipe,
+            PipeNeutralEmptyCorner,
+            PipeNeutralEmptyT,
+            PipeNeutralEmptyStraight,
+            PipeNeutralEmptyCross,
+
+            PipeBlueEmptyCorner,
+            PipeBlueEmptyT,
+            PipeBlueEmptyStraight,
+            PipeBlueEmptyCross,
+
+            PipeCyanEmptyCorner,
+            PipeCyanEmptyT,
+            PipeCyanEmptyStraight,
+            PipeCyanEmptyCross,
+
+            PipePurpleEmptyCorner,
+            PipePurpleEmptyT,
+            PipePurpleEmptyStraight,
+            PipePurpleEmptyCross,
+
+            PipeYellowEmptyCorner,
+            PipeYellowEmptyT,
+            PipeYellowEmptyStraight,
+            PipeYellowEmptyCross,
+
+            PipeBlueFullCorner,
+            PipeBlueFullT,
+            PipeBlueFullStraight,
+            PipeBlueFullCross,
+
+            PipeCyanFullCorner,
+            PipeCyanFullT,
+            PipeCyanFullStraight,
+            PipeCyanFullCross,
+
+            PipePurpleFullCorner,
+            PipePurpleFullT,
+            PipePurpleFullStraight,
+            PipePurpleFullCross,
+
+            PipeYellowFullCorner,
+            PipeYellowFullT,
+            PipeYellowFullStraight,
+            PipeYellowFullCross,
 
             //Sources and Central Machine
             SourceMachineCyan,
             SourceMachineBlue,
             SourceMachinePurple,
             SourceMachineYellow
+
+        }
+
+        public enum SpriteSheet
+        {
+            Character,
+            Pipe
         }
 
         public enum AudioClipState 

@@ -87,7 +87,7 @@ public class PlayerColorManager : MonoBehaviour
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                     PlayerPrefs.SetInt("isDataSaved", 1);
                 }
-                SceneManager.LoadScene("Level01");
+                SceneManager.LoadScene("Level02");
             }
         }
     }
