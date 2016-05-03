@@ -44,7 +44,7 @@ public class InputController : MonoBehaviour
     public GameData.Direction characterFacing = GameData.Direction.South;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
-
+    private Pipe pipeToDestroyRef = null;
     public AnimationManager AnimationManager { get; private set; }
 
     //Checking the velocity of the player
@@ -136,9 +136,17 @@ public class InputController : MonoBehaviour
                 colorPicked = true;
             }
         }
-
+        if (pipeToDestroyRef != null)
+            pipeToDestroyRef.SetHightlight(true);
         if (GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+        {
             isPressingDelete = true;
+            if (pipeToDestroyRef != null)
+            {
+                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef);
+                pipeToDestroyRef = null;
+            }
+        }          
         else
             isPressingDelete = false;
 
@@ -260,8 +268,20 @@ public class InputController : MonoBehaviour
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team && isPressingDelete) 
-            pipeStatus.DestroyPipeOfPlayer(team,col.gameObject.GetComponent<Pipe>());
+        if (col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
+            if (pipeToDestroyRef == null)
+            {
+                pipeToDestroyRef = col.gameObject.GetComponent<Pipe>();
+            }
+            else
+            {
+                if(Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))< Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    {
+                    pipeToDestroyRef.SetHightlight(false);
+                    pipeToDestroyRef = col.GetComponent<Pipe>();
+                    pipeToDestroyRef.SetHightlight(true);
+                }
+            }
 
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
@@ -298,6 +318,13 @@ public class InputController : MonoBehaviour
     //If it was a pipe remove it.
     void OnTriggerExit(Collider col)
     {
+        if (col.gameObject.tag == "Pipe"&&pipeToDestroyRef==col.GetComponent<Pipe>())
+        {
+            pipeToDestroyRef.SetHightlight(false);
+            pipeToDestroyRef = null;
+        }
+            
+
         ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
         if (conveyorPipe != null)
         {

@@ -38,6 +38,7 @@ public class PipeStatus : MonoBehaviour {
         pipesPerPlayer.Add(GameData.Team.Yellow, voidList);
         teamsToDestroy = new List<GameData.Team>();
         neutralPipes = new List<RecursivePipe>();
+        copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
     }
 
     public void AddPipeToTeam(GameData.Team team, Pipe pipe,Pipe father)
@@ -103,6 +104,7 @@ public class PipeStatus : MonoBehaviour {
     public void DestroyPipeOfPlayer(GameData.Team team,Pipe pipe)
     {
         Debug.Log(pipesPerPlayer[team].ToString());
+        if(copyToDestroy.ContainsKey(team)&&copyToDestroy[team]!=null)
         copyToDestroy[team].DisconnectSubTree(pipe);
         foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect))
         {
@@ -374,7 +376,12 @@ public class PipeStatus : MonoBehaviour {
             }
             else
                 foreach (RecursivePipe p in children)
-                    return p.DestroyPipe(pipe,explosionEffect);
+                {
+                    List<RecursivePipe> neutral = p.DestroyPipe(pipe, explosionEffect);
+                    if (neutral.Count > 0)
+                        return neutral;
+                }
+                    
             return new List<RecursivePipe>();
         }
 

@@ -48,7 +48,6 @@ public class Pipe : MonoBehaviour
     protected GridController gridController;
     private AnimationManager AnimationManager;
 
-
     //TODO: REMOVE TEST
     public bool todestroy = false;
 
@@ -192,4 +191,15 @@ public class Pipe : MonoBehaviour
         return;
     }
     
+    public void SetHightlight(bool val)
+    {
+        if(val)
+        {
+            gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
+        }
+        else
+        {
+            gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
+        }
+    }
 }
