@@ -465,7 +465,6 @@ public class InputController : MonoBehaviour
             }
             if(!found)
                 pipeStatus.AddFirstPipe(pipe.Team, pipe);
-            Debug.Log(found);
             player.PlacePipe();
             selectedPipeConnection = null;
             closePipeConnections.Remove(selectedPipeConnection);

@@ -57,7 +57,7 @@ public class PipeStatus : MonoBehaviour {
                 }
             }
         }
-        Debug.Log(tree.ToString());
+
         pipesPerPlayer[team] = tree;
     }
 
@@ -127,6 +127,16 @@ public class PipeStatus : MonoBehaviour {
         }
     }
 
+    public void DestroyPipesFromFlameMachine(GameData.Coordinate flameMachineCoord, GameData.Team team)
+    {
+        copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
+        copyToDestroy.Add(GameData.Team.Blue, new RecursivePipe(pipesPerPlayer[GameData.Team.Blue]));
+        copyToDestroy.Add(GameData.Team.Cyan, new RecursivePipe(pipesPerPlayer[GameData.Team.Cyan]));
+        copyToDestroy.Add(GameData.Team.Purple, new RecursivePipe(pipesPerPlayer[GameData.Team.Purple]));
+        copyToDestroy.Add(GameData.Team.Yellow, new RecursivePipe(pipesPerPlayer[GameData.Team.Yellow]));
+        StartCoroutine(DestroyPipeFromFlameMachine(flameMachineCoord,team));
+    }
+
     private IEnumerator DestroyLeavesWithDelay()
     {
         bool exit = false;
@@ -147,6 +157,73 @@ public class PipeStatus : MonoBehaviour {
             yield return new WaitForSeconds(delay);
         }
         
+    }
+
+    private IEnumerator DestroyPipeFromFlameMachine(GameData.Coordinate flameMachineCoord,GameData.Team team)
+    {
+        List<RecursivePipe>  toDestroy = new List<RecursivePipe>();
+        toDestroy.Add(GetPipeFromFlameMachineCoord(copyToDestroy[team], flameMachineCoord));
+        while (toDestroy.Count>0)
+        {
+            Debug.Log(copyToDestroy[team].ToString());
+            List<RecursivePipe> temp=new List<RecursivePipe>();
+            if (toDestroy.Count == 0)
+                break;
+            for(int i=0;i<toDestroy.Count;i++)
+            {
+                if (toDestroy[i] != null)
+                {
+                    temp.Add(toDestroy[i].father);
+                    foreach (RecursivePipe child in toDestroy[i].children)
+                        temp.Add(child);
+                }
+            }
+            if (toDestroy.Count == 0)
+                break;
+            for (int i=toDestroy.Count-1;i>=0;i--) 
+                {
+                
+                if (toDestroy[i]!=null&&toDestroy[i].current != null)
+                {
+                    Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
+                    toDestroy[i].current.DestroyPipe();
+                    toDestroy[i].Destroy();
+                    toDestroy.RemoveAt(i);
+                }
+                else
+                {
+                    for (int k = temp.Count - 1; k >= 0; k--)
+                        if(temp[k]!=null)
+                        for(int j=temp[k].children.Count-1;j>=0;j--)
+                            if (temp[k]!=null&&temp[k].children[j]!=null&&temp[k].children[j].current == null)
+                            {
+                                temp.RemoveAt(k);
+                                break;
+                            }
+
+                }
+            }
+            toDestroy = temp;
+            yield return new WaitForSeconds(delay);
+        }
+    }
+
+    private RecursivePipe GetPipeFromFlameMachineCoord(RecursivePipe pipe,GameData.Coordinate coord)
+    {
+        if (pipe.current != null)
+        {
+            foreach (GameData.Coordinate c in pipe.current.connections)
+                if (coord.Equals(c))
+                    return pipe;
+        }
+        foreach (RecursivePipe p in pipe.children)
+            {
+                RecursivePipe t = GetPipeFromFlameMachineCoord(p, coord);
+                if (t != null)
+                    return t;
+            }
+        
+            return null;
     }
 
     private bool leavesLeft()
@@ -229,6 +306,14 @@ public class PipeStatus : MonoBehaviour {
             children = new List<RecursivePipe>();
         }
 
+        public void Destroy()
+        {
+            foreach (RecursivePipe child in children)
+                child.father = null;
+            children = new List<RecursivePipe>();
+            if (father != null)
+                father.RemovePipeFromChildren(current);
+        }
 
         public void AddChild(RecursivePipe pipe)
         {

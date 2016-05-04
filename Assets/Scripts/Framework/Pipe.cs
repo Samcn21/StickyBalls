@@ -36,10 +36,11 @@ public class Pipe : MonoBehaviour
     }
 
     public List<GameData.Coordinate> connections;
-    public GameData.Coordinate positionCoordinate { get; private set; } 
+    public GameData.Coordinate positionCoordinate { get; protected set; } 
     public bool isCenterMachine { get; protected set; }
     public bool isSource { get; protected set; }
-    
+    public bool isFlameMachine { get; protected set; }
+
     private List<GameData.Coordinate> visited;
     private List<Pipe> connectedPipes;
 
@@ -171,7 +172,7 @@ public class Pipe : MonoBehaviour
         GetConnectedPipes(positionCoordinate);
         foreach (Pipe pipe in connectedPipes)
         {
-            pipe.Team = newTeam;
+            pipe.Team = newTeam;          
         }
     }
 
