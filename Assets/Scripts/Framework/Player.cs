@@ -57,10 +57,11 @@ public class Player : MonoBehaviour
         }
     }
     
-    public void PickupPipe(ConveyorPipe conPipe)
+    public void PickupPipe(ConveyorPipe conPipe, int angle)
     {
         HeldPipeType = conPipe.PipeType;
         conPipe.PickPipe();
+        heldPipe.rotation = Quaternion.Euler(90, angle, 0);
     }
 
     public void PlacePipe()

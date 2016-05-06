@@ -44,7 +44,7 @@ public class PushMechanic : MonoBehaviour {
         Player opponentPlayerRef = opponent.GetComponent<Player>();
         heldPipe.PipeType = opponentPlayerRef.HeldPipeType;
         voidPipe.PipeType = PipeData.PipeType.Void;
-        playerRef.PickupPipe(heldPipe);
-        opponentPlayerRef.PickupPipe(voidPipe);
+        playerRef.PickupPipe(heldPipe, 0);
+        opponentPlayerRef.PickupPipe(voidPipe, 0);
     }
 }

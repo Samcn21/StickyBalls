@@ -500,7 +500,7 @@ public class InputController : MonoBehaviour
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PickupPipe, index, true);
 
-        player.PickupPipe(selectedConveyorPipe);
+        player.PickupPipe(selectedConveyorPipe, rotationIndex*90);
         closeConveyorPipes.Remove(selectedConveyorPipe);
         Destroy(selectedConveyorPipe.gameObject);
         selectedConveyorPipe = null;
