@@ -40,6 +40,90 @@ using System.Collections.Generic;
             {Team.Neutral,       new Color32(232, 232, 232 , 255) }
         };
 
+        public enum SourceMachineStates
+        {
+            SourceMachineBlue,
+            SourceMachineCyan,
+            SourceMachinePurple,
+            SourceMachineYellow
+        }
+
+        public enum CenterMachineStates
+        {
+            CenterMachineNeutral,
+            CenterMachineBlue,
+            CenterMachineCyan,
+            CenterMachinePurple,
+            CenterMachineYellow
+        }
+
+        public enum PipesStates
+        {
+            PipeNeutralEmptyCorner,
+            PipeNeutralEmptyT,
+            PipeNeutralEmptyStraight,
+            PipeNeutralEmptyCross,
+
+            PipeBlueEmptyCorner,
+            PipeBlueEmptyT,
+            PipeBlueEmptyStraight,
+            PipeBlueEmptyCross,
+
+            PipeCyanEmptyCorner,
+            PipeCyanEmptyT,
+            PipeCyanEmptyStraight,
+            PipeCyanEmptyCross,
+
+            PipePurpleEmptyCorner,
+            PipePurpleEmptyT,
+            PipePurpleEmptyStraight,
+            PipePurpleEmptyCross,
+
+            PipeYellowEmptyCorner,
+            PipeYellowEmptyT,
+            PipeYellowEmptyStraight,
+            PipeYellowEmptyCross,
+
+            PipeBlueFullCorner,
+            PipeBlueFullT,
+            PipeBlueFullStraight,
+            PipeBlueFullCross,
+
+            PipeCyanFullCorner,
+            PipeCyanFullT,
+            PipeCyanFullStraight,
+            PipeCyanFullCross,
+
+            PipePurpleFullCorner,
+            PipePurpleFullT,
+            PipePurpleFullStraight,
+            PipePurpleFullCross,
+
+            PipeYellowFullCorner,
+            PipeYellowFullT,
+            PipeYellowFullStraight,
+            PipeYellowFullCross
+        }
+
+        public enum PlayerState
+        {
+            IdleFront,
+            MovementFront,
+            IdleBack,
+            MovementBack,
+            IdleRight,
+            MovementRight,
+            IdleLeft,
+            MovementLeft,
+            PipeGrabFront,
+            PipeGrabBack,
+            PipeGrabRight,
+            PipeGrabLeft,
+            PipePlaceFront,
+            PipePlaceBack,
+            PipePlaceRight,
+            PipePlaceLeft
+        }
 
         public enum AnimationStates
         {
@@ -107,18 +191,27 @@ using System.Collections.Generic;
             PipeYellowFullStraight,
             PipeYellowFullCross,
 
-            //Sources and Central Machine
+            //Sources Machine
             SourceMachineCyan,
             SourceMachineBlue,
             SourceMachinePurple,
-            SourceMachineYellow
+            SourceMachineYellow,
+
+            //Center Machine
+            CenterMachineNeutral,
+            CenterMachineBlue,
+            CenterMachineCyan,
+            CenterMachinePurple,
+            CenterMachineYellow
 
         }
 
         public enum SpriteSheet
         {
             Character,
-            Pipe
+            Pipe,
+            CenterMachine,
+            SourceMachine
         }
 
         public enum AudioClipState 

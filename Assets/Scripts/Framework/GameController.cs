@@ -8,7 +8,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public GameObject winningGUI;
-
+    private SpriteManager SpriteManager;
     private static GameController instance;
     public static GameController Instance
     {
@@ -29,6 +29,7 @@ public class GameController : MonoBehaviour
 
     void Start()
     {
+        SpriteManager = GameObject.FindObjectOfType<SpriteManager>();
         AnimationManager = GameObject.FindObjectOfType<AnimationManager>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         Players = new List<Player>();
@@ -58,6 +59,7 @@ public class GameController : MonoBehaviour
         {
             pipe.GetComponent<AnimationManager>().FindWinnerPipes(winningTeam);
         }
+        SpriteManager.FindCentralMachineStatus(winningTeam);
 
         gameRunning = false;
 
@@ -69,7 +71,7 @@ public class GameController : MonoBehaviour
 
     IEnumerator ShowWinnerGUI(GameData.Team  color)
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(3);
 
         if (winningGUI != null)
         {

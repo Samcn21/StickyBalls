@@ -157,6 +157,16 @@ public class InputController : MonoBehaviour
                 RotatePipe();
         }
 
+        if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
+        {
+            SpriteManager SpriteManager;
+
+            SpriteManager = GameObject.FindObjectOfType<SpriteManager>();
+
+            SpriteManager.FindCentralMachineStatus(team);
+        }
+
+
         //Select closest conveyor pipe out of all within the sphere collider
         if (closeConveyorPipes.Count > 0 && player.HeldPipeType == PipeData.PipeType.Void)
         {
