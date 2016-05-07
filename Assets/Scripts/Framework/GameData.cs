@@ -64,6 +64,16 @@ using System.Collections.Generic;
             PipeNeutralEmptyStraight,
             PipeNeutralEmptyCross,
 
+            PipeNeutralAllowedCorner,
+            PipeNeutralAllowedT,
+            PipeNeutralAllowedStraight,
+            PipeNeutralAllowedCross,
+
+            PipeNeutralForbiddenCorner,
+            PipeNeutralForbiddenT,
+            PipeNeutralForbiddenStraight,
+            PipeNeutralForbiddenCross,
+
             PipeBlueEmptyCorner,
             PipeBlueEmptyT,
             PipeBlueEmptyStraight,
@@ -210,6 +220,7 @@ using System.Collections.Generic;
         {
             Character,
             Pipe,
+            PipeNeutral,
             CenterMachine,
             SourceMachine
         }

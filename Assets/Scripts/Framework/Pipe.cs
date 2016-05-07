@@ -47,13 +47,13 @@ public class Pipe : MonoBehaviour
     protected MeshRenderer meshRenderer;
     protected PipeMan pipeMan;
     protected GridController gridController;
-    private AnimationManager AnimationManager;
+    private PipesSprite PipesSprite;
 
     //TODO: REMOVE TEST
     public bool todestroy = false;
 
     void Start() {
-        AnimationManager = GameObject.FindObjectOfType<AnimationManager>();
+        PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
     }
     void Update()
     {
@@ -119,8 +119,8 @@ public class Pipe : MonoBehaviour
         }
 
         //Animation SpriteSheet Setup
-        AnimationManager = GetComponent<AnimationManager>();
-        AnimationManager.FindPipeStatus(pipeType, Team);
+        PipesSprite = GetComponent<PipesSprite>();
+        PipesSprite.FindPipeStatus(pipeType, Team);
     }
 
     public void DestroyPipe() {

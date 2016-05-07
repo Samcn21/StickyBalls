@@ -25,12 +25,12 @@ public class GameController : MonoBehaviour
     public List<Player> Players;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
-    private AnimationManager AnimationManager;
+    private PipesSprite PipesSprite;
 
     void Start()
     {
         SpriteManager = GameObject.FindObjectOfType<SpriteManager>();
-        AnimationManager = GameObject.FindObjectOfType<AnimationManager>();
+        PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         Players = new List<Player>();
 
@@ -57,7 +57,7 @@ public class GameController : MonoBehaviour
         GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
         foreach (GameObject pipe in allPipes)
         {
-            pipe.GetComponent<AnimationManager>().FindWinnerPipes(winningTeam);
+            pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
         }
         SpriteManager.FindCentralMachineStatus(winningTeam);
 

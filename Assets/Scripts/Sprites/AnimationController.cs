@@ -10,13 +10,22 @@ public class AnimationController : MonoBehaviour {
     private int iCount;
     protected int currentFrame = 1;
 
+    private float animTime = 0.0f;
+    protected float fps = 10.0f;
+
     void Start () {
 	
 	}
-	
-	void Update () {
-	
-	}
+
+    protected void FPSController() 
+    {
+        animTime -= Time.deltaTime;
+        if (animTime <= 0)
+        {
+            currentFrame += 1;
+            animTime += 1.0f / fps;
+        }
+    }
 
     protected void ReadSpriteSheet(GameData.SpriteSheet spriteSheet)
     {
@@ -32,5 +41,16 @@ public class AnimationController : MonoBehaviour {
 
         GetComponent<Renderer>().material.SetTextureScale("_MainTex", frameSize);
         GetComponent<Renderer>().material.SetTextureOffset("_MainTex", frameOffset);
+    }
+
+    protected void LoopingAnimation(int[] frames)
+    {
+
+        currentFrame = Mathf.Clamp(currentFrame, frames[0], frames[frames.Length - 1] + 1);
+        if (currentFrame > frames[frames.Length - 1])
+        {
+            currentFrame = frames[0];
+        }
+
     }
 }
