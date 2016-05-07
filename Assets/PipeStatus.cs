@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class PipeStatus : MonoBehaviour {
     public List<PlayerSource> playerSourcesRef { get; private set; }
@@ -45,11 +46,26 @@ public class PipeStatus : MonoBehaviour {
     {
         RecursivePipe tree = pipesPerPlayer[team];
         RecursivePipe r = tree.SearchAndAddChild(pipe,father);
-        if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
+      /*  if(tree.GetChildren().Count>1)
         {
+            RecursivePipe rootParent = r.GetRootPipe();
+            RecursivePipe start;
+            if(rootParent.current.positionCoordinate.Equals(tree.firstChild.current.positionCoordinate))
+            {
+                start = tree.firstChild.nextBrother;
+            }
+            else
+            {
+                start = tree.firstChild;
+            }
+            foreach (GameData.Coordinate coord in pipe.connections)
+            {
+                start.SearchAndAddAsParent(r, coord);
+            }
+        }*/
+        Debug.Log(tree.ToString());
+        if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
             copyToDestroy[team].ReconnectSubTree(pipe, father, neutralPipes);
-            Debug.Log("Executed");
-        }
         for (int i = neutralPipes.Count - 1; i >= 0; i--)
         {
             foreach (GameData.Coordinate coord in pipe.connections)
@@ -57,14 +73,13 @@ public class PipeStatus : MonoBehaviour {
                 if (neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
-                    neutralPipes.Remove(neutralPipes[i]);
+                    neutralPipes.RemoveAt(i);
                     break;
                 }
             }
         }
 
         pipesPerPlayer[team] = tree;
-        Debug.Log(tree.ToString());
     }
 
     public void AddFirstPipe(GameData.Team team, Pipe pipe)
@@ -80,7 +95,7 @@ public class PipeStatus : MonoBehaviour {
                 if (neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
-                    neutralPipes.Remove(neutralPipes[i]);
+                    neutralPipes.RemoveAt(i);
                     break;
                 }
             }
@@ -118,7 +133,7 @@ public class PipeStatus : MonoBehaviour {
         {
             neutralPipes.Add(p);
         }
-        Debug.Log(pipesPerPlayer[team].ToString());
+        Debug.Log("AFTER DESTRUCTION"+pipesPerPlayer[team].ToString());
     }
 
     void Update()
@@ -174,7 +189,7 @@ public class PipeStatus : MonoBehaviour {
 
         while (toDestroy.Count>0)
         {
-            Debug.Log(copyToDestroy[team].ToString());
+            Debug.Log(copyToDestroy[team]);
             List<RecursivePipe> temp=new List<RecursivePipe>();
             for(int i=0;i<toDestroy.Count;i++)
             {
@@ -183,6 +198,28 @@ public class PipeStatus : MonoBehaviour {
                     temp.Add(toDestroy[i].father);
                     foreach (RecursivePipe child in toDestroy[i].GetChildren())
                         temp.Add(child);
+                    RecursivePipe p = copyToDestroy[team].FindPipe(toDestroy[i]);
+                    if (p != null)
+                    {
+                        foreach(RecursivePipe t in p.GetRelatives())
+                        {
+                            if (t.current == null)
+                                continue;
+                            bool found = false;
+                            foreach (RecursivePipe t1 in temp)
+                            {
+                                if (t1==null || t1.current == null)
+                                    continue;
+                                if (t.current.positionCoordinate.Equals(t1.current.positionCoordinate))
+                                {
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found)
+                                temp.Add(t);
+                        }
+                    }
                 }
             }
             for (int i=toDestroy.Count-1;i>=0;i--) 
@@ -211,6 +248,7 @@ public class PipeStatus : MonoBehaviour {
             toDestroy = temp;
             yield return new WaitForSeconds(delay);
         }
+        copyToDestroy[team] = null;
     }
 
     private RecursivePipe GetPipeFromFlameMachineCoord(RecursivePipe pipe,GameData.Coordinate coord)
@@ -439,6 +477,53 @@ public class PipeStatus : MonoBehaviour {
             
         }
 
+        public RecursivePipe GetRootPipe()
+        {
+            if (father.current == null)
+                return this;
+            return father.GetRootPipe();
+        }
+
+        public bool SearchAndAddAsParent(RecursivePipe child, GameData.Coordinate fatherCoordinates)
+        {
+          //  Debug.Log(ToString());
+            if (current.positionCoordinate.Equals(fatherCoordinates))
+            {
+                bool matches = false;
+                foreach (GameData.Coordinate coord in current.connections)
+                    if (coord.Equals(child.current.positionCoordinate))
+                        matches = true;
+                if (!matches)
+                    return false;
+                if (child.firstChild == null)
+                    child.firstChild = this;
+                else
+                {
+                    RecursivePipe p = child.firstChild.nextBrother;
+                    if (p != null)
+                    {
+                        while (p.nextBrother != null)
+                            p = p.nextBrother;
+                        p.nextBrother = this;
+                    }
+                    else
+                    {
+                        child.firstChild.nextBrother = this;
+                    }
+                    return true;
+                }
+            }
+
+            if (nextBrother != null)
+                if (nextBrother.SearchAndAddAsParent(child, fatherCoordinates))
+                    return true;
+            if (firstChild != null)
+                if (firstChild.SearchAndAddAsParent(child, fatherCoordinates))
+                    return true;
+
+            return false;
+        }
+
         public RecursivePipe SearchAndAddChild(Pipe toAdd,Pipe father)
         {
             RecursivePipe ris=null;
@@ -446,7 +531,6 @@ public class PipeStatus : MonoBehaviour {
             {
                  ris= new RecursivePipe(toAdd);
                 AddChild(ris);
-                Debug.Log("I added " +ris.ToString()+" to "+this.father.ToString());
             }
             else
             {
@@ -468,32 +552,16 @@ public class PipeStatus : MonoBehaviour {
 
         public void DisconnectSubTree(Pipe pipe)
         {
-            if (current != null && current.positionCoordinate.Equals(pipe))
+            if (current != null && current.positionCoordinate.Equals(pipe.positionCoordinate))
             {
-                if(firstChild!=null)
-                {
-                    if(firstChild.nextBrother!=null)
-                    {
-                        RecursivePipe p = firstChild.nextBrother;
-                        do
-                        {
-                            p.father = null;
-                            p = p.nextBrother;
-                        } while (p != null);
-                    }
-                    firstChild.father = null;
-                    firstChild = null;
-                }
+                DisconnectPipe();
                 return;
             }
-                
             else
-            {
-                if (nextBrother != null)
-                    nextBrother.DisconnectSubTree(pipe);
-                if (firstChild != null)
-                    firstChild.DisconnectSubTree(pipe);
-            }
+                foreach (RecursivePipe p in GetChildren())
+                {
+                    p.DisconnectSubTree(pipe);
+                }
         }
 
         public RecursivePipe AddFirstChild(Pipe toAdd)
@@ -614,7 +682,7 @@ public class PipeStatus : MonoBehaviour {
 
         public void ReconnectSubTree(Pipe pipe, Pipe father, List<RecursivePipe> neutralPipes)
         {
-            if (current != null && current.positionCoordinate.Equals(father.positionCoordinate))
+            if (current!=null && current.positionCoordinate.Equals(father.positionCoordinate))
             {
                 RecursivePipe p = new RecursivePipe(pipe);
                 AddChild(p);
@@ -636,6 +704,38 @@ public class PipeStatus : MonoBehaviour {
                 nextBrother.ReconnectSubTree(pipe, father, neutralPipes);
             if (firstChild != null)
                 firstChild.ReconnectSubTree(pipe, father, neutralPipes);
+        }
+
+        public List<RecursivePipe> GetRelatives()
+        {
+            List<RecursivePipe> r = new List<RecursivePipe>();
+            if (father != null)
+                r.Add(father);
+            if(firstChild!=null)
+            {
+                r.Add(firstChild);
+                RecursivePipe t = firstChild.nextBrother;
+                while(t!=null)
+                {
+                    r.Add(t);
+                    t = t.nextBrother;
+                }
+            }
+            return r;
+        }
+
+        public RecursivePipe FindPipe(RecursivePipe p)
+        {
+            if (current!=null&&current.positionCoordinate.Equals(p.current.positionCoordinate))
+                return this;
+            RecursivePipe r=null;
+            if (nextBrother != null)
+                r=nextBrother.FindPipe(p);
+            if (r != null)
+                return r;
+            if (firstChild != null)
+                return firstChild.FindPipe(p);
+            return null;
         }
         
         override public string ToString()
