@@ -4,12 +4,12 @@ using System.Collections;
 public class PipesSprite : AnimationController
 {
     public GameData.SpriteSheet mySpriteSheet;
-    public int spriteSheetColumns = 2;
-    public int spriteSheetRows = 2;
+    public int spriteSheetColumns       = 8;
+    public int spriteSheetRows          = 8;
     [SerializeField] int currentFrameShow = 1;
 
     public GameData.PipesStates currentAnim;
-    private string StateName = "";
+    private string stateName = "";
     private Pipe Pipe;
     public Material pipesMat;
     public Material pipesNeutralMat;
@@ -19,50 +19,50 @@ public class PipesSprite : AnimationController
     public float fpsFullPipes = 12;
 
     //ANIMATION FRAMES FOR PIPES
-    private int neutralEmptyCorner = 1;
-    private int neutralEmptyT = 2;
-    private int neutralEmptyStraight = 3;
-    private int neutralEmptyCross = 4;
+    private int neutralEmptyCorner      = 1;
+    private int neutralEmptyT           = 2;
+    private int neutralEmptyStraight    = 3;
+    private int neutralEmptyCross       = 4;
 
-    private int blueEmptyCorner = 5;
-    private int blueEmptyT = 9;
-    private int blueEmptyStraight = 13;
-    private int blueEmptyCross = 17;
+    private int blueEmptyCorner         = 5;
+    private int blueEmptyT              = 9;
+    private int blueEmptyStraight       = 13;
+    private int blueEmptyCross          = 17;
 
-    private int cyanEmptyCorner = 8;
-    private int cyanEmptyT = 12;
-    private int cyanEmptyStraight = 16;
-    private int cyanEmptyCross = 20;
+    private int cyanEmptyCorner         = 8;
+    private int cyanEmptyT              = 12;
+    private int cyanEmptyStraight       = 16;
+    private int cyanEmptyCross          = 20;
 
-    private int purpleEmptyCorner = 7;
-    private int purpleEmptyT = 11;
-    private int purpleEmptyStraight = 15;
-    private int purpleEmptyCross = 19;
+    private int purpleEmptyCorner       = 7;
+    private int purpleEmptyT            = 11;
+    private int purpleEmptyStraight     = 15;
+    private int purpleEmptyCross        = 19;
 
-    private int yellowEmptyCorner = 6;
-    private int yellowEmptyT = 10;
-    private int yellowEmptyStraight = 14;
-    private int yellowEmptyCross = 18;
+    private int yellowEmptyCorner       = 6;
+    private int yellowEmptyT            = 10;
+    private int yellowEmptyStraight     = 14;
+    private int yellowEmptyCross        = 18;
 
-    private int[] blueFullCorner = new int[2] { 21, 22 };
-    private int[] blueFullT = new int[3] { 29, 30, 31 };
-    private int[] blueFullStraight = new int[3] { 41, 42, 43 };
-    private int[] blueFullCross = new int[3] { 53, 54, 55 };
+    private int[] blueFullCorner        = new int[2] { 21, 22 };
+    private int[] blueFullT             = new int[3] { 29, 30, 31 };
+    private int[] blueFullStraight      = new int[3] { 41, 42, 43 };
+    private int[] blueFullCross         = new int[3] { 53, 54, 55 };
 
-    private int[] cyanFullCorner = new int[2] { 27, 28 };
-    private int[] cyanFullT = new int[3] { 38, 39, 40 };
-    private int[] cyanFullStraight = new int[3] { 50, 51, 52 };
-    private int[] cyanFullCross = new int[3] { 62, 63, 64 };
+    private int[] cyanFullCorner        = new int[2] { 27, 28 };
+    private int[] cyanFullT             = new int[3] { 38, 39, 40 };
+    private int[] cyanFullStraight      = new int[3] { 50, 51, 52 };
+    private int[] cyanFullCross         = new int[3] { 62, 63, 64 };
 
-    private int[] purpleFullCorner = new int[2] { 25, 26 };
-    private int[] purpleFullT = new int[3] { 35, 36, 37 };
-    private int[] purpleFullStraight = new int[3] { 47, 48, 49 };
-    private int[] purpleFullCross = new int[3] { 59, 60, 61 };
+    private int[] purpleFullCorner      = new int[2] { 25, 26 };
+    private int[] purpleFullT           = new int[3] { 35, 36, 37 };
+    private int[] purpleFullStraight    = new int[3] { 47, 48, 49 };
+    private int[] purpleFullCross       = new int[3] { 59, 60, 61 };
 
-    private int[] yellowFullCorner = new int[2] { 23, 24 };
-    private int[] yellowFullT = new int[3] { 32, 33, 34 };
-    private int[] yellowFullStraight = new int[3] { 44, 45, 46 };
-    private int[] yellowFullCross = new int[3] { 56, 57, 58 };
+    private int[] yellowFullCorner      = new int[2] { 23, 24 };
+    private int[] yellowFullT           = new int[3] { 32, 33, 34 };
+    private int[] yellowFullStraight    = new int[3] { 44, 45, 46 };
+    private int[] yellowFullCross       = new int[3] { 56, 57, 58 };
 
 
 	void Start () {
@@ -294,27 +294,27 @@ public class PipesSprite : AnimationController
         {
             if (currentAnim.ToString().Contains("Corner"))
             {
-                StateName = "Pipe" + color + "Full" + "Corner";
-                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), StateName, true);
+                stateName = "Pipe" + color + "Full" + "Corner";
+                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), stateName, true);
             }
 
             else if (currentAnim.ToString().Contains("T"))
             {
-                StateName = "Pipe" + color + "Full" + "T";
-                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), StateName, true);
+                stateName = "Pipe" + color + "Full" + "T";
+                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), stateName, true);
             }
 
             else if (currentAnim.ToString().Contains("Straight"))
             {
-                StateName = "Pipe" + color + "Full" + "Straight";
-                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), StateName, true);
+                stateName = "Pipe" + color + "Full" + "Straight";
+                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), stateName, true);
             }
 
             else if (currentAnim.ToString().Contains("Cross"))
             {
 
-                StateName = "Pipe" + color + "Full" + "Cross";
-                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), StateName, true);
+                stateName = "Pipe" + color + "Full" + "Cross";
+                currentAnim = (GameData.PipesStates)GameData.PipesStates.Parse(typeof(GameData.PipesStates), stateName, true);
             }
         }
     }
