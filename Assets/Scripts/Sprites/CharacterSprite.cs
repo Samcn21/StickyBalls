@@ -3,7 +3,7 @@ using System.Collections;
 
 public class CharacterSprite : AnimationController {
 
-    public GameData.SpriteSheet mySpriteSheet;
+    public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Character;
     public int spriteSheetColumns   = 8;
     public int spriteSheetRows      = 8;
     [SerializeField]

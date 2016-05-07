@@ -159,11 +159,11 @@ public class InputController : MonoBehaviour
 
         if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
         {
-            SpriteManager SpriteManager;
+            CenterMachineSprite CenterMachineSprite;
 
-            SpriteManager = GameObject.FindObjectOfType<SpriteManager>();
+            CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
 
-            SpriteManager.FindCentralMachineStatus(team);
+            CenterMachineSprite.FindCentralMachineStatus(team);
         }
 
 
