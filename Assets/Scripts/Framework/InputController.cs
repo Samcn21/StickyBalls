@@ -56,6 +56,8 @@ public class InputController : MonoBehaviour
 
     public bool isPressingDelete { get; private set; }
 
+    private float destroyTimer;
+    private float resetDestroyTimer;
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -67,6 +69,7 @@ public class InputController : MonoBehaviour
         initialized = true;
         colorPicked = false;
         isPressingDelete = false;
+        resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
     }
 
     // Use this for initialization
@@ -138,18 +141,22 @@ public class InputController : MonoBehaviour
         }
         if (pipeToDestroyRef != null)
             pipeToDestroyRef.SetHightlight(true);
-       
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
         {
+            destroyTimer -= Time.deltaTime;
             isPressingDelete = true;
             if (pipeToDestroyRef != null)
             {
-                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef);
+                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef,true);
+                destroyTimer = resetDestroyTimer;
                 pipeToDestroyRef = null;
             }
-        }          
-        else
+        }
+        else {
+            destroyTimer = resetDestroyTimer;
             isPressingDelete = false;
+        }
 
         //If B is pressed, rotate the pipe to one of the allowed rotations
         if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
@@ -283,12 +290,14 @@ public class InputController : MonoBehaviour
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
             if (pipeToDestroyRef == null)
             {
+                destroyTimer = resetDestroyTimer;
                 pipeToDestroyRef = col.gameObject.GetComponent<Pipe>();
             }
             else
             {
                 if(Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))< Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
                     {
+                    destroyTimer = resetDestroyTimer;
                     pipeToDestroyRef.SetHightlight(false);
                     pipeToDestroyRef = col.GetComponent<Pipe>();
                     pipeToDestroyRef.SetHightlight(true);
