@@ -58,6 +58,7 @@ public class InputController : MonoBehaviour
 
     private float destroyTimer;
     private float resetDestroyTimer;
+    private bool isPressingX;
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -85,6 +86,8 @@ public class InputController : MonoBehaviour
         pipeStatus = GameController.Instance.PipeStatus;
         AssignColorsToPlayers();
         closePipes = new List<Pipe>();
+        isPressingX = false;
+        destroyTimer = resetDestroyTimer;
     }
 
 
@@ -141,23 +144,37 @@ public class InputController : MonoBehaviour
         }
         if (pipeToDestroyRef != null)
             pipeToDestroyRef.SetHightlight(true);
-
+        Debug.Log(destroyTimer);
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
         {
-            destroyTimer -= Time.deltaTime;
+            isPressingX = true;
             isPressingDelete = true;
-            if (pipeToDestroyRef != null)
+            /*if (pipeToDestroyRef != null&&destroyTimer<=0)
             {
                 pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef,true);
                 destroyTimer = resetDestroyTimer;
                 pipeToDestroyRef = null;
-            }
+            }*/
         }
-        else {
-            destroyTimer = resetDestroyTimer;
+        else {   
             isPressingDelete = false;
         }
 
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
+        {
+            isPressingX = false;
+            destroyTimer = resetDestroyTimer;
+
+        }
+        if (isPressingX && pipeToDestroyRef != null)
+        {
+            destroyTimer -= Time.deltaTime;
+            if (pipeToDestroyRef != null && destroyTimer <= 0)
+            {
+                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
+                pipeToDestroyRef = null;
+            }
+        }
         //If B is pressed, rotate the pipe to one of the allowed rotations
         if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
         {
@@ -290,14 +307,12 @@ public class InputController : MonoBehaviour
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
             if (pipeToDestroyRef == null)
             {
-                destroyTimer = resetDestroyTimer;
                 pipeToDestroyRef = col.gameObject.GetComponent<Pipe>();
             }
             else
             {
                 if(Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))< Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
                     {
-                    destroyTimer = resetDestroyTimer;
                     pipeToDestroyRef.SetHightlight(false);
                     pipeToDestroyRef = col.GetComponent<Pipe>();
                     pipeToDestroyRef.SetHightlight(true);
