@@ -138,7 +138,8 @@ public class InputController : MonoBehaviour
         }
         if (pipeToDestroyRef != null)
             pipeToDestroyRef.SetHightlight(true);
-        if (GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+       
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
         {
             isPressingDelete = true;
             if (pipeToDestroyRef != null)

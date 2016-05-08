@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System;
 
 public class PipeStatus : MonoBehaviour {
+    public bool DestroySinglePipeActive;
+
     public List<PlayerSource> playerSourcesRef { get; private set; }
     //This dictionary will hold the pipe tree for each player
     private Dictionary<GameData.Team, RecursivePipe> pipesPerPlayer;
