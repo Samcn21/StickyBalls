@@ -280,7 +280,7 @@ public class InputController : MonoBehaviour
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
             if (pipeToDestroyRef == null)
             {
                 pipeToDestroyRef = col.gameObject.GetComponent<Pipe>();
