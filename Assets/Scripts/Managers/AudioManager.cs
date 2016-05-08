@@ -76,6 +76,7 @@ public class AudioManager : MonoBehaviour
             pitchRange = pitchRanges[0];
         }
         audioControllerSFX.pitch = pitchRange;
+        audioControllerSFX.volume = 0.4f;
         audioControllerSFX.Play();
     }
 
