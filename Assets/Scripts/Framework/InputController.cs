@@ -157,6 +157,7 @@ public class InputController : MonoBehaviour
                 RotatePipe();
         }
 
+        //This part is for testing, and it's temporary 
         if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
         {
             CenterMachineSprite CenterMachineSprite;
