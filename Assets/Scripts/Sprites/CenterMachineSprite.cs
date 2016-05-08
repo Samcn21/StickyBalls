@@ -28,6 +28,8 @@ public class CenterMachineSprite : AnimationController {
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
         currentFrame = cmNeutral;
+        currentFrameShow = currentFrame;
+
     }
 
     void Update()
@@ -36,6 +38,8 @@ public class CenterMachineSprite : AnimationController {
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(GameData.SpriteSheet.CenterMachine);
+        currentFrameShow = currentFrame;
+
     }
 
     void PlayAnimation() 

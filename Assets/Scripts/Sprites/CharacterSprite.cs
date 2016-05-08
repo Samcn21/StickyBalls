@@ -20,12 +20,14 @@ public class CharacterSprite : AnimationController {
     public Renderer rend;
 
     private InputController InputController;
-    public bool hasMovementPermit = true;
 
     public float fpsIdle                = 4;
     public float fpsMovement            = 15;
     public float fpsPipeGrab            = 6;
     public float fpsPipePlace           = 6;
+
+    public bool hasMovementPermit = true;
+
 
     //ANIMATION FRAMES FOR CHARACTERS
     private int[] idleFront             = new int[3] { 1, 2, 3 };
@@ -89,6 +91,7 @@ public class CharacterSprite : AnimationController {
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(mySpriteSheet);
+        currentFrameShow = currentFrame;
     }
 
     public void FindGrabPipeAnimation()

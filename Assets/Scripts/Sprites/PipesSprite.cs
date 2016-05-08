@@ -86,6 +86,7 @@ public class PipesSprite : AnimationController
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(mySpriteSheet);
+        currentFrameShow = currentFrame;
 	}
 
     void PlayAnimation() 
