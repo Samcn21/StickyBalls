@@ -5,8 +5,11 @@ using System;
 
 public class PipeStatus : MonoBehaviour {
     public List<PlayerSource> playerSourcesRef { get; private set; }
+    //This dictionary will hold the pipe tree for each player
     private Dictionary<GameData.Team, RecursivePipe> pipesPerPlayer;
+    //When the destruction(complete) of the pipe starts, this dictionary will be used instead
     private Dictionary<GameData.Team, RecursivePipe> copyToDestroy;
+    //This list will contain the Tree form of the neutral pipes
     private List<RecursivePipe> neutralPipes;
     [SerializeField]
     private bool destroyAllThePipes;
@@ -16,9 +19,13 @@ public class PipeStatus : MonoBehaviour {
     private bool destroyAllPipes = false;
     [SerializeField]
     private GameObject explosionEffect;
-
+    //This list contains the pipes that will be destroyed
     private List<GameData.Team> teamsToDestroy;
+    //Reference to the grid controller
     private GridController gridController;
+    //List that will be reset every time that the tree will be explored. Will contain the already explored pipes
+    private static List<RecursivePipe> exploredPipes;
+
 	void Awake()
     {
         gridController = GetComponent<GridController>();
@@ -41,12 +48,18 @@ public class PipeStatus : MonoBehaviour {
         neutralPipes = new List<RecursivePipe>();
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
     }
-
+    /// <summary>
+    /// This function will be called to add a Pipe to a team
+    /// </summary>
+    /// <param name="team">The team owner of the pipe</param>
+    /// <param name="pipe">The pipe to add to the team</param>
+    /// <param name="father">The father(the pipe where the pipe is attached) of the pipe</param>
     public void AddPipeToTeam(GameData.Team team, Pipe pipe,Pipe father)
     {
         RecursivePipe tree = pipesPerPlayer[team];
+        exploredPipes = new List<RecursivePipe>();
         RecursivePipe r = tree.SearchAndAddChild(pipe,father);
-      /*  if(tree.GetChildren().Count>1)
+       if(tree.GetChildren().Count>1)
         {
             RecursivePipe rootParent = r.GetRootPipe();
             RecursivePipe start;
@@ -60,10 +73,10 @@ public class PipeStatus : MonoBehaviour {
             }
             foreach (GameData.Coordinate coord in pipe.connections)
             {
+                exploredPipes = new List<RecursivePipe>();
                 start.SearchAndAddAsParent(r, coord);
             }
-        }*/
-        Debug.Log(tree.ToString());
+        }
         if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
             copyToDestroy[team].ReconnectSubTree(pipe, father, neutralPipes);
         for (int i = neutralPipes.Count - 1; i >= 0; i--)
@@ -82,6 +95,13 @@ public class PipeStatus : MonoBehaviour {
         pipesPerPlayer[team] = tree;
     }
 
+    /// <summary>
+    /// This function will be called to place the first pipe of the tree of pipes.
+    /// Note that compared to the previous funciton, the father does not exist because the first pipe will be connected to the 
+    /// root of the tree
+    /// </summary>
+    /// <param name="team">The team owner of the pipe</param>
+    /// <param name="pipe">The pipe to add</param>
     public void AddFirstPipe(GameData.Team team, Pipe pipe)
     {
         RecursivePipe tree = pipesPerPlayer[team];
@@ -103,6 +123,10 @@ public class PipeStatus : MonoBehaviour {
         pipesPerPlayer[team] = tree;
     }
 
+    /// <summary>
+    /// This function is called to destroy the pipes of a certain player. It is used by the button
+    /// </summary>
+    /// <param name="team">The team owner of the pipe to be destroyed</param>
     public void DestroyPipesOfPlayer(GameData.Team team)
     {
         destroyAllPipes = true;
@@ -124,6 +148,11 @@ public class PipeStatus : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// This function is called to destroy a single pipe that belongs to a player
+    /// </summary>
+    /// <param name="team">The team owner of the pipe</param>
+    /// <param name="pipe">The pipe to be destroyed</param>
     public void DestroyPipeOfPlayer(GameData.Team team,Pipe pipe)
     {
         
@@ -133,7 +162,6 @@ public class PipeStatus : MonoBehaviour {
         {
             neutralPipes.Add(p);
         }
-        Debug.Log("AFTER DESTRUCTION"+pipesPerPlayer[team].ToString());
     }
 
     void Update()
@@ -150,6 +178,11 @@ public class PipeStatus : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// This function si called to start the destruction of the pipe connected to the flame machine
+    /// </summary>
+    /// <param name="flameMachineCoord">The coordinates of the flame machine</param>
+    /// <param name="team">The team whose pipe is going to be destroyed</param>
     public void DestroyPipesFromFlameMachine(GameData.Coordinate flameMachineCoord, GameData.Team team)
     {
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
@@ -160,6 +193,10 @@ public class PipeStatus : MonoBehaviour {
         StartCoroutine(DestroyPipeFromFlameMachine(flameMachineCoord,team));
     }
 
+    /// <summary>
+    /// The coroutine that destroys the pipe starting from the leaves. Used by the button mechanic
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator DestroyLeavesWithDelay()
     {
         bool exit = false;
@@ -182,6 +219,12 @@ public class PipeStatus : MonoBehaviour {
         
     }
 
+    /// <summary>
+    /// Function that destroys the pipe starting from the flame machine coordinates. Used by the flame machine mechanic
+    /// </summary>
+    /// <param name="flameMachineCoord">The coordinates of the flame machine</param>
+    /// <param name="team">The color of the team</param>
+    /// <returns></returns>
     private IEnumerator DestroyPipeFromFlameMachine(GameData.Coordinate flameMachineCoord,GameData.Team team)
     {
         List<RecursivePipe>  toDestroy = new List<RecursivePipe>();
@@ -189,7 +232,6 @@ public class PipeStatus : MonoBehaviour {
 
         while (toDestroy.Count>0)
         {
-            Debug.Log(copyToDestroy[team]);
             List<RecursivePipe> temp=new List<RecursivePipe>();
             for(int i=0;i<toDestroy.Count;i++)
             {
@@ -251,6 +293,12 @@ public class PipeStatus : MonoBehaviour {
         copyToDestroy[team] = null;
     }
 
+    /// <summary>
+    /// Function that will be called to get the tree type pipe that is connected to the flame machine.
+    /// </summary>
+    /// <param name="pipe">The pipe to be analyzed</param>
+    /// <param name="coord">The coordinates of the flame machine</param>
+    /// <returns>The tree type pipe connected to the machine</returns>
     private RecursivePipe GetPipeFromFlameMachineCoord(RecursivePipe pipe,GameData.Coordinate coord)
     {
         if (pipe.current != null)
@@ -269,6 +317,10 @@ public class PipeStatus : MonoBehaviour {
             return null;
     }
 
+    /// <summary>
+    /// Checks if a tree has leaves left. Used by the button mechanic
+    /// </summary>
+    /// <returns>True or false</returns>
     private bool leavesLeft()
     {
         foreach(GameData.Team team in teamsToDestroy)
@@ -279,6 +331,11 @@ public class PipeStatus : MonoBehaviour {
         return false;
     }
 
+    /// <summary>
+    /// Function that returns a player source based on the team color
+    /// </summary>
+    /// <param name="team">The color of the team</param>
+    /// <returns>The player source</returns>
     public PlayerSource GetPlayerSourceFromTeam(GameData.Team team)
     {
         switch (team)
@@ -307,6 +364,14 @@ public class PipeStatus : MonoBehaviour {
         return null;
     }
     
+    /// <summary>
+    /// This class represent the tree type of the pipe. 
+    /// The tree is built in the following way:
+    ///     - One reference to the father;
+    ///     - One reference to the first child;
+    ///     - One reference to the brother;
+    ///     - The actual value encapsuled by this node
+    /// </summary>
     internal class RecursivePipe 
     {
         public RecursivePipe father { get; private set; }
@@ -314,6 +379,10 @@ public class PipeStatus : MonoBehaviour {
         public RecursivePipe firstChild { get; private set; }
         public RecursivePipe nextBrother { get; private set; }
 
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
+        /// <param name="p">The tree type pipe to copy from</param>
         public RecursivePipe(RecursivePipe p)
         {
             father = null;
@@ -335,7 +404,13 @@ public class PipeStatus : MonoBehaviour {
             }
         }
 
-        public RecursivePipe(RecursivePipe p, RecursivePipe father)
+        /// <summary>
+        /// Constructor that builds a tree type pipe starting from the pipe and the father.
+        /// Used by the copy constructor.
+        /// </summary>
+        /// <param name="p">The pipe to be copied</param>
+        /// <param name="father">The father to be copied</param>
+        private RecursivePipe(RecursivePipe p, RecursivePipe father)
         {
             this.father = father;
             firstChild = null;
@@ -343,14 +418,20 @@ public class PipeStatus : MonoBehaviour {
             current = p.current;
             if (p.firstChild != null)
             {
-                firstChild = new RecursivePipe(p.firstChild,this);
+                if(FindPipe(p.firstChild)==null)
+                    firstChild = new RecursivePipe(p.firstChild,this);
             }
             if (p.nextBrother != null)
             {
-                nextBrother = new RecursivePipe(p.nextBrother,father);
+                if (FindPipe(p.nextBrother) == null)
+                    nextBrother = new RecursivePipe(p.nextBrother,father);
             }
         }
 
+        /// <summary>
+        /// Constructor that stores the passed pipe in the node
+        /// </summary>
+        /// <param name="pipe">The pipe to be stored</param>
         public RecursivePipe(Pipe pipe)
         {
             current = pipe;
@@ -359,6 +440,9 @@ public class PipeStatus : MonoBehaviour {
             nextBrother = null;
         }
 
+        /// <summary>
+        /// Simple constructor initializer.
+        /// </summary>
         public RecursivePipe()
         {
             current = null;
@@ -367,11 +451,19 @@ public class PipeStatus : MonoBehaviour {
             nextBrother = null;
         }
 
+        /// <summary>
+        /// Destroys a pipe from a tree type pipe. Aka disconnect the pipe from the rest of the tree.
+        /// </summary>
         public void Destroy()
         {
             DisconnectPipe();
         }
 
+        /// <summary>
+        /// Add a tree type pipe as child of the current tree type pipe.
+        /// Takes care of the proper initialization of the references (father, nextbrother and firstchild)
+        /// </summary>
+        /// <param name="pipe">The child to be added</param>
         public void AddChild(RecursivePipe pipe)
         {
             
@@ -388,6 +480,10 @@ public class PipeStatus : MonoBehaviour {
             
         }
 
+        /// <summary>
+        /// Function that returns the last brother of the current tree type pipe
+        /// </summary>
+        /// <returns>The last brother</returns>
         private RecursivePipe LastBrother()
         {
             if (nextBrother == null)
@@ -396,6 +492,11 @@ public class PipeStatus : MonoBehaviour {
                 return nextBrother.LastBrother();
         }
 
+        /// <summary>
+        /// Function that checks if the current tree type pipe is actually connected to the passed coordinate
+        /// </summary>
+        /// <param name="coordinate">The coordinate to check if the tree is connected</param>
+        /// <returns>True or false</returns>
         public bool CheckIfTreeIsConnected(GameData.Coordinate coordinate)
         {
             if (current.positionCoordinate.Equals(coordinate))
@@ -408,6 +509,10 @@ public class PipeStatus : MonoBehaviour {
             return false;
         }
 
+        /// <summary>
+        /// Function called to remove a child from the current tree type pipe
+        /// </summary>
+        /// <param name="pipe">The pipe to remove from the children</param>
         private void RemoveChild(RecursivePipe pipe)
         {
             if (firstChild != null)
@@ -439,6 +544,9 @@ public class PipeStatus : MonoBehaviour {
             }
         }
 
+        /// <summary>
+        /// Function that actually disconnects a pipe from the top layers(father), the bottom layer(firstchild) and the same layer(nextbrother)
+        /// </summary>
         public void DisconnectPipe()
         {
             if(father!=null)
@@ -477,6 +585,11 @@ public class PipeStatus : MonoBehaviour {
             
         }
 
+        /// <summary>
+        /// This function will NOT return the REAL root. This is because the real root contains a reference to 2 roots, one for each player source.
+        /// This function will return the first tree type pipe that comes out from a player source starting from the current pipe
+        /// </summary>
+        /// <returns>The root</returns>
         public RecursivePipe GetRootPipe()
         {
             if (father.current == null)
@@ -484,9 +597,19 @@ public class PipeStatus : MonoBehaviour {
             return father.GetRootPipe();
         }
 
+        /// <summary>
+        /// This function is called when the player tries to add a pipe that involves multiple pipes coming out from different sources.
+        /// It will EVENTUALLY set the child node as child of the EVENTUALLY found father based on the coordinates
+        /// </summary>
+        /// <param name="child">The child node to be added</param>
+        /// <param name="fatherCoordinates">The eventual coordinates of the father</param>
+        /// <returns>True if success, false otherwise</returns>
         public bool SearchAndAddAsParent(RecursivePipe child, GameData.Coordinate fatherCoordinates)
         {
-          //  Debug.Log(ToString());
+            foreach (RecursivePipe p in PipeStatus.exploredPipes)
+                if (p.current.positionCoordinate.Equals(current.positionCoordinate))
+                    return false;
+            exploredPipes.Add(this);
             if (current.positionCoordinate.Equals(fatherCoordinates))
             {
                 bool matches = false;
@@ -514,7 +637,7 @@ public class PipeStatus : MonoBehaviour {
                 }
             }
 
-            if (nextBrother != null)
+            if (father.current!=null&&nextBrother != null)
                 if (nextBrother.SearchAndAddAsParent(child, fatherCoordinates))
                     return true;
             if (firstChild != null)
@@ -524,8 +647,20 @@ public class PipeStatus : MonoBehaviour {
             return false;
         }
 
+
+        /// <summary>
+        /// This funciton is called every time that a player adds a pipe.
+        /// It adds a pipe to a tree
+        /// </summary>
+        /// <param name="toAdd">The pipe to add</param>
+        /// <param name="father">The father of the pipe to be added</param>
+        /// <returns>The tree type pipe that will store the added pipe</returns>
         public RecursivePipe SearchAndAddChild(Pipe toAdd,Pipe father)
         {
+            foreach (RecursivePipe p in PipeStatus.exploredPipes)
+                if (p.current!=null&&p.current.positionCoordinate.Equals(current.positionCoordinate))
+                    return null;
+            exploredPipes.Add(this);
             RecursivePipe ris=null;
             if (current!=null&&current.positionCoordinate.Equals(father.positionCoordinate))
             {
@@ -550,6 +685,11 @@ public class PipeStatus : MonoBehaviour {
             return ris;
         }
 
+        /// <summary>
+        /// This function will look for a passed pipe and eventually it will disconnect it from the tree.
+        /// This means that all the subtree connected to that pipe will be disconnected from the main pipe
+        /// </summary>
+        /// <param name="pipe">The pipe to be disconnected</param>
         public void DisconnectSubTree(Pipe pipe)
         {
             if (current != null && current.positionCoordinate.Equals(pipe.positionCoordinate))
@@ -564,6 +704,11 @@ public class PipeStatus : MonoBehaviour {
                 }
         }
 
+        /// <summary>
+        /// Function used to add a pipe as first child of the current tree type pipe
+        /// </summary>
+        /// <param name="toAdd">The pipe to add as first child</param>
+        /// <returns>The tree type pipe that will store the pipe</returns>
         public RecursivePipe AddFirstChild(Pipe toAdd)
         {
             RecursivePipe child = new RecursivePipe(toAdd);
@@ -578,34 +723,10 @@ public class PipeStatus : MonoBehaviour {
             return child;
         }
 
-        public void DestroyFromLeaves(GameObject explosionEffect)
-        {
-            if (firstChild==null)
-            {
-                if (father != null)
-                    father.RemoveChild(this);
-                if (current != null)
-                {
-                    current.DestroyPipe();
-                    Instantiate(explosionEffect, current.gameObject.transform.position, Quaternion.identity);                    
-                }
-
-            }
-            else
-            {
-                firstChild.DestroyFromLeaves(explosionEffect);
-                if(nextBrother!=null)
-                nextBrother.DestroyFromLeaves(explosionEffect);
-            }
-            if (father != null)
-                father.RemoveChild(this);
-            if (current != null)
-            {
-                current.DestroyPipe();
-                Instantiate(explosionEffect, current.gameObject.transform.position, Quaternion.identity);    
-            }
-        }
-
+        /// <summary>
+        /// Function that will be called to destroy the leaves of the current tree
+        /// </summary>
+        /// <returns>Returns the list of tree that will be destroyed in the upper layer</returns>
         public List<RecursivePipe> DestroyLeaves()
         {
             List<RecursivePipe> l = new List<RecursivePipe>();
@@ -631,11 +752,19 @@ public class PipeStatus : MonoBehaviour {
             return l;
         }
 
+        /// <summary>
+        /// Function that removes a pipe from the children
+        /// </summary>
+        /// <param name="pipe">The pipe to be removed</param>
         private void RemovePipeFromChildren(Pipe pipe)
         {
             RemoveChild(new RecursivePipe(pipe));
         }
 
+        /// <summary>
+        /// Function that returns a list containing the children of the current node
+        /// </summary>
+        /// <returns>A list of tree type pipes that are the children</returns>
         public List<RecursivePipe> GetChildren()
         {
             List<RecursivePipe> pipes = new List<RecursivePipe>();
@@ -653,11 +782,17 @@ public class PipeStatus : MonoBehaviour {
             return pipes;
         }
 
+        /// <summary>
+        /// Function called to destroy the pipe that is passed and generates a list of tree type pipe.
+        /// Each one of these will contain a tree of neutral pipes
+        /// </summary>
+        /// <param name="pipe">The pipe to be destroyed</param>
+        /// <param name="explosionEffect">The explosion effect to be instantiated</param>
+        /// <returns>A list of tree type pipes containing the neutral pipes</returns>
         public List<RecursivePipe> DestroyPipe(Pipe pipe,GameObject explosionEffect)
         {
             if (current!=null&&current.positionCoordinate.Equals(pipe.positionCoordinate))
             {
-                Debug.Log("entra");
                 List<RecursivePipe> children = GetChildren();
                 Instantiate(explosionEffect, current.gameObject.transform.position, Quaternion.identity);
                 DisconnectPipe();
@@ -675,11 +810,13 @@ public class PipeStatus : MonoBehaviour {
             return new List<RecursivePipe>();
         }
 
-        private IEnumerator Wait()
-        {
-            yield return new WaitForSeconds(0.2f);
-        }
-
+        /// <summary>
+        /// Function called to reconnect a sub tree, given a pipe(the one that has recently been added), the father of the previous pipe
+        /// and the known list of neutral pipes
+        /// </summary>
+        /// <param name="pipe">The pipe that has recently been added</param>
+        /// <param name="father">The father of the previous pipe</param>
+        /// <param name="neutralPipes">A list of the neutral known pipes</param>
         public void ReconnectSubTree(Pipe pipe, Pipe father, List<RecursivePipe> neutralPipes)
         {
             if (current!=null && current.positionCoordinate.Equals(father.positionCoordinate))
@@ -706,6 +843,10 @@ public class PipeStatus : MonoBehaviour {
                 firstChild.ReconnectSubTree(pipe, father, neutralPipes);
         }
 
+        /// <summary>
+        /// Function that returns the directly connected tree type pipes. The father and the children.
+        /// </summary>
+        /// <returns>Returns the father and the children of the current node</returns>
         public List<RecursivePipe> GetRelatives()
         {
             List<RecursivePipe> r = new List<RecursivePipe>();
@@ -724,6 +865,11 @@ public class PipeStatus : MonoBehaviour {
             return r;
         }
 
+        /// <summary>
+        /// Function that attempts to find a tree type pipe in the current tree type pipe
+        /// </summary>
+        /// <param name="p">The tree type pipe to be found</param>
+        /// <returns>Returns the match if it finds it</returns>
         public RecursivePipe FindPipe(RecursivePipe p)
         {
             if (current!=null&&current.positionCoordinate.Equals(p.current.positionCoordinate))
@@ -738,6 +884,10 @@ public class PipeStatus : MonoBehaviour {
             return null;
         }
         
+        /// <summary>
+        /// String representation of the node
+        /// </summary>
+        /// <returns>A representative string of the node</returns>
         override public string ToString()
         {
             string s = "";
