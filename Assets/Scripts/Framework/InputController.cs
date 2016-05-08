@@ -159,14 +159,14 @@ public class InputController : MonoBehaviour
         }
 
         //This part is for testing, and it's temporary 
-        if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
-        {
-            CenterMachineSprite CenterMachineSprite;
+        //if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
+        //{
+        //    CenterMachineSprite CenterMachineSprite;
 
-            CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
+        //    CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
 
-            CenterMachineSprite.FindCentralMachineStatus(team);
-        }
+        //    CenterMachineSprite.FindCentralMachineStatus(team);
+        //}
 
 
         //Select closest conveyor pipe out of all within the sphere collider
