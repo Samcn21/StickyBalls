@@ -23,12 +23,20 @@ public class FlameMachine : Pipe {
         switch (position)
         {
             case FlameMachinePosition.Left:
-                xBase = gridController.GridWidth / 8;
+                xBase = gridController.GridWidth / 4;
                 yBase = gridController.GridHeight / 2;
                 break;
             case FlameMachinePosition.Right:
-                xBase = gridController.GridWidth * 7 / 8;
+                xBase = gridController.GridWidth * 3 / 4;
                 yBase = gridController.GridHeight / 2;
+                break;
+            case FlameMachinePosition.Top:
+                xBase = gridController.GridWidth /2;
+                yBase = gridController.GridHeight / 4;
+                break;
+            case FlameMachinePosition.Bottom:
+                xBase = gridController.GridWidth /2;
+                yBase = gridController.GridHeight *3/ 4;
                 break;
         }
         me = new GameData.Coordinate(xBase,yBase);
@@ -47,7 +55,7 @@ public class FlameMachine : Pipe {
     }
     public enum FlameMachinePosition
     {
-        Right,Left
+        Right,Left,Top,Bottom
     }
 
     void Update()
