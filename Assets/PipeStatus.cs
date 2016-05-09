@@ -5,6 +5,7 @@ using System;
 
 public class PipeStatus : MonoBehaviour {
     public bool DestroySinglePipeActive;
+    public float TimerToDestroyPipe;
 
     public List<PlayerSource> playerSourcesRef { get; private set; }
     //This dictionary will hold the pipe tree for each player
@@ -155,12 +156,13 @@ public class PipeStatus : MonoBehaviour {
     /// </summary>
     /// <param name="team">The team owner of the pipe</param>
     /// <param name="pipe">The pipe to be destroyed</param>
-    public void DestroyPipeOfPlayer(GameData.Team team,Pipe pipe)
+    /// <param name="instantiateEffect">If it has to instantiate the effect</param>
+    public void DestroyPipeOfPlayer(GameData.Team team,Pipe pipe,bool instantiateEffect)
     {
         
         if(copyToDestroy.ContainsKey(team)&&copyToDestroy[team]!=null)
         copyToDestroy[team].DisconnectSubTree(pipe);
-        foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect))
+        foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect,instantiateEffect))
         {
             neutralPipes.Add(p);
         }
@@ -791,11 +793,12 @@ public class PipeStatus : MonoBehaviour {
         /// <param name="pipe">The pipe to be destroyed</param>
         /// <param name="explosionEffect">The explosion effect to be instantiated</param>
         /// <returns>A list of tree type pipes containing the neutral pipes</returns>
-        public List<RecursivePipe> DestroyPipe(Pipe pipe,GameObject explosionEffect)
+        public List<RecursivePipe> DestroyPipe(Pipe pipe,GameObject explosionEffect,bool explosionActive)
         {
             if (current!=null&&current.positionCoordinate.Equals(pipe.positionCoordinate))
             {
                 List<RecursivePipe> children = GetChildren();
+                if(explosionActive)
                 Instantiate(explosionEffect, current.gameObject.transform.position, Quaternion.identity);
                 DisconnectPipe();
                 pipe.DestroyPipe();
@@ -804,7 +807,7 @@ public class PipeStatus : MonoBehaviour {
             else
                 foreach (RecursivePipe p in GetChildren())
                 {
-                    List<RecursivePipe> neutral = p.DestroyPipe(pipe, explosionEffect);
+                    List<RecursivePipe> neutral = p.DestroyPipe(pipe, explosionEffect,explosionActive);
                     if (neutral.Count > 0)
                         return neutral;
                 }
