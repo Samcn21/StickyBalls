@@ -203,4 +203,19 @@ public class Pipe : MonoBehaviour
             gameObject.GetComponent<MeshRenderer>().material.color = Color.white;
         }
     }
+
+    public bool IsEndPipe()
+    {
+        int nrOfConnections = 0;
+        foreach (GameData.Coordinate c in connections)
+        {
+            if (gridController.Grid[c.x, c.y].pipe == null) continue;
+            if (gridController.Grid[c.x, c.y].pipe.connections.Contains(positionCoordinate)) 
+            {
+                nrOfConnections++;
+                if (nrOfConnections > 1) return false;
+            }
+        }
+        return true;
+    }
 }

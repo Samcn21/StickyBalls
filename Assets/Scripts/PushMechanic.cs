@@ -40,12 +40,8 @@ public class PushMechanic : MonoBehaviour {
 
     private void stealCarryingPipe(GameObject opponent)
     {
-        ConveyorPipe voidPipe = new ConveyorPipe();
-        ConveyorPipe heldPipe = new ConveyorPipe();
         Player opponentPlayerRef = opponent.GetComponent<Player>();
-        heldPipe.PipeType = opponentPlayerRef.HeldPipeType;
-        voidPipe.PipeType = PipeData.PipeType.Void;
-        playerRef.PickupPipe(heldPipe, 0);
-        opponentPlayerRef.PickupPipe(voidPipe, 0);
+        playerRef.PickupPipe(opponentPlayerRef.HeldPipeType, 0);
+        opponentPlayerRef.PickupPipe(PipeData.PipeType.Void, 0);
     }
 }

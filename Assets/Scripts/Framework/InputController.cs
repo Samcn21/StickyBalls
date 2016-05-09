@@ -119,42 +119,13 @@ public class InputController : MonoBehaviour
     {
         if (!initialized) return;
 
-        //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
-        //If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
-        //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
-        if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
-        {
-
-            if (selectedConveyorPipe != null)
-            {
-                PickUpPipe();
-            }
-            else if (selectedPipeConnection != null)
-            {
-                if (isLegalRotation)
-                    PlacePipe();
-            }
-
-
-            //color pick 
-            if (colorPickPermit && team == GameData.Team.Neutral)
-            {
-                colorPicked = true;
-            }
-        }
-        if (pipeToDestroyRef != null)
+        if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
-        Debug.Log(destroyTimer);
+        /*
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
         {
             isPressingX = true;
             isPressingDelete = true;
-            /*if (pipeToDestroyRef != null&&destroyTimer<=0)
-            {
-                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef,true);
-                destroyTimer = resetDestroyTimer;
-                pipeToDestroyRef = null;
-            }*/
         }
         else {   
             isPressingDelete = false;
@@ -164,7 +135,6 @@ public class InputController : MonoBehaviour
         {
             isPressingX = false;
             destroyTimer = resetDestroyTimer;
-
         }
         if (isPressingX && pipeToDestroyRef != null)
         {
@@ -174,24 +144,45 @@ public class InputController : MonoBehaviour
                 pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                 pipeToDestroyRef = null;
             }
+        }*/
+
+
+        //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
+        //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
+        //Else If A is pressed and you are not holding pipe, or near a conveyor pipe, you pick up a pipe that is already placed
+        //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
+        if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
+        {
+
+            if (selectedConveyorPipe != null)
+            {
+                PickUpPipe(selectedConveyorPipe);
+            }
+            else if (selectedPipeConnection != null)
+            {
+                if (isLegalRotation)
+                    PlacePipe();
+            }
+            else if (pipeToDestroyRef != null)
+            {
+                PickUpPipe(pipeToDestroyRef);
+            }
+
+
+
+            //color pick 
+            if (colorPickPermit && team == GameData.Team.Neutral)
+            {
+                colorPicked = true;
+            }
         }
+
         //If B is pressed, rotate the pipe to one of the allowed rotations
         if (GamePad.GetButtonDown(GamePad.Button.B, gamepadIndex))
         {
             if (player.HeldPipeType != PipeData.PipeType.Void)
                 RotatePipe();
         }
-
-        //This part is for testing, and it's temporary 
-        //if (GamePad.GetButtonDown(GamePad.Button.Y,gamepadIndex))
-        //{
-        //    CenterMachineSprite CenterMachineSprite;
-
-        //    CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
-
-        //    CenterMachineSprite.FindCentralMachineStatus(team);
-        //}
-
 
         //Select closest conveyor pipe out of all within the sphere collider
         if (closeConveyorPipes.Count > 0 && player.HeldPipeType == PipeData.PipeType.Void)
@@ -304,20 +295,24 @@ public class InputController : MonoBehaviour
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive&&col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
-            if (pipeToDestroyRef == null)
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
+        {
+            Pipe pipe = col.gameObject.GetComponent<Pipe>();
+            if (pipe.IsEndPipe())
             {
-                pipeToDestroyRef = col.gameObject.GetComponent<Pipe>();
-            }
-            else
-            {
-                if(Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))< Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
-                    {
-                    pipeToDestroyRef.SetHightlight(false);
-                    pipeToDestroyRef = col.GetComponent<Pipe>();
-                    pipeToDestroyRef.SetHightlight(true);
+                if (pipeToDestroyRef == null) {
+                    pipeToDestroyRef = pipe;
+                }
+                else {
+                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) < Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position))) {
+                        pipeToDestroyRef.SetHightlight(false);
+                        pipeToDestroyRef = col.GetComponent<Pipe>();
+                        pipeToDestroyRef.SetHightlight(true);
+                    }
                 }
             }
+        }
+            
 
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
@@ -536,10 +531,25 @@ public class InputController : MonoBehaviour
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PickupPipe, index, true);
 
-        player.PickupPipe(selectedConveyorPipe, rotationIndex*90);
+        
+    }
+
+    private void PickUpPipe(ConveyorPipe conveyorPipe)
+    {
+        PickUpPipe();
+        conveyorPipe.PickPipe();
+        player.PickupPipe(conveyorPipe.PipeType, rotationIndex * 90);
         closeConveyorPipes.Remove(selectedConveyorPipe);
         Destroy(selectedConveyorPipe.gameObject);
         selectedConveyorPipe = null;
+    }
+
+    private void PickUpPipe(Pipe pipeToPick)
+    {
+        PickUpPipe();
+        player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
+        pipeToDestroyRef = null;
+        pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
     }
 
     private void PlayerState()
