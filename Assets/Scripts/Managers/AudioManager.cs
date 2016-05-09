@@ -37,18 +37,6 @@ public class AudioManager : MonoBehaviour
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
-    void Awake()
-    {
-        if (instantiate == null)
-            instantiate = this;
-        else if (instantiate != this)
-            Destroy(gameObject);
-
-        DontDestroyOnLoad(gameObject);
-    }
-
-
-
     public void PlayOneShotPlayer(GameData.AudioClipState state, GamePad.Index playerNumber, bool needsPitch)
     {
         foreach (GameObject player in players)
