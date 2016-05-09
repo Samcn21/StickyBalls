@@ -173,10 +173,11 @@ public class PipeStatus : MonoBehaviour {
         if(destroyAllPipes)
         {
             copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-            copyToDestroy.Add(GameData.Team.Blue, new RecursivePipe(pipesPerPlayer[GameData.Team.Blue]));
-            copyToDestroy.Add(GameData.Team.Cyan, new RecursivePipe(pipesPerPlayer[GameData.Team.Cyan]));
-            copyToDestroy.Add(GameData.Team.Purple, new RecursivePipe(pipesPerPlayer[GameData.Team.Purple]));
-            copyToDestroy.Add(GameData.Team.Yellow, new RecursivePipe(pipesPerPlayer[GameData.Team.Yellow]));
+            for(int i=teamsToDestroy.Count-1;i>=0;i--)
+            {
+                copyToDestroy.Add(teamsToDestroy[i], new RecursivePipe(pipesPerPlayer[teamsToDestroy[i]]));
+                teamsToDestroy.RemoveAt(i);
+            }  
             StartCoroutine(DestroyLeavesWithDelay());
             destroyAllPipes = false;
         }

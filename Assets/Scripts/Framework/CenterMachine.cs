@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System;
 
 public class CenterMachine : Pipe
 {
@@ -42,7 +43,12 @@ public class CenterMachine : Pipe
                 if (gridController.Grid[connection.x, connection.y].pipe.Team != GameData.Team.Neutral && localConnectionCoordinates.Any(gridController.Grid[connection.x, connection.y].pipe.connections.Contains))
                 {
                     if (gridController.Grid[connection.x, connection.y].pipe.CheckSourceConnection())
+                    {
                         GameController.Instance.PlayerWon(gridController.Grid[connection.x, connection.y].pipe.Team);
+                        foreach (GameData.Team t in Enum.GetValues(typeof(GameData.Team)))
+                            if (t != gridController.Grid[connection.x, connection.y].pipe.Team)
+                                GameController.Instance.PipeStatus.DestroyPipesOfPlayer(t);
+                    }
                 }
             }
         }
