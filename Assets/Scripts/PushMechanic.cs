@@ -8,19 +8,27 @@ public class PushMechanic : MonoBehaviour {
     private bool stealMechanicActive;
     private Rigidbody body;
     private Player playerRef;
+    private Vector3 lastPosition = Vector3.zero;
+    public float speed { get; private set; }
     void Awake()
     {
         body = GetComponent<Rigidbody>();
         playerRef = GetComponent<Player>();
     }
-
+   
+    void FixedUpdate()
+    {
+        speed = (transform.position - lastPosition).magnitude;
+        lastPosition = transform.position;
+    }
     void OnCollisionEnter(Collision col)
     {
         if(col.gameObject.tag=="Player")
         {
             Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
-            Debug.Log(opponentBody.velocity.magnitude + " vs " + body.velocity.magnitude);
-            if (opponentBody.velocity.normalized.magnitude >= body.velocity.normalized.magnitude)
+           
+          
+            if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
             {
                 Vector3 direction = (transform.position - col.contacts[0].point);
                 direction.y = 0;
