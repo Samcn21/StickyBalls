@@ -26,7 +26,7 @@ public class AudioManager : MonoBehaviour
     private float MusicVolume = 1;
     private float MusicVolumeSetting = 50;
 
-    public float[] pitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
+    public float[] playerPitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
     [SerializeField] private float pitchRange = 1;
 
     void Start() 
@@ -67,25 +67,25 @@ public class AudioManager : MonoBehaviour
             switch (playerNumber)
             {
                 case GamePad.Index.One:
-                    pitchRange = pitchRanges[1];
+                    pitchRange = playerPitchRanges[1];
                     break;
 
                 case GamePad.Index.Two:
-                    pitchRange = pitchRanges[2];
+                    pitchRange = playerPitchRanges[2];
                     break;
 
                 case GamePad.Index.Three:
-                    pitchRange = pitchRanges[3];
+                    pitchRange = playerPitchRanges[3];
                     break;
 
                 case GamePad.Index.Four:
-                    pitchRange = pitchRanges[4];
+                    pitchRange = playerPitchRanges[4];
                     break;
             }
         }
         else
         {
-            pitchRange = pitchRanges[0];
+            pitchRange = playerPitchRanges[0];
         }
         playerAS.pitch = pitchRange;
         playerAS.volume = SFXVolume;
