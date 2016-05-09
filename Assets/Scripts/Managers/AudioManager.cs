@@ -16,37 +16,49 @@ public class AudioManager : MonoBehaviour
     public AudioSource audioControllerSFX;
     public AudioSource audioControllerMusic;
     public static AudioManager instantiate = null;
+    private InputController InputController;
+    private GameObject[] players;
+    private AudioSource playerAS;
+
+    //We need to get the volume settings from the menu in the end to apply to all sounds and music
+    private float SFXVolume = 1;
+    private float SFXVolumeSetting = 50;
+    private float MusicVolume = 1;
+    private float MusicVolumeSetting = 50;
 
     public float[] pitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
     [SerializeField] private float pitchRange = 1;
 
-
-    void Awake()
+    void Start() 
     {
-        if (instantiate == null)
-            instantiate = this;
-        else if (instantiate != this)
-            Destroy(gameObject);
+        SFXVolume = SFXVolume * (SFXVolumeSetting / 100);
+        MusicVolume = MusicVolume * (MusicVolumeSetting / 100);
 
-        DontDestroyOnLoad(gameObject);
+        players = GameObject.FindGameObjectsWithTag("Player");
     }
-
-
 
     public void PlayOneShotPlayer(GameData.AudioClipState state, GamePad.Index playerNumber, bool needsPitch)
     {
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<InputController>().index == playerNumber) 
+            {
+                playerAS = player.GetComponent<AudioSource>();
+            }
+        }
+
         switch (state)
         {
             case GameData.AudioClipState.PickupPipe:
-                audioControllerSFX.clip = pickupPipeClip;
+                playerAS.clip = pickupPipeClip;
                 break;
 
             case GameData.AudioClipState.PlacePipe:
-                audioControllerSFX.clip = placePipeClip;
+                playerAS.clip = placePipeClip;
                 break;
 
             case GameData.AudioClipState.RotatePipe:
-                audioControllerSFX.clip = rotatePipeClip;
+                playerAS.clip = rotatePipeClip;
                 break;
         }
 
@@ -75,9 +87,9 @@ public class AudioManager : MonoBehaviour
         {
             pitchRange = pitchRanges[0];
         }
-        audioControllerSFX.pitch = pitchRange;
-        audioControllerSFX.volume = 0.4f;
-        audioControllerSFX.Play();
+        playerAS.pitch = pitchRange;
+        playerAS.volume = SFXVolume;
+        playerAS.Play();
     }
 
 }
