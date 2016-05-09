@@ -19,7 +19,6 @@ public class PipeStatus : MonoBehaviour {
     [SerializeField]
     private float delay;
 
-    private bool destroyAllPipes = false;
     [SerializeField]
     private GameObject explosionEffect;
     //This list contains the pipes that will be destroyed
@@ -40,13 +39,13 @@ public class PipeStatus : MonoBehaviour {
         }
         RecursivePipe voidList = new RecursivePipe();
         pipesPerPlayer = new Dictionary<GameData.Team, RecursivePipe>();
-        pipesPerPlayer.Add(GameData.Team.Blue, voidList);
+        pipesPerPlayer[GameData.Team.Blue] = voidList;
         voidList = new RecursivePipe();
-        pipesPerPlayer.Add(GameData.Team.Cyan, voidList);
+        pipesPerPlayer[GameData.Team.Cyan] = voidList;
         voidList = new RecursivePipe();
-        pipesPerPlayer.Add(GameData.Team.Purple, voidList);
+        pipesPerPlayer[GameData.Team.Purple] = voidList;
         voidList = new RecursivePipe();
-        pipesPerPlayer.Add(GameData.Team.Yellow, voidList);
+        pipesPerPlayer[GameData.Team.Yellow] = voidList;
         teamsToDestroy = new List<GameData.Team>();
         neutralPipes = new List<RecursivePipe>();
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
@@ -132,12 +131,18 @@ public class PipeStatus : MonoBehaviour {
     /// <param name="team">The team owner of the pipe to be destroyed</param>
     public void DestroyPipesOfPlayer(GameData.Team team)
     {
-        destroyAllPipes = true;
+       
         if (!destroyAllThePipes)
         {
             if (!teamsToDestroy.Contains(team))
-                teamsToDestroy.Add(team);
-        }
+                teamsToDestroy.Add(team);       
+
+            if (!pipesPerPlayer.ContainsKey(team))
+                copyToDestroy.Add(team, new RecursivePipe());
+            else
+                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));      
+        StartCoroutine(DestroyLeavesWithDelay());
+    }
         else
         {
             if (!teamsToDestroy.Contains(GameData.Team.Blue))
@@ -168,20 +173,7 @@ public class PipeStatus : MonoBehaviour {
         }
     }
 
-    void Update()
-    {
-        if(destroyAllPipes)
-        {
-            copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-            for(int i=teamsToDestroy.Count-1;i>=0;i--)
-            {
-                copyToDestroy.Add(teamsToDestroy[i], new RecursivePipe(pipesPerPlayer[teamsToDestroy[i]]));
-                teamsToDestroy.RemoveAt(i);
-            }  
-            StartCoroutine(DestroyLeavesWithDelay());
-            destroyAllPipes = false;
-        }
-    }
+
 
     /// <summary>
     /// This function si called to start the destruction of the pipe connected to the flame machine
@@ -191,10 +183,7 @@ public class PipeStatus : MonoBehaviour {
     public void DestroyPipesFromFlameMachine(GameData.Coordinate flameMachineCoord, GameData.Team team)
     {
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-        copyToDestroy.Add(GameData.Team.Blue, new RecursivePipe(pipesPerPlayer[GameData.Team.Blue]));
-        copyToDestroy.Add(GameData.Team.Cyan, new RecursivePipe(pipesPerPlayer[GameData.Team.Cyan]));
-        copyToDestroy.Add(GameData.Team.Purple, new RecursivePipe(pipesPerPlayer[GameData.Team.Purple]));
-        copyToDestroy.Add(GameData.Team.Yellow, new RecursivePipe(pipesPerPlayer[GameData.Team.Yellow]));
+        copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
         StartCoroutine(DestroyPipeFromFlameMachine(flameMachineCoord,team));
     }
 
@@ -204,14 +193,16 @@ public class PipeStatus : MonoBehaviour {
     /// <returns></returns>
     private IEnumerator DestroyLeavesWithDelay()
     {
-        bool exit = false;
-        while (leavesLeft()&&!exit)
+        bool exit;
+        do
         {
+
+            exit = true;
             foreach (GameData.Team team in teamsToDestroy)
             {
                 List<RecursivePipe> leaves = copyToDestroy[team].DestroyLeaves();
-                if (leaves.Count == 0)
-                    exit = true;
+                if (leaves.Count != 0)
+                    exit = false;
                 foreach (RecursivePipe leave in leaves)
                 {
                     Instantiate(explosionEffect, leave.current.gameObject.transform.position, Quaternion.identity);
@@ -220,8 +211,23 @@ public class PipeStatus : MonoBehaviour {
 
             }
             yield return new WaitForSeconds(delay);
-        }
-        
+        } while (leavesLeft() && !exit);
+
+
+    }
+
+    public void Annhilation(GameData.Team winningTeam)
+    {
+        foreach(GameData.Team team in Enum.GetValues(typeof(GameData.Team)))
+            if(team!=winningTeam&&team!=GameData.Team.Neutral)
+            {
+                teamsToDestroy.Add(team);
+                if (!pipesPerPlayer.ContainsKey(team))
+                    copyToDestroy.Add(team, new RecursivePipe());
+                else
+                    copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
+            }
+        StartCoroutine(DestroyLeavesWithDelay());
     }
 
     /// <summary>
@@ -735,21 +741,24 @@ public class PipeStatus : MonoBehaviour {
         public List<RecursivePipe> DestroyLeaves()
         {
             List<RecursivePipe> l = new List<RecursivePipe>();
-            if(firstChild!=null)
+            if(firstChild==null)
             {
-                if (father != null)
-                    father.RemoveChild(this);
-                if(current!=null)
+                if (current != null)
                 {
+                
                     l.Add(this);
+                    if (nextBrother != null)
+                        foreach (RecursivePipe r in nextBrother.DestroyLeaves())
+                            l.Add(r);
+                    DisconnectPipe();
                     return l;
                 }
             }
             else
             {
                 
-                    foreach (RecursivePipe r in firstChild.DestroyLeaves())
-                        l.Add(r);
+                foreach (RecursivePipe r in firstChild.DestroyLeaves())
+                    l.Add(r);
                 if (nextBrother != null)
                     foreach (RecursivePipe r in nextBrother.DestroyLeaves())
                         l.Add(r);

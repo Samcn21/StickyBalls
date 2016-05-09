@@ -481,7 +481,7 @@ public class InputController : MonoBehaviour
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
             Pipe pipe = newPipe.GetComponent<Pipe>();
             pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
-
+            Debug.Log("I just added a pipe to the player of the color " + pipe.Team);
             bool found = false;
             foreach (Pipe father in closePipes)
             {

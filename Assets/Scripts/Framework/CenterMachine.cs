@@ -7,7 +7,8 @@ using System;
 public class CenterMachine : Pipe
 {
     // Use this for initialization
-    private List<GameData.Coordinate> localConnectionCoordinates; 
+    private List<GameData.Coordinate> localConnectionCoordinates;
+    private bool calledAnnhilation = false;
 
     void Start () {
         localConnectionCoordinates = new List<GameData.Coordinate>();
@@ -45,9 +46,11 @@ public class CenterMachine : Pipe
                     if (gridController.Grid[connection.x, connection.y].pipe.CheckSourceConnection())
                     {
                         GameController.Instance.PlayerWon(gridController.Grid[connection.x, connection.y].pipe.Team);
-                        foreach (GameData.Team t in Enum.GetValues(typeof(GameData.Team)))
-                            if (t != gridController.Grid[connection.x, connection.y].pipe.Team)
-                                GameController.Instance.PipeStatus.DestroyPipesOfPlayer(t);
+                        if (!calledAnnhilation)
+                        {
+                            GameController.Instance.PipeStatus.Annhilation(gridController.Grid[connection.x, connection.y].pipe.Team);
+                            calledAnnhilation = true;
+                        }
                     }
                 }
             }
