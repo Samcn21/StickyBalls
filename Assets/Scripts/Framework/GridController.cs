@@ -87,4 +87,9 @@ public class GridController : MonoBehaviour
         }
         
     }
+
+    public bool IsInsideGrid(GameData.Coordinate coord)
+    {
+        return (coord.x < GridWidth && coord.x >= 0 && coord.y < GridHeight && coord.y >= 0);
+    }
 }

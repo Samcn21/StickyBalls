@@ -37,6 +37,8 @@ public class FlameMachine : Pipe {
     {
         foreach (GameData.Coordinate connection in connections)
         {
+            if (!gridController.IsInsideGrid(connection))
+                continue;
             if (gridController.Grid[connection.x, connection.y].pipe != null)
             {
                 if (gridController.Grid[connection.x, connection.y].pipe.Team != GameData.Team.Neutral)
