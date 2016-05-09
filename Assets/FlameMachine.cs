@@ -3,10 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class FlameMachine : Pipe {
-
-    public FlameMachinePosition position;
-
-    void Start()
+    
+    public void Instantiate(GameData.Coordinate coords)
     {
         isFlameMachine = true;
         gridController = GameController.Instance.GridController;
@@ -18,33 +16,14 @@ public class FlameMachine : Pipe {
         GameData.Coordinate con2 = null;
         GameData.Coordinate con3 = null;
         GameData.Coordinate con4 = null;
-        int xBase=0;
-        int yBase = 0;
-        switch (position)
-        {
-            case FlameMachinePosition.Left:
-                xBase = gridController.GridWidth / 4;
-                yBase = gridController.GridHeight / 2;
-                break;
-            case FlameMachinePosition.Right:
-                xBase = gridController.GridWidth * 3 / 4;
-                yBase = gridController.GridHeight / 2;
-                break;
-            case FlameMachinePosition.Top:
-                xBase = gridController.GridWidth /2;
-                yBase = gridController.GridHeight / 4;
-                break;
-            case FlameMachinePosition.Bottom:
-                xBase = gridController.GridWidth /2;
-                yBase = gridController.GridHeight *3/ 4;
-                break;
-        }
-        me = new GameData.Coordinate(xBase,yBase);
-        con = new GameData.Coordinate(xBase+1, yBase);
-        con2 = new GameData.Coordinate(xBase, yBase+1);
-        con3 = new GameData.Coordinate(xBase-1, yBase);
-        con4 = new GameData.Coordinate(xBase, yBase-1);
-        gridController.Grid[gridController.GridWidth / 4, gridController.GridHeight / 2].locked = true;
+        int xBase = coords.x;
+        int yBase = coords.y;
+        me = new GameData.Coordinate(xBase, yBase);
+        con = new GameData.Coordinate(xBase + 1, yBase);
+        con2 = new GameData.Coordinate(xBase, yBase + 1);
+        con3 = new GameData.Coordinate(xBase - 1, yBase);
+        con4 = new GameData.Coordinate(xBase, yBase - 1);
+        gridController.Grid[xBase, yBase].locked = true;
         connections.Add(con);
         connections.Add(con2);
         connections.Add(con3);
@@ -52,10 +31,6 @@ public class FlameMachine : Pipe {
         gridController.Grid[me.x, me.y].SetPipe(this);
         transform.position = gridController.Grid[me.x, me.y].gameObject.transform.position;
         positionCoordinate = me;
-    }
-    public enum FlameMachinePosition
-    {
-        Right,Left,Top,Bottom
     }
 
     void Update()
