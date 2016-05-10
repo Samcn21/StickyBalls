@@ -30,13 +30,13 @@ public class PushMechanic : MonoBehaviour {
           
             if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
             {
-                Vector3 direction = (transform.position - col.contacts[0].point);
+                Vector3 direction = (transform.position - col.transform.position);
                 direction.y = 0;
                 body.AddForce( direction* pushForce, ForceMode.Impulse);
             }
             else
             {
-                Vector3 direction = (col.transform.position - col.contacts[0].point);
+                Vector3 direction = (col.transform.position - transform.position);
                 direction.y = 0;
                 opponentBody.AddForce(direction * pushForce, ForceMode.Impulse);
                 if (stealMechanicActive)
