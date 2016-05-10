@@ -94,7 +94,7 @@ public class GameController : MonoBehaviour
         {
             List<Player> toLose = PlayersCoop[team];
 
-            foreach (Player player in  toLose)
+            foreach (Player player in toLose)
             {
                 player.Die();
             }
@@ -116,7 +116,6 @@ public class GameController : MonoBehaviour
             text.enabled = true;
             text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[color];
-
         }
     }
 }

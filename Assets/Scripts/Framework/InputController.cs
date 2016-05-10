@@ -742,4 +742,9 @@ next:
         isDead = true;
         gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
     }
+
+    public void Lose()
+    {
+        isLocked = true;
+    }
 }

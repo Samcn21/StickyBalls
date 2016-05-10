@@ -81,6 +81,16 @@ public class Player : MonoBehaviour
         InputController.Die();
         isDead = true;
         moveSpeed = moveSpeed/2;
+
+        foreach (ParticleSystem inChild in GetComponentsInChildren<ParticleSystem>())
+        {
+            inChild.Play();
+        }
+    }
+
+    public void Lose()
+    {
+        InputController.Lose();
     }
 
     public void Initialize()
