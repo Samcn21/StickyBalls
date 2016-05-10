@@ -76,6 +76,7 @@ public class Player : MonoBehaviour
     public void Die()
     {
         InputController.Die();
+        moveSpeed = moveSpeed/2;
     }
 
     public void Initialize()

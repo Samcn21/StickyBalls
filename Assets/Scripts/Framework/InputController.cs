@@ -57,6 +57,7 @@ public class InputController : MonoBehaviour
 
     public bool isPressingDelete { get; private set; }
     public bool isDead { get; private set; }
+    public bool isLocked;
 
 
     //TEST VARIABLES
@@ -92,11 +93,14 @@ public class InputController : MonoBehaviour
         isPressingX = false;
         destroyTimer = resetDestroyTimer;
         isDead = false;
+        isLocked = false;
     }
 
 
     void FixedUpdate()
     {
+        if (isLocked)
+            return;
         Rigidbody playerRigidbody = GetComponent<Rigidbody>();
         velocityX = playerRigidbody.velocity.x;
         velocityZ = playerRigidbody.velocity.z;
@@ -121,7 +125,7 @@ public class InputController : MonoBehaviour
 
     void Update()
     {
-        if (!initialized) return;
+        if (!initialized || isLocked) return;
         
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
