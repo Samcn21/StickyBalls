@@ -65,9 +65,11 @@ public class GameController : MonoBehaviour
         gameRunning = false;
 
         StartCoroutine(ShowWinnerGUI(winningTeam));
+    }
 
-
-
+    public void Lose(GameData.Team team)
+    {
+        
     }
 
     IEnumerator ShowWinnerGUI(GameData.Team  color)
