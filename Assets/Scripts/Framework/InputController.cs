@@ -73,6 +73,7 @@ public class InputController : MonoBehaviour
         colorPicked = false;
         isPressingDelete = false;
         resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
+        player.Initialize();
     }
 
     // Use this for initialization
@@ -727,7 +728,7 @@ next:
         }
     }
 
-    void Die()
+    public void Die()
     {
         isDead = true;
         gameObject.layer = LayerMask.NameToLayer("DeadPlayer");

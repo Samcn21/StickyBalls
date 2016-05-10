@@ -22,7 +22,8 @@ public class GameController : MonoBehaviour
     public PipeMan PipeMan;
     public GridController GridController;
     public PipeStatus PipeStatus;
-    public List<Player> Players;
+    public Dictionary<GameData.Team, Player> Players;
+    public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
     private PipesSprite PipesSprite;
@@ -33,7 +34,8 @@ public class GameController : MonoBehaviour
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
         PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
-        Players = new List<Player>();
+        Players = new Dictionary<GameData.Team, Player>();
+        PlayerSources = new Dictionary<GameData.Team, PlayerSource>();
 
         gameRunning = true;
 
@@ -69,7 +71,8 @@ public class GameController : MonoBehaviour
 
     public void Lose(GameData.Team team)
     {
-        
+        PlayerSources[team].Explode();
+        Players[team].Die();
     }
 
     IEnumerator ShowWinnerGUI(GameData.Team  color)

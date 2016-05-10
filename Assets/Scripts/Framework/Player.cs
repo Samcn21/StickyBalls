@@ -72,4 +72,14 @@ public class Player : MonoBehaviour
     {
         heldPipe.rotation = Quaternion.Euler(90, angle, 0);
     }
+
+    public void Die()
+    {
+        InputController.Die();
+    }
+
+    public void Initialize()
+    {
+        GameController.Instance.Players.Add(InputController.team, this);
+    }
 }

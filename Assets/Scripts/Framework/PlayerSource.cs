@@ -133,6 +133,7 @@ public class PlayerSource : Pipe
         coordinateOfOutingPoints[1] = new GameData.Coordinate(me2.x, me2.y);
         gridController.Grid[me.x, me.y].SetPipe(this);
         gridController.Grid[me2.x, me2.y].SetPipe(this);
+        GameController.Instance.PlayerSources.Add(Team, this);
     }
 
     public void Explode()
