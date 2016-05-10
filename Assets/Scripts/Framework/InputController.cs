@@ -64,6 +64,7 @@ public class InputController : MonoBehaviour
 
     //TEST VARIABLES
     [SerializeField] private bool TEST_DELETE = false;
+    [SerializeField] private bool TEST_INFINITEXPIPE = false;
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -128,6 +129,10 @@ public class InputController : MonoBehaviour
     void Update()
     {
         if (!initialized || isLocked) return;
+        if (player.HeldPipeType == PipeData.PipeType.Void && TEST_INFINITEXPIPE)
+        {
+            player.PickupPipe(PipeData.PipeType.Cross, 0);
+        }
         
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
