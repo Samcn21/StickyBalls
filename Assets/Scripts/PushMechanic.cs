@@ -6,6 +6,8 @@ public class PushMechanic : MonoBehaviour {
     private float pushForce;
     [SerializeField]
     private bool stealMechanicActive;
+    [SerializeField]
+    private GameObject particleEffect;
     private Rigidbody body;
     private Player playerRef;
     private Vector3 lastPosition = Vector3.zero;
@@ -29,6 +31,11 @@ public class PushMechanic : MonoBehaviour {
                 return;
 
             Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
+<<<<<<< HEAD
+=======
+            Instantiate(particleEffect, Vector3.Lerp(transform.position,col.transform.position,0.5f), Quaternion.identity);
+          
+>>>>>>> 45cb4fe8c761d37384b1cbe713e6b9e83b7c6e00
             if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
             {
                 Vector3 direction = (transform.position - col.transform.position);
