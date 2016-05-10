@@ -144,5 +144,7 @@ public class PlayerSource : Pipe
         {
             gridController.Grid[coordinate.x, coordinate.y].locked = false;
         }
+        Instantiate(GameController.Instance.PipeStatus.bigExplosionEffect, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

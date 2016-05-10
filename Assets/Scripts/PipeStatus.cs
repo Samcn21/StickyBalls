@@ -20,7 +20,7 @@ public class PipeStatus : MonoBehaviour {
     private bool destroyAllThePipes;
     [SerializeField]
     private float delay;
-
+    public GameObject bigExplosionEffect;
     [SerializeField]
     private GameObject explosionEffect;
     //This list contains the pipes that will be destroyed

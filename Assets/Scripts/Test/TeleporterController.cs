@@ -16,7 +16,7 @@ public class TeleporterController : MonoBehaviour
 
     void Start()
     {
-        teleportOffsetY = 0.2f;
+        teleportOffsetY = 0f;
         teleporterNorth = GameObject.Find("TeleporterNorth");
         teleporterSouth = GameObject.Find("TeleporterSouth");
         teleporterEast = GameObject.Find("TeleporterEast");
@@ -43,27 +43,19 @@ public class TeleporterController : MonoBehaviour
             {
                 case GameData.Direction.North:
                     if (teleporterSouth != null)
-                    {
-                        other.transform.position = new Vector3(teleporterSouth.transform.position.x, other.transform.position.y + teleportOffsetY, teleporterSouth.transform.position.z);
-                    }
+                       other.transform.position = new Vector3(teleporterSouth.transform.position.x, other.transform.position.y + teleportOffsetY, teleporterSouth.transform.position.z);
                     break;
                 case GameData.Direction.South:
                     if (teleporterNorth != null)
-                    {
                         other.transform.position = new Vector3(teleporterNorth.transform.position.x, other.transform.position.y + teleportOffsetY, teleporterNorth.transform.position.z);
-                    }
                     break;
                 case GameData.Direction.East:
                     if (teleporterWest != null)
-                    {
                         other.transform.position = new Vector3(teleporterWest.transform.position.x, other.transform.position.y + teleportOffsetY, teleporterWest.transform.position.z);
-                    }
                     break;
                 case GameData.Direction.West:
                     if (teleporterEast != null)
-                    {
                         other.transform.position = new Vector3(teleporterEast.transform.position.x, other.transform.position.y + teleportOffsetY, teleporterEast.transform.position.z);
-                    }
                     break;
             }
         }
