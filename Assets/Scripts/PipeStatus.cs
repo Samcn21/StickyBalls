@@ -325,8 +325,13 @@ public class PipeStatus : MonoBehaviour {
             toDestroy = temp;
             yield return new WaitForSeconds(delay);
         }
-       if(blowUpEntirePipe)
-            GameController.Instance.Lose(team);
+        if (blowUpEntirePipe)
+        {
+            teamsToDestroy.Add(team);
+            copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
+            copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
+            StartCoroutine(DestroyLeavesWithDelay());
+        }
         copyToDestroy[team] = null;
     }
 
