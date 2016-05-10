@@ -138,13 +138,17 @@ public class PlayerSource : Pipe
 
     public void Explode()
     {
-        gridController.Grid[me.x, me.y].SetPipe(null);
+        if (gameObject != null)
+        {
+            gridController.Grid[me.x, me.y].SetPipe(null);
         gridController.Grid[me2.x, me2.y].SetPipe(null);
         foreach (GameData.Coordinate coordinate in lockedTiles)
         {
             gridController.Grid[coordinate.x, coordinate.y].locked = false;
         }
-        Instantiate(GameController.Instance.PipeStatus.bigExplosionEffect, transform.position, Quaternion.identity);
-        Destroy(gameObject);
+        
+            Instantiate(GameController.Instance.PipeStatus.bigExplosionEffect, transform.position, Quaternion.identity);
+            Destroy(gameObject);
+        }
     }
 }

@@ -300,13 +300,16 @@ public class PipeStatus : MonoBehaviour {
                 if (toDestroy[i]!=null&&toDestroy[i].current != null)
                 {
                     Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
-                    toDestroy[i].current.DestroyPipe();
-                    toDestroy[i].Destroy();
+                    toDestroy[i].current.DestroyPipe();              
                     RecursivePipe p = pipesPerPlayer[team].FindPipe(toDestroy[i]);
-                    if (p==null||p.father==null||p.father.current==null)
+                    if (p != null && (p.father == null || p.father.current == null))
+                    {
                         blowUpEntirePipe = true;
+                        GameController.Instance.Lose(team);
+                    }
                     if (p != null)
                         p.DisconnectPipe();
+                    toDestroy[i].Destroy();
                     toDestroy.RemoveAt(i);
                 }
                 else
@@ -329,9 +332,9 @@ public class PipeStatus : MonoBehaviour {
         {
             teamsToDestroy.Add(team);
             copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-            copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
-            StartCoroutine(DestroyLeavesWithDelay());
-        }
+            copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));          
+            StartCoroutine(DestroyLeavesWithDelay());      
+        }else
         copyToDestroy[team] = null;
     }
 

@@ -89,6 +89,7 @@ public class GameController : MonoBehaviour
     {
         if (!PlayerSources.ContainsKey(team))
             return;
+        if(PlayerSources[team]!=null)
         PlayerSources[team].Explode();
         if (Gamemode_IsCoop)
         {
