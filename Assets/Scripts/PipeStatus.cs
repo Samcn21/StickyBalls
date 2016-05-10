@@ -311,7 +311,7 @@ public class PipeStatus : MonoBehaviour {
                         blowUpEntirePipe = true;
                         GameController.Instance.Lose(team);
                     }
-                    leave.UpdateColor(GameData.Team.Neutral);
+                    toDestroy[i].UpdateColor(GameData.Team.Neutral);
 
                     if (p != null)
                         p.DisconnectPipe();
