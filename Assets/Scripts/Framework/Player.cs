@@ -12,6 +12,9 @@ public class Player : MonoBehaviour
     private PipeMan pipeMan;
     private InputController InputController;
 
+    public bool isDead { get; private set; }
+    public GameData.Team Team { get; private set; }
+
     void Start()
     {
         pipeMan = GameController.Instance.PipeMan;
@@ -76,11 +79,16 @@ public class Player : MonoBehaviour
     public void Die()
     {
         InputController.Die();
+        isDead = true;
         moveSpeed = moveSpeed/2;
     }
 
     public void Initialize()
     {
-        GameController.Instance.Players.Add(InputController.team, this);
+        if (!GameController.Instance.Gamemode_IsCoop)
+            GameController.Instance.Players.Add(InputController.team, this);
+        else
+            GameController.Instance.PlayersCoop[InputController.team].Add(this);
+        Team = InputController.team;
     }
 }

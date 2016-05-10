@@ -10,6 +10,8 @@ using UnityEngine.SceneManagement;
 public class InputController : MonoBehaviour
 {
     [SerializeField] private float stickSensivity = 0.25f;
+    [SerializeField] private float velocityThreshold = 0.1f;
+    [SerializeField] private float holdTimerLimit = 1.25f;
     public GamePad.Index index;
     public GameData.Team team;
 
@@ -50,10 +52,10 @@ public class InputController : MonoBehaviour
     private float velocityX;
     private float velocityZ;
     private float velocityTotal;
-    [SerializeField] private float velocityThreshold = 0.1f;
     private float destroyTimer;
     private float resetDestroyTimer;
     private bool isPressingX;
+    private float holdTimer = 0;
 
     public bool isPressingDelete { get; private set; }
     public bool isDead { get; private set; }
@@ -119,8 +121,8 @@ public class InputController : MonoBehaviour
         {
             myAnim.SetFloat("velocity", Mathf.Abs(velocity));
         }
-
-        rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+        if (holdTimer >= 0)
+            rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
     }
 
     void Update()
@@ -153,8 +155,18 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-        
 
+        if (gamepadState.A)
+        {
+            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null) {
+                if (holdTimer >= holdTimerLimit) {
+                    PickUpPipe(pipeToDestroyRef);
+                    holdTimer = 0;
+                }
+                else
+                    holdTimer += Time.deltaTime;
+            }
+        }
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
@@ -162,22 +174,19 @@ public class InputController : MonoBehaviour
         //If A is pressed and you are in Player Color Assign and collide activate the trigger you will pick the choosen color
         if (GamePad.GetButtonDown(GamePad.Button.A, gamepadIndex))
         {
-
             if (selectedConveyorPipe != null)
             {
                 PickUpPipe(selectedConveyorPipe);
+                holdTimer = 0;
             }
             else if (selectedPipeConnection != null)
             {
                 if (isLegalRotation)
                     PlacePipe();
+                holdTimer = 0;
             }
-            else if (pipeToDestroyRef != null && !TEST_DELETE)
-            {
-                PickUpPipe(pipeToDestroyRef);
-            }
-
-
+            else
+                holdTimer = 0;
 
             //color pick 
             if (colorPickPermit && team == GameData.Team.Neutral)
@@ -309,7 +318,6 @@ public class InputController : MonoBehaviour
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
         {
             if (GameController.Instance.Gamemode_IsCoop && col.gameObject.GetComponent<Pipe>().Team != team) {
-                Debug.Log(col.gameObject.GetComponent<Pipe>().Team +" = " + team);
                 goto next;
             }
             Pipe pipe = col.gameObject.GetComponent<Pipe>();

@@ -23,6 +23,7 @@ public class GameController : MonoBehaviour
     public GridController GridController;
     public PipeStatus PipeStatus;
     public Dictionary<GameData.Team, Player> Players;
+    public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
@@ -35,8 +36,10 @@ public class GameController : MonoBehaviour
         PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         Players = new Dictionary<GameData.Team, Player>();
+        PlayersCoop = new Dictionary<GameData.Team, List<Player>>();
         PlayerSources = new Dictionary<GameData.Team, PlayerSource>();
-
+        PlayersCoop.Add(GameData.Team.Cyan, new List<Player>());
+        PlayersCoop.Add(GameData.Team.Purple, new List<Player>());
         gameRunning = true;
 
         winningGUI = GameObject.Find("WinningText");
@@ -45,6 +48,19 @@ public class GameController : MonoBehaviour
             Text text = winningGUI.GetComponent<Text>();
             text.enabled = false;
         }
+    }
+
+    void Update()
+    {
+        List<Player> winningPlayers = new List<Player>();
+        foreach (KeyValuePair<GameData.Team, Player> pair in Players)
+        {
+            if (!pair.Value.isDead)
+                winningPlayers.Add(pair.Value);
+        }
+        if (winningPlayers.Count == 1)
+            PlayerWon(winningPlayers[0].Team);
+
     }
 
     public void SpawnPlayer(GameData.Team team, GamePad.Index gamepadIndex)
@@ -71,8 +87,22 @@ public class GameController : MonoBehaviour
 
     public void Lose(GameData.Team team)
     {
+
         PlayerSources[team].Explode();
-        Players[team].Die();
+        if (Gamemode_IsCoop)
+        {
+            List<Player> toLose = PlayersCoop[team];
+
+            foreach (Player player in  toLose)
+            {
+                player.Die();
+            }
+        }
+        else
+        {
+            Players[team].Die();
+        }
+        
     }
 
     IEnumerator ShowWinnerGUI(GameData.Team  color)
