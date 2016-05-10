@@ -174,7 +174,7 @@ public class PipeStatus : MonoBehaviour {
         foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect,instantiateEffect))
         {
             neutralPipes.Add(p);
-            p.UpdateColor();
+            p.UpdateColor(GameData.Team.Neutral);
         }
     }
 

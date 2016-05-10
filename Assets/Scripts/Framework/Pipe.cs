@@ -30,12 +30,7 @@ public class Pipe : MonoBehaviour
                     t.GetComponent<MeshRenderer>().material.color = GameData.TeamColors[value];
                 }
             }
-            else
-            {
-                if (this.GetComponent<PipesSprite>() != null) { 
-                    this.GetComponent<PipesSprite>().FindPipeStatus(pipeType, GameData.Team.Neutral);
-                }
-            }
+            
         }
         get { return team; }
     }
