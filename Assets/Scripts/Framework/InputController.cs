@@ -301,8 +301,12 @@ public class InputController : MonoBehaviour
     //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe" && col.gameObject.GetComponent<Pipe>().Team == team)
+        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
         {
+            if (GameController.Instance.Gamemode_IsCoop && col.gameObject.GetComponent<Pipe>().Team != team) {
+                Debug.Log(col.gameObject.GetComponent<Pipe>().Team +" = " + team);
+                goto next;
+            }
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
             if (pipe.IsEndPipe())
             {
@@ -322,7 +326,7 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-            
+next:   
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -611,11 +615,11 @@ public class InputController : MonoBehaviour
     {
         Animator myAnim = GetComponentInChildren<Animator>();
         SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject redSpot = GameObject.Find("Purple");
+        GameObject purpleSpot = GameObject.Find("Purple");
         GameObject blueSpot = GameObject.Find("Blue");
         GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject balckSpot = GameObject.Find("Cyan");
-
+        GameObject cyanSpot = GameObject.Find("Cyan");
+        
         //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
         if (mySprite != null)
         {
@@ -625,7 +629,7 @@ public class InputController : MonoBehaviour
             {
                 mySprite.sprite = redSprite;
                 myAnim.runtimeAnimatorController = redAnim;
-                transform.position = redSpot.transform.position;
+                transform.position = purpleSpot.transform.position;
             }
             else if (t.ToString().Contains("Blue"))
             {
@@ -643,7 +647,7 @@ public class InputController : MonoBehaviour
             {
                 mySprite.sprite = blackSprite;
                 myAnim.runtimeAnimatorController = blackAnim;
-                transform.position = balckSpot.transform.position;
+                transform.position = cyanSpot.transform.position;
             }
         }
     }
@@ -651,11 +655,12 @@ public class InputController : MonoBehaviour
     void AssignColorsToPlayers()
     {
         //Gives default color to the players
-        if ((SceneManager.GetActiveScene().name != "PlayerColorAssign"))
+        if (SceneManager.GetActiveScene().name != "PlayerColorAssign")
         {
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level invokes directly from PlayerColorAssign level
-            if (PlayerPrefs.GetInt("isDataSaved") == 1)
+
+            if (PlayerPrefs.GetInt("isDataSaved") == 1 && !GameController.Instance.Gamemode_IsCoop)
             {
                 string[] names = Enum.GetNames(typeof(GamePad.Index));
                 Dictionary<GamePad.Index, GameData.Team> playerPrefIndexColor = new Dictionary<GamePad.Index, GameData.Team>();
@@ -682,14 +687,29 @@ public class InputController : MonoBehaviour
             }
             else
             {
-                //if playerPrefs is null then assign this colors to the players
-                Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>() 
+                Dictionary<GamePad.Index, GameData.Team> defaultPlayerIndexColor = null;
+                if (GameController.Instance.Gamemode_IsCoop)
                 {
-                    {GamePad.Index.One, GameData.Team.Cyan},
-                    {GamePad.Index.Two, GameData.Team.Yellow},
-                    {GamePad.Index.Three, GameData.Team.Blue},
-                    {GamePad.Index.Four, GameData.Team.Purple},
-                };
+                    defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>()
+                    {
+                        {GamePad.Index.One, GameData.Team.Cyan},
+                        {GamePad.Index.Two, GameData.Team.Cyan},
+                        {GamePad.Index.Three, GameData.Team.Purple},
+                        {GamePad.Index.Four, GameData.Team.Purple}
+                    };
+                }
+                else
+                {
+                //if playerPrefs is null then assign this colors to the players
+                    defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>()
+                    {
+                        {GamePad.Index.One, GameData.Team.Cyan},
+                        {GamePad.Index.Two, GameData.Team.Yellow},
+                        {GamePad.Index.Three, GameData.Team.Blue},
+                        {GamePad.Index.Four, GameData.Team.Purple}
+                    };
+                }
+                
 
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
                 {

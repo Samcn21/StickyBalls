@@ -40,7 +40,14 @@ using System.Collections.Generic;
             {Team.Neutral,       new Color32(232, 232, 232 , 255) }
         };
 
-        public enum SourceMachineStates
+        public static Dictionary<Team, Color> CoopTeamColors = new Dictionary<Team, Color>()
+        {
+            {Team.Cyan,          new Color32(0, 255, 255 , 255) },
+            {Team.Purple,        new Color32(255, 0, 255 , 255) },
+            {Team.Neutral,       new Color32(232, 232, 232 , 255) }
+        };
+
+    public enum SourceMachineStates
         {
             SourceMachineBlue,
             SourceMachineCyan,

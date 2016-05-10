@@ -26,6 +26,7 @@ public class GameController : MonoBehaviour
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
     private PipesSprite PipesSprite;
+    public bool Gamemode_IsCoop = false;
 
     void Start()
     {
