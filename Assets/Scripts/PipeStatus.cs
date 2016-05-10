@@ -90,6 +90,7 @@ public class PipeStatus : MonoBehaviour {
                 if (neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
+                    neutralPipes[i].UpdateColor(team);
                     neutralPipes.RemoveAt(i);
                     break;
                 }
@@ -119,6 +120,7 @@ public class PipeStatus : MonoBehaviour {
                 if (neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
+                    neutralPipes[i].UpdateColor(team);
                     neutralPipes.RemoveAt(i);
                     break;
                 }
@@ -172,6 +174,7 @@ public class PipeStatus : MonoBehaviour {
         foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect,instantiateEffect))
         {
             neutralPipes.Add(p);
+            p.UpdateColor();
         }
     }
 
@@ -912,6 +915,15 @@ public class PipeStatus : MonoBehaviour {
                 }
             }
             return r;
+        }
+
+        public void UpdateColor(GameData.Team color)
+        {
+            current.GetComponent<PipesSprite>().FindPipeStatus(current.PipeType, color);
+            if (firstChild != null)
+                firstChild.UpdateColor(color);
+            if (nextBrother != null)
+                nextBrother.UpdateColor(color);
         }
 
         /// <summary>
