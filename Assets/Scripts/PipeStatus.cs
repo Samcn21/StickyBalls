@@ -15,6 +15,8 @@ public class PipeStatus : MonoBehaviour {
     //This list will contain the Tree form of the neutral pipes
     private List<RecursivePipe> neutralPipes;
     [SerializeField]
+    private bool eliminatePlayerWithPlayerSource;
+    [SerializeField]
     private bool destroyAllThePipes;
     [SerializeField]
     private float delay;
@@ -207,6 +209,9 @@ public class PipeStatus : MonoBehaviour {
                 {
                     Instantiate(explosionEffect, leave.current.gameObject.transform.position, Quaternion.identity);
                     leave.current.DestroyPipe();
+                    RecursivePipe p = pipesPerPlayer[team].FindPipe(leave);
+                    if (p != null)
+                        p.DisconnectPipe();
                 }
 
             }
@@ -283,6 +288,9 @@ public class PipeStatus : MonoBehaviour {
                     Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
                     toDestroy[i].current.DestroyPipe();
                     toDestroy[i].Destroy();
+                    RecursivePipe p = pipesPerPlayer[team].FindPipe(toDestroy[i]);
+                    if (p != null)
+                        p.DisconnectPipe();
                     toDestroy.RemoveAt(i);
                 }
                 else
@@ -301,6 +309,7 @@ public class PipeStatus : MonoBehaviour {
             toDestroy = temp;
             yield return new WaitForSeconds(delay);
         }
+       
         copyToDestroy[team] = null;
     }
 
@@ -899,6 +908,22 @@ public class PipeStatus : MonoBehaviour {
             return null;
         }
         
+        public bool HasValidChildren()
+        {
+            if (firstChild == null)
+                return false;
+            if (firstChild.current != null)
+                return true;
+            RecursivePipe p = firstChild;
+            while (p.nextBrother != null)
+            {
+                if (p.current != null)
+                    return true;
+                p = p.nextBrother;
+            }
+                return false;
+        }
+
         /// <summary>
         /// String representation of the node
         /// </summary>
