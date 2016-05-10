@@ -14,7 +14,7 @@ public class GridController : MonoBehaviour
     public int GridWidth { get; private set; }
     public int GridHeight { get; private set; }
     public Tile[,] Grid;
-    public List<Vector2> lockedTiles = new List<Vector2>(); 
+    public List<Vector2> lockedTiles = new List<Vector2>();
 	
     void Start ()
     {

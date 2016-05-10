@@ -16,24 +16,24 @@ public class SourceMachineSprites : AnimationController
 
     void Start()
     {
+        GameData.Team team = GetComponentInParent<PlayerSource>().Team;
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
-
-        switch (sourceMachine)
+        switch (team)
         {
-            case GameData.SourceMachineStates.SourceMachineBlue:
+            case GameData.Team.Blue:
                 currentFrame = smBlue;
                 break;
 
-            case GameData.SourceMachineStates.SourceMachineCyan:
+            case GameData.Team.Cyan:
                 currentFrame = smCyan;
                 break;
 
-            case GameData.SourceMachineStates.SourceMachinePurple:
+            case GameData.Team.Purple:
                 currentFrame = smPurple;
                 break;
 
-            case GameData.SourceMachineStates.SourceMachineYellow:
+            case GameData.Team.Yellow:
                 currentFrame = smYellow;
                 break;
         }
