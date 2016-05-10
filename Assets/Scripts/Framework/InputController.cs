@@ -60,6 +60,9 @@ public class InputController : MonoBehaviour
     private float resetDestroyTimer;
     private bool isPressingX;
 
+    //TEST VARIABLES
+    [SerializeField] private bool TEST_DELETE = false;
+
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
         team = t;
@@ -118,33 +121,34 @@ public class InputController : MonoBehaviour
     void Update()
     {
         if (!initialized) return;
-
+        
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
-        /*
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
-        {
-            isPressingX = true;
-            isPressingDelete = true;
-        }
-        else {   
-            isPressingDelete = false;
-        }
 
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
+
+        if (TEST_DELETE)
         {
-            isPressingX = false;
-            destroyTimer = resetDestroyTimer;
-        }
-        if (isPressingX && pipeToDestroyRef != null)
-        {
-            destroyTimer -= Time.deltaTime;
-            if (pipeToDestroyRef != null && destroyTimer <= 0)
-            {
-                pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
-                pipeToDestroyRef = null;
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex)) {
+                isPressingX = true;
+                isPressingDelete = true;
             }
-        }*/
+            else {
+                isPressingDelete = false;
+            }
+
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex)) {
+                isPressingX = false;
+                destroyTimer = resetDestroyTimer;
+            }
+            if (isPressingX && pipeToDestroyRef != null) {
+                destroyTimer -= Time.deltaTime;
+                if (pipeToDestroyRef != null && destroyTimer <= 0) {
+                    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
+                    pipeToDestroyRef = null;
+                }
+            }
+        }
+        
 
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
@@ -163,7 +167,7 @@ public class InputController : MonoBehaviour
                 if (isLegalRotation)
                     PlacePipe();
             }
-            else if (pipeToDestroyRef != null)
+            else if (pipeToDestroyRef != null && !TEST_DELETE)
             {
                 PickUpPipe(pipeToDestroyRef);
             }
@@ -284,6 +288,8 @@ public class InputController : MonoBehaviour
                 isLegalRotation = true;
             }
         }
+        if (closePipes.Count == 0)
+            closePipeConnections.Clear();
     }
 
     void OnTriggerStay(Collider col)
@@ -300,11 +306,15 @@ public class InputController : MonoBehaviour
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
             if (pipe.IsEndPipe())
             {
-                if (pipeToDestroyRef == null) {
+                if (pipeToDestroyRef == null)
+                {
                     pipeToDestroyRef = pipe;
                 }
-                else {
-                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) < Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position))) {
+                else
+                {
+                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    {
                         pipeToDestroyRef.SetHightlight(false);
                         pipeToDestroyRef = col.GetComponent<Pipe>();
                         pipeToDestroyRef.SetHightlight(true);
@@ -313,7 +323,6 @@ public class InputController : MonoBehaviour
             }
         }
             
-
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -333,14 +342,12 @@ public class InputController : MonoBehaviour
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
             {
-
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
                 {
                     if (!closePipes.Contains(pipe))
                         closePipes.Add(pipe);
                     closePipeConnections.Add(c);
                 }
-                
             }
         }
     }
@@ -469,13 +476,10 @@ public class InputController : MonoBehaviour
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
-
         Vector3 pipeOffset = new Vector3(0, 1, 0);
         Vector3 dynamiteOffset = new Vector3(0, 2, 0);
-        Vector3 offset = dynamiteOffset;
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
-            offset = pipeOffset;
             GameObject newPipe = Instantiate(pipeMan.pipePrefab,
                            gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
@@ -503,7 +507,6 @@ public class InputController : MonoBehaviour
         }
         else
         {
-            offset = pipeOffset;
             GameObject newDynamite = Instantiate(pipeMan.dynamitePrefab,
                            gridController.Grid[selectedPipeConnection.x, selectedPipeConnection.y].transform.position,
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
@@ -512,6 +515,9 @@ public class InputController : MonoBehaviour
             player.PlacePipe();
             Destroy(selectedPipePlaceholder.gameObject);
         }
+        if (pipeToDestroyRef != null)
+            pipeToDestroyRef.SetHightlight(false);
+        pipeToDestroyRef = null;
     }
 
     private void PickUpPipe()
@@ -529,8 +535,6 @@ public class InputController : MonoBehaviour
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PickupPipe, index, true);
-
-        
     }
 
     private void PickUpPipe(ConveyorPipe conveyorPipe)
@@ -549,6 +553,7 @@ public class InputController : MonoBehaviour
         player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
         pipeToDestroyRef = null;
         pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
+
     }
 
     private void PlayerState()
