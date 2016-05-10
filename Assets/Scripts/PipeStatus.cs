@@ -223,15 +223,29 @@ public class PipeStatus : MonoBehaviour {
 
     public void Annhilation(GameData.Team winningTeam)
     {
-        foreach(GameData.Team team in Enum.GetValues(typeof(GameData.Team)))
-            if(team!=winningTeam&&team!=GameData.Team.Neutral)
-            {
-                teamsToDestroy.Add(team);
-                if (!pipesPerPlayer.ContainsKey(team))
-                    copyToDestroy.Add(team, new RecursivePipe());
-                else
-                    copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
-            }
+        List<GameData.Team> teams = new List<GameData.Team>();
+        if (GameController.Instance.Gamemode_IsCoop)
+        {
+            teams.Add(GameData.Team.Purple);
+            teams.Add(GameData.Team.Cyan);
+        }
+        else
+        {
+            teams.Add(GameData.Team.Purple);
+            teams.Add(GameData.Team.Yellow);
+            teams.Add(GameData.Team.Cyan);
+            teams.Add(GameData.Team.Blue);
+        }
+        foreach (GameData.Team team in teams)
+        {
+            if (team == winningTeam)
+                continue;
+            teamsToDestroy.Add(team);
+            if (!pipesPerPlayer.ContainsKey(team))
+                copyToDestroy.Add(team, new RecursivePipe());
+            else
+                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
+        }
         StartCoroutine(DestroyLeavesWithDelay());
     }
 

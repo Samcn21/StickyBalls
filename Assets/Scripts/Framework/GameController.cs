@@ -87,7 +87,8 @@ public class GameController : MonoBehaviour
 
     public void Lose(GameData.Team team)
     {
-
+        if (!PlayerSources.ContainsKey(team))
+            return;
         PlayerSources[team].Explode();
         if (Gamemode_IsCoop)
         {
