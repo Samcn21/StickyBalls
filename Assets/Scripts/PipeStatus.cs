@@ -309,7 +309,8 @@ public class PipeStatus : MonoBehaviour {
             toDestroy = temp;
             yield return new WaitForSeconds(delay);
         }
-       
+        if(!pipesPerPlayer[team].HasValidChildren())
+            GameController.Instance.Lose(team);
         copyToDestroy[team] = null;
     }
 
