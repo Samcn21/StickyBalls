@@ -259,7 +259,7 @@ public class PipeStatus : MonoBehaviour {
     {
         List<RecursivePipe>  toDestroy = new List<RecursivePipe>();
         toDestroy.Add(GetPipeFromFlameMachineCoord(copyToDestroy[team], flameMachineCoord));
-
+        bool blowUpEntirePipe = false;
         while (toDestroy.Count>0)
         {
             List<RecursivePipe> temp=new List<RecursivePipe>();
@@ -303,6 +303,8 @@ public class PipeStatus : MonoBehaviour {
                     toDestroy[i].current.DestroyPipe();
                     toDestroy[i].Destroy();
                     RecursivePipe p = pipesPerPlayer[team].FindPipe(toDestroy[i]);
+                    if (p==null||p.father==null||p.father.current==null)
+                        blowUpEntirePipe = true;
                     if (p != null)
                         p.DisconnectPipe();
                     toDestroy.RemoveAt(i);
@@ -323,7 +325,7 @@ public class PipeStatus : MonoBehaviour {
             toDestroy = temp;
             yield return new WaitForSeconds(delay);
         }
-        if(!pipesPerPlayer[team].HasValidChildren())
+       if(blowUpEntirePipe)
             GameController.Instance.Lose(team);
         copyToDestroy[team] = null;
     }
