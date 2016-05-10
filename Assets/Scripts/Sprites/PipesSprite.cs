@@ -327,6 +327,7 @@ public class PipesSprite : AnimationController
             case PipeData.PipeType.Corner:
                 switch (color)
                 {
+
                     case GameData.Team.Blue:
                         currentAnim = GameData.PipesStates.PipeBlueEmptyCorner;
                         break;
@@ -341,6 +342,10 @@ public class PipesSprite : AnimationController
 
                     case GameData.Team.Yellow:
                         currentAnim = GameData.PipesStates.PipeYellowEmptyCorner;
+                        break;
+
+                    default:
+                        currentAnim = GameData.PipesStates.PipeNeutralEmptyCorner;
                         break;
                 }
                 break;
@@ -363,6 +368,10 @@ public class PipesSprite : AnimationController
                     case GameData.Team.Yellow:
                         currentAnim = GameData.PipesStates.PipeYellowEmptyStraight;
                         break;
+
+                    default:
+                        currentAnim = GameData.PipesStates.PipeNeutralEmptyStraight;
+                        break;
                 }
                 break;
 
@@ -384,6 +393,10 @@ public class PipesSprite : AnimationController
                     case GameData.Team.Yellow:
                         currentAnim = GameData.PipesStates.PipeYellowEmptyCross;
                         break;
+
+                    default:
+                        currentAnim = GameData.PipesStates.PipeNeutralEmptyCross;
+                        break;
                 }
                 break;
 
@@ -404,6 +417,10 @@ public class PipesSprite : AnimationController
 
                     case GameData.Team.Yellow:
                         currentAnim = GameData.PipesStates.PipeYellowEmptyT;
+                        break;
+
+                    default:
+                        currentAnim = GameData.PipesStates.PipeNeutralEmptyT;
                         break;
                 }
                 break;

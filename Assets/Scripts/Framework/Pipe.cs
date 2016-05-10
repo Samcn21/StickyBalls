@@ -7,6 +7,7 @@ public class Pipe : MonoBehaviour
 {
     [SerializeField] private GameObject WeldSparkParticleSystemPrefab;
     private PipeData.PipeType pipeType;
+
     public PipeData.PipeType PipeType
     {
         private set
@@ -29,8 +30,12 @@ public class Pipe : MonoBehaviour
                     t.GetComponent<MeshRenderer>().material.color = GameData.TeamColors[value];
                 }
             }
-            else 
-                meshRenderer.material.color = GameData.TeamColors[value];
+            else
+            {
+                if (this.GetComponent<PipesSprite>() != null) { 
+                    this.GetComponent<PipesSprite>().FindPipeStatus(pipeType, GameData.Team.Neutral);
+                }
+            }
         }
         get { return team; }
     }
@@ -47,14 +52,10 @@ public class Pipe : MonoBehaviour
     protected MeshRenderer meshRenderer;
     protected PipeMan pipeMan;
     protected GridController gridController;
-    private PipesSprite PipesSprite;
 
     //TODO: REMOVE TEST
     public bool todestroy = false;
 
-    void Start() {
-        PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
-    }
     void Update()
     {
         if (todestroy) DestroyPipe();
@@ -119,8 +120,7 @@ public class Pipe : MonoBehaviour
         }
 
         //Animation SpriteSheet Setup
-        PipesSprite = GetComponent<PipesSprite>();
-        PipesSprite.FindPipeStatus(pipeType, Team);
+        GetComponent<PipesSprite>().FindPipeStatus(pipeType, Team);
     }
 
     public void DestroyPipe() {
