@@ -6,6 +6,8 @@ public class PushMechanic : MonoBehaviour {
     private float pushForce;
     [SerializeField]
     private bool stealMechanicActive;
+    [SerializeField]
+    private GameObject particleEffect;
     private Rigidbody body;
     private Player playerRef;
     private Vector3 lastPosition = Vector3.zero;
@@ -26,7 +28,7 @@ public class PushMechanic : MonoBehaviour {
         if(col.gameObject.tag=="Player")
         {
             Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
-           
+            Instantiate(particleEffect, Vector3.Lerp(transform.position,col.transform.position,0.5f), Quaternion.identity);
           
             if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
             {
