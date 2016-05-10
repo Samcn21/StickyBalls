@@ -317,25 +317,22 @@ public class InputController : MonoBehaviour
     {
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
         {
-            if (GameController.Instance.Gamemode_IsCoop && col.gameObject.GetComponent<Pipe>().Team != team) {
+            Pipe pipe = col.gameObject.GetComponent<Pipe>();
+            if (pipe.Team != team) {
                 goto next;
             }
-            Pipe pipe = col.gameObject.GetComponent<Pipe>();
-            if (pipe.IsEndPipe())
+            if (pipeToDestroyRef == null)
             {
-                if (pipeToDestroyRef == null)
+                pipeToDestroyRef = pipe;
+            }
+            else
+            {
+                if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                    Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
                 {
-                    pipeToDestroyRef = pipe;
-                }
-                else
-                {
-                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
-                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
-                    {
-                        pipeToDestroyRef.SetHightlight(false);
-                        pipeToDestroyRef = col.GetComponent<Pipe>();
-                        pipeToDestroyRef.SetHightlight(true);
-                    }
+                    pipeToDestroyRef.SetHightlight(false);
+                    pipeToDestroyRef = col.GetComponent<Pipe>();
+                    pipeToDestroyRef.SetHightlight(true);
                 }
             }
         }
