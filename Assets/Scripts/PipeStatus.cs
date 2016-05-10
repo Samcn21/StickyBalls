@@ -217,8 +217,8 @@ public class PipeStatus : MonoBehaviour {
             }
             yield return new WaitForSeconds(delay);
         } while (leavesLeft() && !exit);
-
-
+        foreach (GameData.Team team in teamsToDestroy)
+            GameController.Instance.Lose(team);
     }
 
     public void Annhilation(GameData.Team winningTeam)
