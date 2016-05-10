@@ -212,6 +212,7 @@ public class PipeStatus : MonoBehaviour {
                 {
                     Instantiate(explosionEffect, leave.current.gameObject.transform.position, Quaternion.identity);
                     leave.current.DestroyPipe();
+                    leave.UpdateColor(GameData.Team.Neutral);
                     RecursivePipe p = pipesPerPlayer[team].FindPipe(leave);
                     if (p != null)
                         p.DisconnectPipe();
@@ -310,6 +311,8 @@ public class PipeStatus : MonoBehaviour {
                         blowUpEntirePipe = true;
                         GameController.Instance.Lose(team);
                     }
+                    leave.UpdateColor(GameData.Team.Neutral);
+
                     if (p != null)
                         p.DisconnectPipe();
                     toDestroy[i].Destroy();
