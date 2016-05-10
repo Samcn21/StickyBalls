@@ -9,8 +9,7 @@ using UnityEngine.SceneManagement;
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
-    [SerializeField]
-    private float stickSensivity = 0.25f;
+    [SerializeField] private float stickSensivity = 0.25f;
     public GamePad.Index index;
     public GameData.Team team;
 
@@ -51,14 +50,14 @@ public class InputController : MonoBehaviour
     private float velocityX;
     private float velocityZ;
     private float velocityTotal;
-    [SerializeField]
-    private float velocityThreshold = 0.1f;
-
-    public bool isPressingDelete { get; private set; }
-
+    [SerializeField] private float velocityThreshold = 0.1f;
     private float destroyTimer;
     private float resetDestroyTimer;
     private bool isPressingX;
+
+    public bool isPressingDelete { get; private set; }
+    public bool isDead { get; private set; }
+
 
     //TEST VARIABLES
     [SerializeField] private bool TEST_DELETE = false;
@@ -91,6 +90,7 @@ public class InputController : MonoBehaviour
         closePipes = new List<Pipe>();
         isPressingX = false;
         destroyTimer = resetDestroyTimer;
+        isDead = false;
     }
 
 
@@ -725,5 +725,11 @@ next:
             //in Player Color Assign page gives everybody Neutral color!
             Initialize(GameData.Team.Neutral, index);
         }
+    }
+
+    void Die()
+    {
+        isDead = true;
+        gameObject.layer = LayerMask.NameToLayer("DeadPlayer");
     }
 }
