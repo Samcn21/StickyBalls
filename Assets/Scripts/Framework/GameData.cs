@@ -242,6 +242,21 @@ using System.Collections.Generic;
             RotatePipe
         }
 
+        public enum GameStates
+        {
+            Begin,
+            Menu,
+            ColorAssignFFA,
+            ColorAssign2vs2,
+            PlayFFA,
+            Play2vs2,
+            WinningFFA,
+            Winning2vs2,
+            Restart,
+            Pause,
+            Replay  //for ghost trail later on
+
+        }
         public class Coordinate
         {
             public int x;
