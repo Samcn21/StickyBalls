@@ -57,6 +57,13 @@ public class InputController : MonoBehaviour
     private bool isPressingX;
     private float holdTimer = 0;
 
+    //Ghost trail vars
+    protected int fixedUpdateCounter;
+    protected int updateCounter;
+    protected Vector3 playerForce;
+    protected bool isRecording = false;
+
+
     public bool isPressingDelete { get; private set; }
     public bool isDead { get; private set; }
     public bool isLocked;
@@ -102,6 +109,8 @@ public class InputController : MonoBehaviour
 
     void FixedUpdate()
     {
+        fixedUpdateCounter++;
+        
         if (isLocked)
             return;
         Rigidbody playerRigidbody = GetComponent<Rigidbody>();
@@ -123,11 +132,18 @@ public class InputController : MonoBehaviour
             myAnim.SetFloat("velocity", Mathf.Abs(velocity));
         }
         if (holdTimer >= 0)
-            rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+        {
+
+                rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+                playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
+
+
+        }
     }
 
     void Update()
     {
+        updateCounter++;
         if (!initialized || isLocked) return;
         if (player.HeldPipeType == PipeData.PipeType.Void && TEST_INFINITEXPIPE)
         {
