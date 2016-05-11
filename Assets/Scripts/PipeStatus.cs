@@ -6,10 +6,10 @@ using System;
 public class PipeStatus : MonoBehaviour {
     public bool DestroySinglePipeActive;
     public float TimerToDestroyPipe;
-
+    private Vector2 ROOT_POSITION = new Vector2(-1, -1);
     public List<PlayerSource> playerSourcesRef { get; private set; }
     //This dictionary will hold the pipe tree for each player
-    private Dictionary<GameData.Team, RecursivePipe> pipesPerPlayer;
+    private Dictionary<GameData.Team, Dictionary<Vector2,RecursivePipe>> pipesPerPlayer;
     //When the destruction(complete) of the pipe starts, this dictionary will be used instead
     private Dictionary<GameData.Team, RecursivePipe> copyToDestroy;
     //This list will contain the Tree form of the neutral pipes
@@ -40,14 +40,22 @@ public class PipeStatus : MonoBehaviour {
             playerSourcesRef.Add(obj.GetComponent<PlayerSource>());
         }
         RecursivePipe voidList = new RecursivePipe();
-        pipesPerPlayer = new Dictionary<GameData.Team, RecursivePipe>();
-        pipesPerPlayer[GameData.Team.Blue] = voidList;
+        Dictionary<Vector2, RecursivePipe> p = new Dictionary<Vector2, RecursivePipe>();
+        p[ROOT_POSITION] = voidList;
+        pipesPerPlayer = new Dictionary<GameData.Team, Dictionary<Vector2,RecursivePipe>>();
+        pipesPerPlayer[GameData.Team.Blue] = p;
         voidList = new RecursivePipe();
-        pipesPerPlayer[GameData.Team.Cyan] = voidList;
+        p = new Dictionary<Vector2, RecursivePipe>();
+        p[ROOT_POSITION] = voidList;
+        pipesPerPlayer[GameData.Team.Cyan] = p;
         voidList = new RecursivePipe();
-        pipesPerPlayer[GameData.Team.Purple] = voidList;
+        p = new Dictionary<Vector2, RecursivePipe>();
+        p[ROOT_POSITION] = voidList;
+        pipesPerPlayer[GameData.Team.Purple] = p;
         voidList = new RecursivePipe();
-        pipesPerPlayer[GameData.Team.Yellow] = voidList;
+        p = new Dictionary<Vector2, RecursivePipe>();
+        p[ROOT_POSITION] = voidList;
+        pipesPerPlayer[GameData.Team.Yellow] = p;
         teamsToDestroy = new List<GameData.Team>();
         neutralPipes = new List<RecursivePipe>();
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
@@ -60,44 +68,55 @@ public class PipeStatus : MonoBehaviour {
     /// <param name="father">The father(the pipe where the pipe is attached) of the pipe</param>
     public void AddPipeToTeam(GameData.Team team, Pipe pipe,Pipe father)
     {
-        RecursivePipe tree = pipesPerPlayer[team];
-        exploredPipes = new List<RecursivePipe>();
-        RecursivePipe r = tree.SearchAndAddChild(pipe,father);
-       if(tree.GetChildren().Count>1)
+        Vector2 fatherPos = new Vector2(father.positionCoordinate.x, father.positionCoordinate.y);
+        if (pipesPerPlayer[team].ContainsKey(fatherPos))
         {
-            RecursivePipe rootParent = r.GetRootPipe();
-            RecursivePipe start;
-            if(rootParent.current.positionCoordinate.Equals(tree.firstChild.current.positionCoordinate))
+            RecursivePipe recursiveFather = pipesPerPlayer[team][fatherPos];
+            RecursivePipe r = new RecursivePipe(pipe);
+            recursiveFather.AddChild(r);
+            pipesPerPlayer[team][new Vector2(father.positionCoordinate.x, father.positionCoordinate.y)] = recursiveFather;
+            pipesPerPlayer[team][new Vector2(pipe.positionCoordinate.x, pipe.positionCoordinate.y)] = r;
+            exploredPipes = new List<RecursivePipe>();
+            RecursivePipe tree = pipesPerPlayer[team][ROOT_POSITION];
+            if (tree.GetChildren().Count > 1)
             {
-                start = tree.firstChild.nextBrother;
-            }
-            else
-            {
-                start = tree.firstChild;
-            }
-            foreach (GameData.Coordinate coord in pipe.connections)
-            {
-                exploredPipes = new List<RecursivePipe>();
-                start.SearchAndAddAsParent(r, coord);
-            }
-        }
-        if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
-            copyToDestroy[team].ReconnectSubTree(pipe, father, neutralPipes);
-        for (int i = neutralPipes.Count - 1; i >= 0; i--)
-        {
-            foreach (GameData.Coordinate coord in pipe.connections)
-            {
-                if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                RecursivePipe rootParent = r.GetRootPipe();
+                RecursivePipe start;
+                if (rootParent.current.positionCoordinate.Equals(tree.firstChild.current.positionCoordinate))
                 {
-                    r.AddChild(neutralPipes[i]);
-                    neutralPipes[i].UpdateColor(team);
-                    neutralPipes.RemoveAt(i);
-                    break;
+                    start = tree.firstChild.nextBrother;
+                }
+                else
+                {
+                    start = tree.firstChild;
+                }
+                foreach (GameData.Coordinate coord in pipe.connections)
+                {
+                    exploredPipes = new List<RecursivePipe>();
+                    if (pipesPerPlayer[team].ContainsKey(new Vector2(coord.x, coord.y))) { 
+                    RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
+                    if (start.SearchAndAddAsParent(r, coord))
+                        break;
+                }
                 }
             }
+            if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
+                copyToDestroy[team].ReconnectSubTree(pipe, father, neutralPipes);
+            for (int i = neutralPipes.Count - 1; i >= 0; i--)
+            {
+                foreach (GameData.Coordinate coord in pipe.connections)
+                {
+                    if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                    {
+                        r.AddChild(neutralPipes[i]);
+                        neutralPipes[i].UpdateColor(team);
+                        neutralPipes.RemoveAt(i);
+                        break;
+                    }
+                }
+            }
+            pipesPerPlayer[team][ROOT_POSITION] = tree;
         }
-
-        pipesPerPlayer[team] = tree;
     }
 
     /// <summary>
@@ -109,8 +128,10 @@ public class PipeStatus : MonoBehaviour {
     /// <param name="pipe">The pipe to add</param>
     public void AddFirstPipe(GameData.Team team, Pipe pipe)
     {
-        RecursivePipe tree = pipesPerPlayer[team];
-        RecursivePipe r=tree.AddFirstChild(pipe);
+        RecursivePipe tree = pipesPerPlayer[team][ROOT_POSITION];
+        tree.AddFirstChild(pipe);
+        RecursivePipe r = tree.firstChild;
+        pipesPerPlayer[team][new Vector2(pipe.positionCoordinate.x, pipe.positionCoordinate.y)] = r;
         if (copyToDestroy.ContainsKey(team) && copyToDestroy[team] != null)
             copyToDestroy[team].ReconnectSubTree(pipe,tree.firstChild.current,neutralPipes);
         for (int i = neutralPipes.Count - 1; i >= 0; i--)
@@ -126,7 +147,7 @@ public class PipeStatus : MonoBehaviour {
                 }
             }
         }
-        pipesPerPlayer[team] = tree;
+        pipesPerPlayer[team][ROOT_POSITION] = tree;
     }
 
     /// <summary>
@@ -144,7 +165,7 @@ public class PipeStatus : MonoBehaviour {
             if (!pipesPerPlayer.ContainsKey(team))
                 copyToDestroy.Add(team, new RecursivePipe());
             else
-                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));      
+                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team][ROOT_POSITION]));      
         StartCoroutine(DestroyLeavesWithDelay());
     }
         else
@@ -171,7 +192,7 @@ public class PipeStatus : MonoBehaviour {
         
         if(copyToDestroy.ContainsKey(team)&&copyToDestroy[team]!=null)
         copyToDestroy[team].DisconnectSubTree(pipe);
-        foreach (RecursivePipe p in pipesPerPlayer[team].DestroyPipe(pipe,explosionEffect,instantiateEffect))
+        foreach (RecursivePipe p in pipesPerPlayer[team][ROOT_POSITION].DestroyPipe(pipe,explosionEffect,instantiateEffect))
         {
             neutralPipes.Add(p);
             p.UpdateColor(GameData.Team.Neutral);
@@ -188,7 +209,7 @@ public class PipeStatus : MonoBehaviour {
     public void DestroyPipesFromFlameMachine(GameData.Coordinate flameMachineCoord, GameData.Team team)
     {
         copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-        copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
+        copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team][ROOT_POSITION]));
         StartCoroutine(DestroyPipeFromFlameMachine(flameMachineCoord,team));
     }
 
@@ -213,7 +234,8 @@ public class PipeStatus : MonoBehaviour {
                     Instantiate(explosionEffect, leave.current.gameObject.transform.position, Quaternion.identity);
                     leave.current.DestroyPipe();
                     leave.UpdateColor(GameData.Team.Neutral);
-                    RecursivePipe p = pipesPerPlayer[team].FindPipe(leave);
+                    Vector2 pos = new Vector2(leave.current.positionCoordinate.x, leave.current.positionCoordinate.y);
+                    RecursivePipe p = pipesPerPlayer[team][pos];
                     if (p != null)
                         p.DisconnectPipe();
                 }
@@ -248,7 +270,7 @@ public class PipeStatus : MonoBehaviour {
             if (!pipesPerPlayer.ContainsKey(team))
                 copyToDestroy.Add(team, new RecursivePipe());
             else
-                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));
+                copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team][ROOT_POSITION]));
         }
         StartCoroutine(DestroyLeavesWithDelay());
     }
@@ -269,27 +291,31 @@ public class PipeStatus : MonoBehaviour {
             List<RecursivePipe> temp=new List<RecursivePipe>();
             for(int i=0;i<toDestroy.Count;i++)
             {
-                if (toDestroy[i] != null)
+                if (toDestroy[i] != null&&!toDestroy[i].isRoot)
                 {
                     temp.Add(toDestroy[i].father);
                     foreach (RecursivePipe child in toDestroy[i].GetChildren())
                         temp.Add(child);
-                    RecursivePipe p = copyToDestroy[team].FindPipe(toDestroy[i]);
+                    Vector2 toDestroyPos = new Vector2(toDestroy[i].current.positionCoordinate.x, toDestroy[i].current.positionCoordinate.y);
+                    RecursivePipe p = pipesPerPlayer[team][toDestroyPos];
                     if (p != null)
                     {
                         foreach(RecursivePipe t in p.GetRelatives())
                         {
-                            if (t.current == null)
+                            if (t.current == null&&!t.isRoot)
                                 continue;
                             bool found = false;
-                            foreach (RecursivePipe t1 in temp)
+                            if (!t.isRoot)
                             {
-                                if (t1==null || t1.current == null)
-                                    continue;
-                                if (t.current.positionCoordinate.Equals(t1.current.positionCoordinate))
+                                foreach (RecursivePipe t1 in temp)
                                 {
-                                    found = true;
-                                    break;
+                                    if (t1 == null || t1.current == null)
+                                        continue;
+                                    if (t.current.positionCoordinate.Equals(t1.current.positionCoordinate))
+                                    {
+                                        found = true;
+                                        break;
+                                    }
                                 }
                             }
                             if (!found)
@@ -301,22 +327,32 @@ public class PipeStatus : MonoBehaviour {
             for (int i=toDestroy.Count-1;i>=0;i--) 
                 {
                 
-                if (toDestroy[i]!=null&&toDestroy[i].current != null)
+                if ((toDestroy[i]!=null&&toDestroy[i].current != null)||(toDestroy[i]!=null&&toDestroy[i].isRoot))
                 {
-                    Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
-                    toDestroy[i].current.DestroyPipe();              
-                    RecursivePipe p = pipesPerPlayer[team].FindPipe(toDestroy[i]);
-                    if (p != null && (p.father == null || p.father.current == null))
+                   
+                    Vector2 toDestroyPos;
+                    if (!toDestroy[i].isRoot)
+                        toDestroyPos = new Vector2(toDestroy[i].current.positionCoordinate.x, toDestroy[i].current.positionCoordinate.y);
+                    else
+                        toDestroyPos = ROOT_POSITION;
+                    RecursivePipe p = pipesPerPlayer[team][toDestroyPos];
+                    if (p.isRoot)
                     {
                         blowUpEntirePipe = true;
                         GameController.Instance.Lose(team);
+                        break;
                     }
-                    toDestroy[i].UpdateColor(GameData.Team.Neutral);
+                    else {
+                        Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
+                        toDestroy[i].current.DestroyPipe(); 
+                        toDestroy[i].UpdateColor(GameData.Team.Neutral);
 
-                    if (p != null)
-                        p.DisconnectPipe();
+                        if (p != null)
+                            p.DisconnectPipe();
+                    
                     toDestroy[i].Destroy();
                     toDestroy.RemoveAt(i);
+                    }
                 }
                 else
                 {
@@ -338,7 +374,7 @@ public class PipeStatus : MonoBehaviour {
         {
             teamsToDestroy.Add(team);
             copyToDestroy = new Dictionary<GameData.Team, RecursivePipe>();
-            copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team]));          
+            copyToDestroy.Add(team, new RecursivePipe(pipesPerPlayer[team][ROOT_POSITION]));          
             StartCoroutine(DestroyLeavesWithDelay());      
         }else
         copyToDestroy[team] = null;
@@ -429,6 +465,7 @@ public class PipeStatus : MonoBehaviour {
         public Pipe current { get; private set; }
         public RecursivePipe firstChild { get; private set; }
         public RecursivePipe nextBrother { get; private set; }
+        public bool isRoot { get; private set; }
 
         /// <summary>
         /// Copy constructor.
@@ -436,6 +473,7 @@ public class PipeStatus : MonoBehaviour {
         /// <param name="p">The tree type pipe to copy from</param>
         public RecursivePipe(RecursivePipe p)
         {
+            isRoot = p.isRoot;
             father = null;
             firstChild = null;
             nextBrother = null;
@@ -463,6 +501,7 @@ public class PipeStatus : MonoBehaviour {
         /// <param name="father">The father to be copied</param>
         private RecursivePipe(RecursivePipe p, RecursivePipe father)
         {
+            isRoot = false;
             this.father = father;
             firstChild = null;
             nextBrother = null;
@@ -485,6 +524,7 @@ public class PipeStatus : MonoBehaviour {
         /// <param name="pipe">The pipe to be stored</param>
         public RecursivePipe(Pipe pipe)
         {
+            isRoot = false;
             current = pipe;
             father = null;
             firstChild = null;
@@ -496,6 +536,7 @@ public class PipeStatus : MonoBehaviour {
         /// </summary>
         public RecursivePipe()
         {
+            isRoot = false;
             current = null;
             father = null;
             firstChild = null;
@@ -643,7 +684,7 @@ public class PipeStatus : MonoBehaviour {
         /// <returns>The root</returns>
         public RecursivePipe GetRootPipe()
         {
-            if (father.current == null)
+            if (father.isRoot)
                 return this;
             return father.GetRootPipe();
         }
@@ -763,7 +804,10 @@ public class PipeStatus : MonoBehaviour {
         public RecursivePipe AddFirstChild(Pipe toAdd)
         {
             RecursivePipe child = new RecursivePipe(toAdd);
+            isRoot = true;
             child.father = this;
+            
+            
             if (firstChild != null)
             {
                 child.nextBrother = firstChild;
@@ -922,11 +966,14 @@ public class PipeStatus : MonoBehaviour {
 
         public void UpdateColor(GameData.Team color)
         {
-            current.GetComponent<PipesSprite>().FindPipeStatus(current.PipeType, color);
-            if (firstChild != null)
-                firstChild.UpdateColor(color);
-            if (nextBrother != null)
-                nextBrother.UpdateColor(color);
+            if (current != null && current.GetComponent<PipesSprite>() != null)
+            {
+                current.GetComponent<PipesSprite>().FindPipeStatus(current.PipeType, color);
+                if (firstChild != null)
+                    firstChild.UpdateColor(color);
+                if (nextBrother != null)
+                    nextBrother.UpdateColor(color);
+            }
         }
 
         /// <summary>

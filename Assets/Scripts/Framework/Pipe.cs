@@ -56,6 +56,8 @@ public class Pipe : MonoBehaviour
         if (todestroy) DestroyPipe();
     }
 
+
+
     public void Initialize(PipeData.PipeType pipeType, GameData.Coordinate coord, int rotationAngle) {
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
