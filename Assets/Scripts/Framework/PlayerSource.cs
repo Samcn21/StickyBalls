@@ -141,9 +141,7 @@ public class PlayerSource : Pipe
         else if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA) 
         {
 
-            openTiles.Add(new GameData.Coordinate(6, 6));
-            openTiles.Add(new GameData.Coordinate(7, 6));
-            openTiles.Add(new GameData.Coordinate(8, 6));
+
             openTiles.Add(new GameData.Coordinate(12, 6));
             openTiles.Add(new GameData.Coordinate(13, 6));
             openTiles.Add(new GameData.Coordinate(14, 6));
@@ -153,6 +151,9 @@ public class PlayerSource : Pipe
             openTiles.Add(new GameData.Coordinate(10, 8));
             openTiles.Add(new GameData.Coordinate(10, 9));
             openTiles.Add(new GameData.Coordinate(10, 10));
+            openTiles.Add(new GameData.Coordinate(6, 6));
+            openTiles.Add(new GameData.Coordinate(7, 6));
+            openTiles.Add(new GameData.Coordinate(8, 6));
 
             GridController GridController = gameController.GetComponent<GridController>();
             switch (sourceLocation)

@@ -99,10 +99,6 @@ public class InputController : MonoBehaviour
     {
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
-
-        if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA){
-            //GetComponent<SphereCollider>().radius = 1;
-        }
         CharacterSprite = GetComponentInChildren<CharacterSprite>();
         player = GetComponent<Player>();
         closeConveyorPipes = new List<ConveyorPipe>();
@@ -397,24 +393,15 @@ public class InputController : MonoBehaviour
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
             {
-                if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
-                {
+
                     if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
                     {
                         if (!closePipes.Contains(pipe))
                             closePipes.Add(pipe);
                         closePipeConnections.Add(c);
                     }
-                }
-                else if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
-                {
-                    if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
-                    {
-                        if (!closePipes.Contains(pipe))
-                            closePipes.Add(pipe);
-                        closePipeConnections.Add(c);
-                    }
-                }
+
+
             }
         }
     }
