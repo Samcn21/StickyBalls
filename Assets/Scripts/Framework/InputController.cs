@@ -9,9 +9,12 @@ using UnityEngine.SceneManagement;
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
-    [SerializeField] private float stickSensivity = 0.25f;
-    [SerializeField] private float velocityThreshold = 0.1f;
-    [SerializeField] private float holdTimerLimit = 1.25f;
+    [SerializeField]
+    private float stickSensivity = 0.25f;
+    [SerializeField]
+    private float velocityThreshold = 0.1f;
+    [SerializeField]
+    private float holdTimerLimit = 1.25f;
     public GamePad.Index index;
     public GameData.Team team;
 
@@ -63,6 +66,8 @@ public class InputController : MonoBehaviour
     protected Vector3 playerForce;
     protected bool isRecording = false;
 
+    //State Machine
+    private StateManager StateManager;
 
     public bool isPressingDelete { get; private set; }
     public bool isDead { get; private set; }
@@ -70,8 +75,10 @@ public class InputController : MonoBehaviour
 
 
     //TEST VARIABLES
-    [SerializeField] private bool TEST_DELETE = false;
-    [SerializeField] private bool TEST_INFINITEXPIPE = false;
+    [SerializeField]
+    private bool TEST_DELETE = false;
+    [SerializeField]
+    private bool TEST_INFINITEXPIPE = false;
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -90,6 +97,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
         CharacterSprite = GetComponentInChildren<CharacterSprite>();
         player = GetComponent<Player>();
@@ -110,7 +118,7 @@ public class InputController : MonoBehaviour
     void FixedUpdate()
     {
         fixedUpdateCounter++;
-        
+
         if (isLocked)
             return;
         Rigidbody playerRigidbody = GetComponent<Rigidbody>();
@@ -134,8 +142,8 @@ public class InputController : MonoBehaviour
         if (holdTimer >= 0)
         {
 
-                rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
-                playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
+            rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+            playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
 
 
         }
@@ -149,28 +157,33 @@ public class InputController : MonoBehaviour
         {
             player.PickupPipe(PipeData.PipeType.Cross, 0);
         }
-        
+
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
 
 
         if (TEST_DELETE)
         {
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex)) {
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+            {
                 isPressingX = true;
                 isPressingDelete = true;
             }
-            else {
+            else
+            {
                 isPressingDelete = false;
             }
 
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex)) {
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
+            {
                 isPressingX = false;
                 destroyTimer = resetDestroyTimer;
             }
-            if (isPressingX && pipeToDestroyRef != null) {
+            if (isPressingX && pipeToDestroyRef != null)
+            {
                 destroyTimer -= Time.deltaTime;
-                if (pipeToDestroyRef != null && destroyTimer <= 0) {
+                if (pipeToDestroyRef != null && destroyTimer <= 0)
+                {
                     pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                     pipeToDestroyRef = null;
                 }
@@ -179,8 +192,10 @@ public class InputController : MonoBehaviour
 
         if (gamepadState.A)
         {
-            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null) {
-                if (holdTimer >= holdTimerLimit) {
+            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
+            {
+                if (holdTimer >= holdTimerLimit)
+                {
                     PickUpPipe(pipeToDestroyRef);
                     holdTimer = 0;
                 }
@@ -339,7 +354,8 @@ public class InputController : MonoBehaviour
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
         {
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
-            if (pipe.Team != team) {
+            if (pipe.Team != team)
+            {
                 goto next;
             }
             if (pipeToDestroyRef == null)
@@ -357,7 +373,7 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-next:   
+    next:
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -391,12 +407,12 @@ next:
     //If it was a pipe remove it.
     void OnTriggerExit(Collider col)
     {
-        if (col.gameObject.tag == "Pipe"&&pipeToDestroyRef==col.GetComponent<Pipe>())
+        if (col.gameObject.tag == "Pipe" && pipeToDestroyRef == col.GetComponent<Pipe>())
         {
             pipeToDestroyRef.SetHightlight(false);
             pipeToDestroyRef = null;
         }
-            
+
 
         ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
         if (conveyorPipe != null)
@@ -422,11 +438,11 @@ next:
             if (closePipeConnections.Contains(c))
             {
 
-            closePipeConnections.Remove(c);
-                
+                closePipeConnections.Remove(c);
+
                 if (closePipeConnections.Count == 0)
                 {
-                   
+
                     selectedPipeConnection = null;
                     if (selectedPipePlaceholder != null)
                         Destroy(selectedPipePlaceholder.gameObject);
@@ -524,7 +540,7 @@ next:
             foreach (Pipe father in closePipes)
             {
                 found = false;
-                if (father.connections.Contains(selectedPipeConnection)&&father.PipeType!=PipeData.PipeType.Void)
+                if (father.connections.Contains(selectedPipeConnection) && father.PipeType != PipeData.PipeType.Void)
                 {
                     found = true;
                     pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
@@ -532,7 +548,7 @@ next:
                     break;
                 }
             }
-            if(!found)
+            if (!found)
                 pipeStatus.AddFirstPipe(pipe.Team, pipe);
             player.PlacePipe();
             selectedPipeConnection = null;
@@ -644,41 +660,44 @@ next:
 
     void ColorInit(GameData.Team t)
     {
-        Animator myAnim = GetComponentInChildren<Animator>();
-        SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject purpleSpot = GameObject.Find("Purple");
-        GameObject blueSpot = GameObject.Find("Blue");
-        GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject cyanSpot = GameObject.Find("Cyan");
-        
-        //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
-        if (mySprite != null)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            //change the color of the player in order to the gamePad index number and move the player
-            // to the related respawn spots (next to their source) that have the same color as the player
-            if (t.ToString().Contains("Purple"))
+            Animator myAnim = GetComponentInChildren<Animator>();
+            SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
+            GameObject purpleSpot = GameObject.Find("Purple");
+            GameObject blueSpot = GameObject.Find("Blue");
+            GameObject yellowSpot = GameObject.Find("Yellow");
+            GameObject cyanSpot = GameObject.Find("Cyan");
+
+            //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
+            if (mySprite != null)
             {
-                mySprite.sprite = redSprite;
-                myAnim.runtimeAnimatorController = redAnim;
-                transform.position = purpleSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Blue"))
-            {
-                mySprite.sprite = blueSprite;
-                myAnim.runtimeAnimatorController = blueAnim;
-                transform.position = blueSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Yellow"))
-            {
-                mySprite.sprite = yellowSprite;
-                myAnim.runtimeAnimatorController = yellowAnim;
-                transform.position = yellowSpot.transform.position;
-            }
-            else if (t.ToString().Contains("Cyan"))
-            {
-                mySprite.sprite = blackSprite;
-                myAnim.runtimeAnimatorController = blackAnim;
-                transform.position = cyanSpot.transform.position;
+                //change the color of the player in order to the gamePad index number and move the player
+                // to the related respawn spots (next to their source) that have the same color as the player
+                if (t.ToString().Contains("Purple"))
+                {
+                    mySprite.sprite = redSprite;
+                    myAnim.runtimeAnimatorController = redAnim;
+                    transform.position = purpleSpot.transform.position;
+                }
+                else if (t.ToString().Contains("Blue"))
+                {
+                    mySprite.sprite = blueSprite;
+                    myAnim.runtimeAnimatorController = blueAnim;
+                    transform.position = blueSpot.transform.position;
+                }
+                else if (t.ToString().Contains("Yellow"))
+                {
+                    mySprite.sprite = yellowSprite;
+                    myAnim.runtimeAnimatorController = yellowAnim;
+                    transform.position = yellowSpot.transform.position;
+                }
+                else if (t.ToString().Contains("Cyan"))
+                {
+                    mySprite.sprite = blackSprite;
+                    myAnim.runtimeAnimatorController = blackAnim;
+                    transform.position = cyanSpot.transform.position;
+                }
             }
         }
     }
@@ -731,7 +750,7 @@ next:
                 }
                 else
                 {
-                //if playerPrefs is null then assign this colors to the players
+                    //if playerPrefs is null then assign this colors to the players
                     defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>()
                     {
                         {GamePad.Index.One, GameData.Team.Cyan},
@@ -740,7 +759,7 @@ next:
                         {GamePad.Index.Four, GameData.Team.Purple}
                     };
                 }
-                
+
 
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
                 {

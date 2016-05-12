@@ -30,6 +30,10 @@ public class GameController : MonoBehaviour
     private PipesSprite PipesSprite;
     public bool Gamemode_IsCoop = false;
 
+    //State Machine
+    private StateManager StateManager;
+    private GameObject gameController;
+
     void Start()
     {
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
@@ -70,19 +74,25 @@ public class GameController : MonoBehaviour
 
     public void PlayerWon(GameData.Team winningTeam)
     {
-        if (!gameRunning)
-            return;
+        gameController = GameObject.FindGameObjectWithTag("GameController");
+        StateManager = gameController.GetComponent<StateManager>();
 
-        GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
-        foreach (GameObject pipe in allPipes)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
+            if (!gameRunning)
+                return;
+
+            GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+            foreach (GameObject pipe in allPipes)
+            {
+                pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
+            }
+            CenterMachineSprite.FindCentralMachineStatus(winningTeam);
+
+            gameRunning = false;
+
+            StartCoroutine(ShowWinnerGUI(winningTeam));
         }
-        CenterMachineSprite.FindCentralMachineStatus(winningTeam);
-
-        gameRunning = false;
-
-        StartCoroutine(ShowWinnerGUI(winningTeam));
     }
 
     public void Lose(GameData.Team team)
