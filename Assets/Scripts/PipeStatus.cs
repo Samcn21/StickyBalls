@@ -106,7 +106,7 @@ public class PipeStatus : MonoBehaviour {
             {
                 foreach (GameData.Coordinate coord in pipe.connections)
                 {
-                    if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                    if (gridController.IsInsideGrid(coord)&&neutralPipes[i].CheckIfTreeIsConnected(coord))
                     {
                         r.AddChild(neutralPipes[i]);
                         neutralPipes[i].UpdateColor(team);
@@ -138,7 +138,7 @@ public class PipeStatus : MonoBehaviour {
         {
             foreach (GameData.Coordinate coord in pipe.connections)
             {
-                if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                if (gridController.IsInsideGrid(coord) && neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
                     neutralPipes[i].UpdateColor(team);
@@ -344,8 +344,9 @@ public class PipeStatus : MonoBehaviour {
                     }
                     else {
                         Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
-                        toDestroy[i].current.DestroyPipe(); 
                         toDestroy[i].UpdateColor(GameData.Team.Neutral);
+                        toDestroy[i].current.DestroyPipe(); 
+                        
 
                         if (p != null)
                             p.DisconnectPipe();
@@ -566,8 +567,17 @@ public class PipeStatus : MonoBehaviour {
             }
             else
             {
-                RecursivePipe last = firstChild.LastBrother();
-                last.nextBrother = pipe;
+                RecursivePipe p = firstChild;
+                while (p.nextBrother != null) {
+                    if (!p.current.positionCoordinate.Equals(pipe.current.positionCoordinate))
+                    {
+                        p = p.nextBrother;
+                    }
+                    else
+                        return;
+                }
+                p.nextBrother = pipe;
+
             }
             
         }
