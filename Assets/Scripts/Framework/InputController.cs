@@ -48,7 +48,7 @@ public class InputController : MonoBehaviour
     public GameData.Direction characterFacing = GameData.Direction.South;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
-    public bool hasPipePicked = true;
+    private bool hasPipePicked = true;
 
     private Pipe pipeToDestroyRef = null;
     public CharacterSprite CharacterSprite { get; private set; }
