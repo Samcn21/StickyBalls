@@ -48,6 +48,8 @@ public class InputController : MonoBehaviour
     public GameData.Direction characterFacing = GameData.Direction.South;
     public bool colorPicked { get; private set; }
     public bool colorPickPermit = false;
+    public bool hasPipePicked = true;
+
     private Pipe pipeToDestroyRef = null;
     public CharacterSprite CharacterSprite { get; private set; }
 
@@ -89,6 +91,7 @@ public class InputController : MonoBehaviour
         ColorInit(t);  //Color initialization 
         initialized = true;
         colorPicked = false;
+        hasPipePicked = true;
         isPressingDelete = false;
         resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
         player.Initialize();
@@ -358,18 +361,21 @@ public class InputController : MonoBehaviour
             {
                 goto next;
             }
-            if (pipeToDestroyRef == null)
+            if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
             {
-                pipeToDestroyRef = pipe;
-            }
-            else
-            {
-                if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
-                    Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                if (pipeToDestroyRef == null)
                 {
-                    pipeToDestroyRef.SetHightlight(false);
-                    pipeToDestroyRef = col.GetComponent<Pipe>();
-                    pipeToDestroyRef.SetHightlight(true);
+                    pipeToDestroyRef = pipe;
+                }
+                else
+                {
+                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    {
+                        pipeToDestroyRef.SetHightlight(false);
+                        pipeToDestroyRef = col.GetComponent<Pipe>();
+                        pipeToDestroyRef.SetHightlight(true);
+                    }
                 }
             }
         }
@@ -590,21 +596,31 @@ public class InputController : MonoBehaviour
 
     private void PickUpPipe(ConveyorPipe conveyorPipe)
     {
-        PickUpPipe();
-        conveyorPipe.PickPipe();
-        player.PickupPipe(conveyorPipe.PipeType, rotationIndex * 90);
-        closeConveyorPipes.Remove(selectedConveyorPipe);
-        Destroy(selectedConveyorPipe.gameObject);
-        selectedConveyorPipe = null;
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+            hasPipePicked = true;
+
+        if (hasPipePicked)
+        {
+            PickUpPipe();
+            conveyorPipe.PickPipe();
+            player.PickupPipe(conveyorPipe.PipeType, rotationIndex * 90);
+            closeConveyorPipes.Remove(selectedConveyorPipe);
+            Destroy(selectedConveyorPipe.gameObject);
+            selectedConveyorPipe = null;
+            hasPipePicked = false;
+        }
+
     }
 
     private void PickUpPipe(Pipe pipeToPick)
     {
-        PickUpPipe();
-        player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
-        pipeToDestroyRef = null;
-        pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
-
+        if(StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            PickUpPipe();
+            player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
+            pipeToDestroyRef = null;
+            pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
+        }
     }
 
     private void PlayerState()
