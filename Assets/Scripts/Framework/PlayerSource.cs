@@ -181,7 +181,6 @@ public class PlayerSource : Pipe
                     Team = GameData.Team.Yellow;
                     break;
             }
-            con2 = null;
 
             for (int x = 0; x < GridController.GridWidth; x++)
             {
@@ -200,7 +199,10 @@ public class PlayerSource : Pipe
         }
 
         connections.Add(con);
-        connections.Add(con2);
+        if (con2 != null)
+        {
+            connections.Add(con2);
+        }
 
         coordinateOfOutingPoints[0] = new GameData.Coordinate(me.x, me.y);
         gridController.Grid[me.x, me.y].SetPipe(this);
