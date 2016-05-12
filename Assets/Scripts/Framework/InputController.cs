@@ -393,15 +393,12 @@ public class InputController : MonoBehaviour
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
             {
-
                     if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
                     {
                         if (!closePipes.Contains(pipe))
                             closePipes.Add(pipe);
                         closePipeConnections.Add(c);
                     }
-
-
             }
         }
     }
