@@ -64,6 +64,20 @@ public class GameData
         CenterMachineYellow
     }
 
+    public enum ControllerStates 
+    {
+        XboxController,
+        XboxLeftScroll,
+        XboxA,
+        XboxB,
+        XboxStart,
+        PsController,
+        PsLeftScroll,
+        PsX,
+        PsCircle,
+        PsStart
+    }
+
     public enum PipesStates
     {
         PipeNeutralEmptyCorner,
@@ -234,7 +248,9 @@ public class GameData
         Pipe,
         PipeNeutral,
         CenterMachine,
-        SourceMachine
+        SourceMachine,
+        XboxController,
+        PsController
     }
 
     public enum AudioClipState
