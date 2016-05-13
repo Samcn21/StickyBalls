@@ -47,14 +47,33 @@ public class CharacterSprite : AnimationController {
     private int[] pipePlaceRight        = new int[2] { 43, 44 };
     private int[] pipePlaceLeft         = new int[2] { 45, 46 };
 
-
-	// Use this for initialization
-	void Start () {
+    void Start() 
+    {
         InputController = transform.parent.GetComponent<InputController>();
+    }
+
+    public void Settings()
+    {
+        rows = spriteSheetRows;
+        columns = spriteSheetColumns;
+        FindMaterial();
+    }
+
+    void Update()
+    {
+        Settings();
+        FPSController();
+        PlayAnimation();
+        ReadSpriteSheet(mySpriteSheet);
+        currentFrameShow = currentFrame;
+    }
+
+    public void FindMaterial() 
+    {
         if (InputController != null)
         {
             switch (InputController.team)
-            { 
+            {
                 case GameData.Team.Blue:
                     rend.material = charBlueMat;
                     break;
@@ -77,23 +96,7 @@ public class CharacterSprite : AnimationController {
 
             }
         }
-	}
-
-    void Settings()
-    {
-        rows = spriteSheetRows;
-        columns = spriteSheetColumns;
     }
-
-    void Update()
-    {
-        Settings();
-        FPSController();
-        PlayAnimation();
-        ReadSpriteSheet(mySpriteSheet);
-        currentFrameShow = currentFrame;
-    }
-
     public void FindGrabPipeAnimation()
     {
         hasMovementPermit = false;

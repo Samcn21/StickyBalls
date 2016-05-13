@@ -84,7 +84,10 @@ public class InputController : MonoBehaviour
         hasPipePicked = true;
         isPressingDelete = false;
         resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
-        player.Initialize();
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            player.Initialize();
+        }
     }
 
     // Use this for initialization
@@ -324,8 +327,11 @@ public class InputController : MonoBehaviour
                 isLegalRotation = true;
             }
         }
-        if (closePipes.Count == 0)
-            closePipeConnections.Clear();
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            if (closePipes.Count == 0)
+                closePipeConnections.Clear();
+        }
     }
 
     void OnTriggerStay(Collider col)
@@ -653,8 +659,6 @@ public class InputController : MonoBehaviour
     {
         if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            Animator myAnim = GetComponentInChildren<Animator>();
-            SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
             GameObject purpleSpot = GameObject.Find("Purple");
             GameObject blueSpot = GameObject.Find("Blue");
             GameObject yellowSpot = GameObject.Find("Yellow");
@@ -685,7 +689,7 @@ public class InputController : MonoBehaviour
     void AssignColorsToPlayers()
     {
         //Gives default color to the players
-        if (SceneManager.GetActiveScene().name != "PlayerColorAssign")
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level invokes directly from PlayerColorAssign level
