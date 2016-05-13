@@ -139,7 +139,12 @@ public class GameData
         PipePlaceFront,
         PipePlaceBack,
         PipePlaceRight,
-        PipePlaceLeft
+        PipePlaceLeft,
+        MovementFrontCarryPipe,
+        MovementBackCarryPipe,
+        MovementRightCarryPipe,
+        MovementLeftCarryPipe,
+        Dance
     }
 
     public enum AnimationStates
