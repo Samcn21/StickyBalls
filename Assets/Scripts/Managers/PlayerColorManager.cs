@@ -45,6 +45,7 @@ public class PlayerColorManager : MonoBehaviour
                                 GameData.Team.Cyan
                         };
                 List<GameData.Team> impossibleColorList = new List<GameData.Team>();
+
                 GamePad.Index[] indexList = new GamePad.Index[] {
                                 GamePad.Index.One,
                                 GamePad.Index.Two,
@@ -87,7 +88,8 @@ public class PlayerColorManager : MonoBehaviour
                     PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
                     PlayerPrefs.SetInt("isDataSaved", 1);
                 }
-                SceneManager.LoadScene("Level02");
+                //TODO: in a coroutine level starts in x serconds
+                SceneManager.LoadScene("LevelFFA");
             }
         }
     }

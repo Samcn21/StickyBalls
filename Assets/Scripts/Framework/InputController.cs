@@ -518,8 +518,6 @@ public class InputController : MonoBehaviour
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
-        Vector3 pipeOffset = new Vector3(0, 1, 0);
-        Vector3 dynamiteOffset = new Vector3(0, 2, 0);
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             GameObject newPipe = Instantiate(pipeMan.pipePrefab,
@@ -546,7 +544,6 @@ public class InputController : MonoBehaviour
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
             {
                 team = pipe.Team;
-                playerColorAssign.Add(gamepadIndex, pipe.Team);
             }
 
             player.PlacePipe();
