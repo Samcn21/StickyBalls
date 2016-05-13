@@ -14,7 +14,7 @@ public class PlayerColorManager : MonoBehaviour
         {GamePad.Index.Three, GameData.Team.Neutral},
         {GamePad.Index.Four, GameData.Team.Neutral},
     };
-    public GameObject[] players;
+    private GameObject[] players;
     private InputController InputController;
     int counter = 0;
     void Start()
@@ -104,6 +104,6 @@ public class PlayerColorManager : MonoBehaviour
             PlayerPrefs.SetInt("isDataSaved", 1);
         }
         //TODO: in a coroutine level starts in x serconds
-        //SceneManager.LoadScene("LevelFFA");
+        SceneManager.LoadScene("LevelFFA");
     }
 }
