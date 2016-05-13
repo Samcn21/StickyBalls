@@ -94,7 +94,7 @@ public class PipeStatus : MonoBehaviour {
                 {
                     exploredPipes = new List<RecursivePipe>();
                     if (pipesPerPlayer[team].ContainsKey(new Vector2(coord.x, coord.y))) { 
-                    RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
+                    //RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
                     if (start.SearchAndAddAsParent(r, coord))
                         break;
                 }

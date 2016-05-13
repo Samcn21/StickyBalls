@@ -27,7 +27,6 @@ public class GameController : MonoBehaviour
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
-    private PipesSprite PipesSprite;
     public bool Gamemode_IsCoop = false;
 
     //State Machine
@@ -40,7 +39,6 @@ public class GameController : MonoBehaviour
         StateManager = gameController.GetComponent<StateManager>();
 
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
-        PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {

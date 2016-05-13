@@ -6,11 +6,10 @@ public class PipesSprite : AnimationController
     public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Pipe;
     public int spriteSheetColumns       = 8;
     public int spriteSheetRows          = 8;
-    [SerializeField] int currentFrameShow = 1;
 
     public GameData.PipesStates currentAnim;
     private string stateName = "";
-    private Pipe Pipe;
+    //private Pipe Pipe;
     public Material pipesMat;
     public Material pipesNeutralMat;
     public Renderer rend;
@@ -68,11 +67,11 @@ public class PipesSprite : AnimationController
 	void Start () {
         Settings();
         rend = GetComponent<Renderer>();
-        if (Pipe != null)
-        {
+        //if (Pipe != null)
+        //{
             mySpriteSheet = GameData.SpriteSheet.Pipe;
             rend.material = pipesMat;
-        }
+        //}
 	}
 
     void Settings() 
@@ -86,7 +85,6 @@ public class PipesSprite : AnimationController
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(mySpriteSheet);
-        currentFrameShow = currentFrame;
 	}
 
     void PlayAnimation() 

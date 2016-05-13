@@ -738,10 +738,10 @@ public class InputController : MonoBehaviour
                     //if playerPrefs is null then assign this colors to the players
                     defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>()
                     {
-                        {GamePad.Index.One, GameData.Team.Cyan},
-                        {GamePad.Index.Two, GameData.Team.Yellow},
-                        {GamePad.Index.Three, GameData.Team.Blue},
-                        {GamePad.Index.Four, GameData.Team.Purple}
+                        {GamePad.Index.One, GameData.Team.Blue},
+                        {GamePad.Index.Two, GameData.Team.Cyan},
+                        {GamePad.Index.Three, GameData.Team.Purple},
+                        {GamePad.Index.Four, GameData.Team.Yellow}
                     };
                 }
 

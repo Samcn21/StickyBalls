@@ -6,8 +6,6 @@ public class CharacterSprite : AnimationController {
     public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Character;
     public int spriteSheetColumns   = 8;
     public int spriteSheetRows      = 8;
-    [SerializeField]
-    int currentFrameShow = 1;
 
     public GameData.PlayerState currentAnim = GameData.PlayerState.IdleFront;
     public GameData.PlayerState previousAnim = GameData.PlayerState.IdleFront;
@@ -65,7 +63,6 @@ public class CharacterSprite : AnimationController {
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(mySpriteSheet);
-        currentFrameShow = currentFrame;
     }
 
     public void FindMaterial() 
