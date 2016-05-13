@@ -597,7 +597,7 @@ public class PipeStatus : MonoBehaviour {
         /// <summary>
         /// Function that checks if the current tree type pipe is actually connected to the passed coordinate
         /// </summary>
-        /// <param name="coordinate">The coordinate to check if the tree is connected</param>
+        /// <param name="coordinate">The coordinate to player if the tree is connected</param>
         /// <returns>True or false</returns>
         public bool CheckIfTreeIsConnected(GameData.Coordinate coordinate)
         {

@@ -160,7 +160,7 @@ public class ObstacleController : MonoBehaviour
         return true;
     }
     
-    //check if the tile is valid in order to its Generation Mode
+    //player if the tile is valid in order to its Generation Mode
     public bool IsValid(Vector2 obstacleTile, GenerationMode obstacleMode) 
     {
         if (obstacleMode == GenerationMode.SingleTile) {
@@ -256,10 +256,10 @@ public class ObstacleController : MonoBehaviour
         }
     }
 
-    //check if making a tile on the left,right,top and bottom side is valid
+    //player if making a tile on the left,right,top and bottom side is valid
     public bool IsAddSymmetryValid(Vector2 obstacleTile, bool XY)
     {
-        //XY = true means check width
+        //XY = true means player width
         if (XY)
         {
             if (Mathf.Abs(gridX - 1 - obstacleTile.x) == obstacleTile.x || IsAlreadyChosen(new Vector2(Mathf.Abs(gridX - 1 - obstacleTile.x), obstacleTile.y)))
@@ -272,7 +272,7 @@ public class ObstacleController : MonoBehaviour
                 return true;
             }
         }
-        //XY = false means check height
+        //XY = false means player height
         else 
         {
             if (Mathf.Abs(gridY - 1 - obstacleTile.y) == obstacleTile.y || IsAlreadyChosen(new Vector2(obstacleTile.x, Mathf.Abs(gridY - 1 - obstacleTile.y))))
@@ -290,19 +290,19 @@ public class ObstacleController : MonoBehaviour
     //Get the symmetry value of an obsticale tile
     public Vector2 GetSymmetryValue(Vector2 obstacleTile, bool XY) 
     {
-        //XY = true means check width
+        //XY = true means player width
         if (XY)
         {
             return new Vector2(Mathf.Abs(gridX - 1 - obstacleTile.x ), obstacleTile.y);
         }
-        //XY = false means check height
+        //XY = false means player height
         else
         {
             return new Vector2(obstacleTile.x, Mathf.Abs(gridY - 1 - obstacleTile.y));
         }
     }
 
-    //check if making a tile on the left,right,top and bottom side is valid
+    //player if making a tile on the left,right,top and bottom side is valid
     public bool IsAddSingleTileAroundValid(Vector2 obstacleTile, int vlaueX, int valueY)
     {
         Vector2 value = new Vector2(obstacleTile.x + vlaueX, obstacleTile.y + valueY);
@@ -314,7 +314,7 @@ public class ObstacleController : MonoBehaviour
         return true;
     }
 
-    //check if making four sides of the tile is valid and if it's valid add to the generation list
+    //player if making four sides of the tile is valid and if it's valid add to the generation list
     public bool IsAddFourSidesValid(Vector2 obstacleTile) {
         if (IsAddSymmetryValid(obstacleTile, false) && IsAddSymmetryValid(obstacleTile, true))
         {
@@ -324,7 +324,7 @@ public class ObstacleController : MonoBehaviour
         return false;
     }
 
-    //check if making four sides of the tile is valid and if it's valid add to the generation list
+    //player if making four sides of the tile is valid and if it's valid add to the generation list
     public Vector2[] GetFourSidesValue(Vector2 obstacleTile) 
     {
         Vector2[] fourSidesTiles = new Vector2[4];
@@ -335,7 +335,7 @@ public class ObstacleController : MonoBehaviour
         return fourSidesTiles;
     }
 
-    //check if a tile is on the board
+    //player if a tile is on the board
     public bool IsOnBoard(Vector2 obstacleTile)
     {
         if ((int)obstacleTile.x > gridX || (int)obstacleTile.y > gridY)
@@ -345,7 +345,7 @@ public class ObstacleController : MonoBehaviour
         return true;
     }
 
-    //check the tile is one of chosen 
+    //player the tile is one of chosen 
     public bool IsAlreadyChosen(Vector2 obstacleTile)
     {
         if (!lockedTilesList.Contains(obstacleTile))

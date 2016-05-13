@@ -122,7 +122,7 @@ public class InputController : MonoBehaviour
         velocityZ = playerRigidbody.velocity.z;
         velocityTotal = Mathf.Abs(velocityX + velocityZ);
 
-        //This method check player's states for movement animation sound and player facing 
+        //This method player player's states for movement animation sound and player facing 
         PlayerState();
 
         if (!initialized) return;
@@ -335,8 +335,8 @@ public class InputController : MonoBehaviour
         OnTriggerEnter(col);
     }
 
-    //If player is not holding a pipe, check if the collider is a conveyor pipe
-    //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
+    //If player is not holding a pipe, player if the collider is a conveyor pipe
+    //Else player if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")

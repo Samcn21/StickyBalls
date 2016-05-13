@@ -15,7 +15,8 @@ public class PlayerColorManager : MonoBehaviour
         {GamePad.Index.Four, GameData.Team.Neutral},
     };
     public GameObject[] players;
-
+    private InputController InputController;
+    int counter = 0;
     void Start()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
@@ -23,16 +24,23 @@ public class PlayerColorManager : MonoBehaviour
 
     void Update()
     {
-        foreach (GameObject check in players)
+        counter = 0;
+        foreach (GameObject player in players)
         {
-            InputController InputController;
-            InputController = check.gameObject.GetComponent<InputController>();
+            InputController = player.gameObject.GetComponent<InputController>();
             if (InputController.team != GameData.Team.Neutral)
             {
                 playerIndexColor[InputController.index] = InputController.team;
+                counter++;
             }
         }
 
+        //if all characters choose a color level automatically restart
+        if (counter == 4) 
+        {
+            RestartLevel();
+        }
+        
         //this part starts the game from PlayerColorAssign level!
         if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
         {
@@ -81,17 +89,21 @@ public class PlayerColorManager : MonoBehaviour
                         }
                     }
                 }
-                foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
-                {
-                    //Debug.Log(player.Key + " - " + player.Value);
-                    //TODO: Show which game pad picked what color in GUI
-                    PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
-                    PlayerPrefs.SetInt("isDataSaved", 1);
-                }
-                //TODO: in a coroutine level starts in x serconds
-                SceneManager.LoadScene("LevelFFA");
+                RestartLevel();
             }
         }
     }
 
+    private void RestartLevel() 
+    {
+        foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
+        {
+            //Debug.Log(player.Key + " - " + player.Value);
+            //TODO: Show which game pad picked what color in GUI
+            PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
+            PlayerPrefs.SetInt("isDataSaved", 1);
+        }
+        //TODO: in a coroutine level starts in x serconds
+        //SceneManager.LoadScene("LevelFFA");
+    }
 }
