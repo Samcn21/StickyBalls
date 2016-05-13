@@ -53,29 +53,29 @@ public class CharacterSprite : AnimationController {
         InputController = transform.parent.GetComponent<InputController>();
         if (InputController != null)
         {
-            //switch (InputController.team)
-            //{ 
-            //    case GameData.Team.Blue:
-            //        rend.material = charBlueMat;
-            //        break;
+            switch (InputController.team)
+            { 
+                case GameData.Team.Blue:
+                    rend.material = charBlueMat;
+                    break;
 
-            //    case GameData.Team.Cyan:
-            //        rend.material = charCyanMat;
-            //        break;
+                case GameData.Team.Cyan:
+                    rend.material = charCyanMat;
+                    break;
 
-            //    case GameData.Team.Purple:
-            //        rend.material = charPurpleMat;
-            //        break;
+                case GameData.Team.Purple:
+                    rend.material = charPurpleMat;
+                    break;
 
-            //    case GameData.Team.Yellow:
-            //        rend.material = charYellowMat;
-            //        break;
+                case GameData.Team.Yellow:
+                    rend.material = charYellowMat;
+                    break;
 
-            //    case GameData.Team.Neutral:
-            //        rend.material = charNeutralMat;
-            //        break;
+                case GameData.Team.Neutral:
+                    rend.material = charNeutralMat;
+                    break;
 
-            //}
+            }
         }
 	}
 

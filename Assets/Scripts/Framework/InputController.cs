@@ -18,16 +18,6 @@ public class InputController : MonoBehaviour
     public GamePad.Index index;
     public GameData.Team team;
 
-    //TODO: Remove animation and sprite variables after instalation of new animation system
-    public RuntimeAnimatorController redAnim;
-    public RuntimeAnimatorController blueAnim;
-    public RuntimeAnimatorController yellowAnim;
-    public RuntimeAnimatorController blackAnim;
-    public Sprite redSprite;
-    public Sprite blueSprite;
-    public Sprite yellowSprite;
-    public Sprite blackSprite;
-
     private AudioManager AudioManager;
     private Player player;
     private GamepadState gamepadState;
@@ -135,13 +125,6 @@ public class InputController : MonoBehaviour
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
 
-        //TODO: These lines must be removed after adding new animation system
-        float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
-        Animator myAnim = GetComponentInChildren<Animator>();
-        if (myAnim != null)
-        {
-            myAnim.SetFloat("velocity", Mathf.Abs(velocity));
-        }
         if (holdTimer >= 0)
         {
 
@@ -579,14 +562,6 @@ public class InputController : MonoBehaviour
 
     private void PickUpPipe()
     {
-        //TODO Animation and sound for pipe pickup
-        Animator myAnim = GetComponentInChildren<Animator>();
-
-        if (myAnim != null)
-        {
-            myAnim.SetTrigger("grabPipe");
-        }
-
         //Animation
         CharacterSprite.FindGrabPipeAnimation();
 
@@ -685,36 +660,25 @@ public class InputController : MonoBehaviour
             GameObject yellowSpot = GameObject.Find("Yellow");
             GameObject cyanSpot = GameObject.Find("Cyan");
 
-            //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
-            if (mySprite != null)
-            {
                 //change the color of the player in order to the gamePad index number and move the player
                 // to the related respawn spots (next to their source) that have the same color as the player
                 if (t.ToString().Contains("Purple"))
                 {
-                    mySprite.sprite = redSprite;
-                    myAnim.runtimeAnimatorController = redAnim;
                     transform.position = purpleSpot.transform.position;
                 }
                 else if (t.ToString().Contains("Blue"))
                 {
-                    mySprite.sprite = blueSprite;
-                    myAnim.runtimeAnimatorController = blueAnim;
                     transform.position = blueSpot.transform.position;
                 }
                 else if (t.ToString().Contains("Yellow"))
                 {
-                    mySprite.sprite = yellowSprite;
-                    myAnim.runtimeAnimatorController = yellowAnim;
                     transform.position = yellowSpot.transform.position;
                 }
                 else if (t.ToString().Contains("Cyan"))
                 {
-                    mySprite.sprite = blackSprite;
-                    myAnim.runtimeAnimatorController = blackAnim;
                     transform.position = cyanSpot.transform.position;
                 }
-            }
+         
         }
     }
 
