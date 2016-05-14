@@ -13,12 +13,12 @@ public class ControllerSprite : AnimationController
     public float fpsBlinking        = 0.5f;
 
     private int xboxController      = 1;
-    private int[] xboxLeftScroll    = new int[2] { 1, 2 };
+    private int xboxLeftScroll    = 2;
     private int[] xboxA             = new int[2] { 3, 4 };
     private int[] xboxB             = new int[2] { 5, 6 };
     private int[] xboxStart         = new int[2] { 7, 8 };
     private int psController        = 9;
-    private int[] psLeftScroll      = new int[2] { 9, 10 };
+    private int psLeftScroll      = 10;
     private int[] psX               = new int[2] { 11, 12 };
     private int[] psCircle          = new int[2] { 13, 14 };
     private int[] psStart           = new int[2] { 15, 16 };
@@ -30,6 +30,7 @@ public class ControllerSprite : AnimationController
 
     void Settings()
     {
+        currentFrame = 1;
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
         fps = fpsBlinking;
@@ -51,7 +52,7 @@ public class ControllerSprite : AnimationController
                 break;
 
             case GameData.ControllerStates.XboxLeftScroll:
-                LoopingAnimation(xboxLeftScroll);
+                currentFrame = xboxLeftScroll;
                 break;
 
             case GameData.ControllerStates.XboxA:
@@ -65,13 +66,16 @@ public class ControllerSprite : AnimationController
             case GameData.ControllerStates.XboxStart:
                 LoopingAnimation(xboxStart);
                 break;
+        }
 
+        switch (currentAnim) 
+        {
             case GameData.ControllerStates.PsController:
                 currentFrame = psController;
                 break;
 
             case GameData.ControllerStates.PsLeftScroll:
-                LoopingAnimation(psLeftScroll);
+                currentFrame = psLeftScroll;
                 break;
 
             case GameData.ControllerStates.PsX:
