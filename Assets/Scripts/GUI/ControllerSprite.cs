@@ -3,20 +3,25 @@ using System.Collections;
 
 public class ControllerSprite : AnimationController
 {
-    public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.XboxController;
-    public int spriteSheetColumns = 2;
+    private GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.XboxController;
+    public int spriteSheetColumns = 4;
     public int spriteSheetRows = 4;
     public GameData.ControllerStates currentAnim = GameData.ControllerStates.XboxController;
 
-    public Material XboxControllerMat;
-    public Material PsControllerMat;
+    public Material Controller;
     public Renderer rend;
+    public float fpsBlinking        = 0.5f;
 
-    private int controller          = 1;
-    private int leftScroll          = 2;
-    private int aorX                = 3;
-    private int borCircle           = 4;
-    private int start               = 5;
+    private int xboxController      = 1;
+    private int[] xboxLeftScroll    = new int[2] { 1, 2 };
+    private int[] xboxA             = new int[2] { 3, 4 };
+    private int[] xboxB             = new int[2] { 5, 6 };
+    private int[] xboxStart         = new int[2] { 7, 8 };
+    private int psController        = 9;
+    private int[] psLeftScroll      = new int[2] { 9, 10 };
+    private int[] psX               = new int[2] { 11, 12 };
+    private int[] psCircle          = new int[2] { 13, 14 };
+    private int[] psStart           = new int[2] { 15, 16 };
 
     void Start()
     {
@@ -27,6 +32,7 @@ public class ControllerSprite : AnimationController
     {
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
+        fps = fpsBlinking;
     }
 
     void Update()
@@ -38,62 +44,46 @@ public class ControllerSprite : AnimationController
 
     private void PlayAnimation()
     {
-
-        //xboxController
-        switch (mySpriteSheet)
+        switch (currentAnim)
         {
-            case GameData.SpriteSheet.XboxController:
-                rend.material = XboxControllerMat;
-
-                switch (currentAnim)
-                {
-                    case GameData.ControllerStates.XboxController:
-                        currentFrame = controller;
-                        break;
-                    case GameData.ControllerStates.XboxLeftScroll:
-                        currentFrame = leftScroll;
-                        break;
-                    case GameData.ControllerStates.XboxA:
-                        currentFrame = aorX;
-                        break;
-                    case GameData.ControllerStates.XboxB:
-                        currentFrame = borCircle;
-                        break;
-                    case GameData.ControllerStates.XboxStart:
-                        currentFrame = start;
-                        break;
-
-                }
-
+            case GameData.ControllerStates.XboxController:
+                currentFrame = xboxController;
                 break;
 
-            case GameData.SpriteSheet.PsController:
-                rend.material = PsControllerMat;
+            case GameData.ControllerStates.XboxLeftScroll:
+                LoopingAnimation(xboxLeftScroll);
+                break;
 
-                switch (currentAnim)
-                {
-                    case GameData.ControllerStates.PsController:
-                        currentFrame = controller;
-                        break;
+            case GameData.ControllerStates.XboxA:
+                LoopingAnimation(xboxA);
+                break;
 
-                    case GameData.ControllerStates.PsLeftScroll:
-                        currentFrame = leftScroll;
-                        break;
+            case GameData.ControllerStates.XboxB:
+                LoopingAnimation(xboxB);
+                break;
 
-                    case GameData.ControllerStates.PsX:
-                        currentFrame = aorX;
-                        break;
+            case GameData.ControllerStates.XboxStart:
+                LoopingAnimation(xboxStart);
+                break;
 
-                    case GameData.ControllerStates.PsCircle:
-                        currentFrame = borCircle;
-                        break;
+            case GameData.ControllerStates.PsController:
+                currentFrame = psController;
+                break;
 
-                    case GameData.ControllerStates.PsStart:
-                        currentFrame = start;
-                        break;
+            case GameData.ControllerStates.PsLeftScroll:
+                LoopingAnimation(psLeftScroll);
+                break;
 
-                }
+            case GameData.ControllerStates.PsX:
+                LoopingAnimation(psX);
+                break;
 
+            case GameData.ControllerStates.PsCircle:
+                LoopingAnimation(psCircle);
+                break;
+
+            case GameData.ControllerStates.PsStart:
+                LoopingAnimation(psStart);
                 break;
         }
     }
