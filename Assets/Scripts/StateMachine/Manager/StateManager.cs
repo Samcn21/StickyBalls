@@ -6,7 +6,9 @@ using Assets.Scripts.Interfaces;
 public class StateManager : MonoBehaviour
 {
     public GameData.GameStates CurrentActiveState;
+    public GameData.GameStates PreActiveState;
     private IStateBase activeState;
+
     void Start()
     {
         activeState = new BeginState(this);
@@ -19,14 +21,9 @@ public class StateManager : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        if (activeState != null)
-        {
-            activeState.StateFixedUpdate();
-        }
-    }
+
     public void SwitchState(IStateBase newState) {
         activeState = newState;
     }
+
 }
