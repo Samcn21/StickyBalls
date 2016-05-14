@@ -40,11 +40,12 @@ namespace Assets.Scripts.States
                     case GameData.GameStates.Play2vs2:
                         StateManager.SwitchState(new Play2vs2(StateManager));
                         break;
-
-                    case GameData.GameStates.ColorAssignFFA:
-                        StateManager.SwitchState(new ColorAssignFFA(StateManager));
-                        break;
                 }
+            }
+            if (Input.GetKeyDown(KeyCode.Escape) && StateManager.PreActiveState == GameData.GameStates.ColorAssignFFA)
+            {
+                pauseMenu.GetComponent<PauseMenu>().DoPause(false);
+                StateManager.SwitchState(new ColorAssignFFA(StateManager));
             }
         }
 

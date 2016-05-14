@@ -62,7 +62,7 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA && StateManager.CurrentActiveState != GameData.GameStates.Pause)
         {
             List<Player> winningPlayers = new List<Player>();
             foreach (KeyValuePair<GameData.Team, Player> pair in Players)
