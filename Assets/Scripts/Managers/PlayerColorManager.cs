@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerColorManager : MonoBehaviour
 {
@@ -16,7 +17,9 @@ public class PlayerColorManager : MonoBehaviour
     };
     private GameObject[] players;
     private InputController InputController;
-    int counter = 0;
+    private int counter = 0;
+    private Text text;
+
     void Start()
     {
         players = GameObject.FindGameObjectsWithTag("Player");
@@ -38,7 +41,7 @@ public class PlayerColorManager : MonoBehaviour
         //if all characters choose a color level automatically restart
         if (counter == 4) 
         {
-            RestartLevel();
+                            StartCoroutine(RestartLevel());
         }
         
         //this part starts the game from PlayerColorAssign level!
@@ -89,21 +92,49 @@ public class PlayerColorManager : MonoBehaviour
                         }
                     }
                 }
-                RestartLevel();
+                StartCoroutine(RestartLevel());
             }
         }
     }
 
-    private void RestartLevel() 
+    IEnumerator RestartLevel()
     {
+
+
         foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
         {
-            //Debug.Log(player.Key + " - " + player.Value);
-            //TODO: Show which game pad picked what color in GUI
+            switch (player.Key)
+            {
+                case GamePad.Index.One:
+                    text = GameObject.Find("Player1").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Two:
+                    text = GameObject.Find("Player2").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Three:
+                    text = GameObject.Find("Player3").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Four:
+                    text = GameObject.Find("Player4").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+            }
+
+            GameObject[] virtualPlayers = GameObject.FindGameObjectsWithTag("VirtualPlayer");
+            foreach (GameObject vp in virtualPlayers)
+            {
+                if (vp.GetComponent<VirtualPlayer>().index == player.Key)
+                    vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(player.Value);
+            }
+
             PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
             PlayerPrefs.SetInt("isDataSaved", 1);
         }
-        //TODO: in a coroutine level starts in x serconds
+
+        yield return new WaitForSeconds(3);
         SceneManager.LoadScene("LevelFFA");
     }
 }

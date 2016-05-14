@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
@@ -52,6 +53,7 @@ public class InputController : MonoBehaviour
     private float resetDestroyTimer;
     private bool isPressingX;
     private float holdTimer = 0;
+    private Text text;
 
     //Ghost trail vars
     protected int fixedUpdateCounter;
@@ -211,7 +213,7 @@ public class InputController : MonoBehaviour
                 holdTimer = 0;
             }
             else
-            { 
+            {
                 holdTimer = 0;
             }
         }
@@ -384,12 +386,12 @@ public class InputController : MonoBehaviour
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
             {
-                    if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
-                    {
-                        if (!closePipes.Contains(pipe))
-                            closePipes.Add(pipe);
-                        closePipeConnections.Add(c);
-                    }
+                if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
+                {
+                    if (!closePipes.Contains(pipe))
+                        closePipes.Add(pipe);
+                    closePipeConnections.Add(c);
+                }
             }
         }
     }
@@ -540,10 +542,31 @@ public class InputController : MonoBehaviour
             if (!found)
                 pipeStatus.AddFirstPipe(pipe.Team, pipe);
 
-            //place a pipe in chosen color pipeline
+            //place a pipe in chosen color pipeline in color assign scene
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
             {
                 team = pipe.Team;
+
+                switch (index)
+                {
+                    case GamePad.Index.One:
+                        text = GameObject.Find("Player1").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Two:
+                        text = GameObject.Find("Player2").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Three:
+                        text = GameObject.Find("Player3").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Four:
+                        text = GameObject.Find("Player4").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                }
+
                 GameObject[] virtualPlayers = GameObject.FindGameObjectsWithTag("VirtualPlayer");
                 foreach (GameObject vp in virtualPlayers)
                 {
@@ -602,7 +625,7 @@ public class InputController : MonoBehaviour
 
     private void PickUpPipe(Pipe pipeToPick)
     {
-        if(StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
             PickUpPipe();
             player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
@@ -671,25 +694,25 @@ public class InputController : MonoBehaviour
             GameObject yellowSpot = GameObject.Find("Yellow");
             GameObject cyanSpot = GameObject.Find("Cyan");
 
-                //change the color of the player in order to the gamePad index number and move the player
-                // to the related respawn spots (next to their source) that have the same color as the player
-                if (t.ToString().Contains("Purple"))
-                {
-                    transform.position = purpleSpot.transform.position;
-                }
-                else if (t.ToString().Contains("Blue"))
-                {
-                    transform.position = blueSpot.transform.position;
-                }
-                else if (t.ToString().Contains("Yellow"))
-                {
-                    transform.position = yellowSpot.transform.position;
-                }
-                else if (t.ToString().Contains("Cyan"))
-                {
-                    transform.position = cyanSpot.transform.position;
-                }
-         
+            //change the color of the player in order to the gamePad index number and move the player
+            // to the related respawn spots (next to their source) that have the same color as the player
+            if (t.ToString().Contains("Purple"))
+            {
+                transform.position = purpleSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Blue"))
+            {
+                transform.position = blueSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Yellow"))
+            {
+                transform.position = yellowSpot.transform.position;
+            }
+            else if (t.ToString().Contains("Cyan"))
+            {
+                transform.position = cyanSpot.transform.position;
+            }
+
         }
     }
 
