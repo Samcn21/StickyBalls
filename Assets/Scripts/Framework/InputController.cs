@@ -544,6 +544,12 @@ public class InputController : MonoBehaviour
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
             {
                 team = pipe.Team;
+                GameObject[] virtualPlayers = GameObject.FindGameObjectsWithTag("VirtualPlayer");
+                foreach (GameObject vp in virtualPlayers)
+                {
+                    if (vp.GetComponent<VirtualPlayer>().index == index)
+                        vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(team);
+                }
             }
 
             player.PlacePipe();
