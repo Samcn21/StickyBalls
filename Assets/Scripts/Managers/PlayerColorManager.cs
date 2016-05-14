@@ -38,69 +38,78 @@ public class PlayerColorManager : MonoBehaviour
             }
         }
 
-        //if all characters choose a color level automatically restart
+        //if all characters choose a color level automatically changes
         if (counter == 4) 
         {
-                            StartCoroutine(RestartLevel());
+            StartCoroutine(RestartLevel());
         }
         
-        //this part starts the game from PlayerColorAssign level!
-        if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
+        //this part starts the game from PlayerColorAssign level when player "ONE" press start and shouldn't be neutral!
+        if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One))
         {
             if (playerIndexColor[GamePad.Index.One] != GameData.Team.Neutral)
             {
-                List<GameData.Team> colorList = new List<GameData.Team>(){
+                AssignColors();
+            }
+        }
+
+        //anytime press enter on keyboard automatically choose a color
+        if (Input.GetKeyDown(KeyCode.Return)) 
+        {
+            AssignColors();
+        }
+    }
+
+    private void AssignColors() 
+    {
+        List<GameData.Team> colorList = new List<GameData.Team>(){
                                 GameData.Team.Yellow, 
                                 GameData.Team.Blue, 
                                 GameData.Team.Purple, 
                                 GameData.Team.Cyan
                         };
-                List<GameData.Team> impossibleColorList = new List<GameData.Team>();
+        List<GameData.Team> impossibleColorList = new List<GameData.Team>();
 
-                GamePad.Index[] indexList = new GamePad.Index[] {
+        GamePad.Index[] indexList = new GamePad.Index[] {
                                 GamePad.Index.One,
                                 GamePad.Index.Two,
                                 GamePad.Index.Three,
                                 GamePad.Index.Four
                         };
 
-                //make a list of colors that alredy picked by the player(s)
-                for (int index = 0; index < indexList.Length; index++)
+        //make a list of colors that alredy picked by the player(s)
+        for (int index = 0; index < indexList.Length; index++)
+        {
+            foreach (GameData.Team color in colorList)
+            {
+                if (playerIndexColor[indexList[index]] == color)
                 {
-                    foreach (GameData.Team color in colorList)
-                    {
-                        if (playerIndexColor[indexList[index]] == color)
-                        {
-                            impossibleColorList.Add(color);
-                        }
-                    }
+                    impossibleColorList.Add(color);
                 }
-
-                //make a list of available colors that hav't picked by the player(s)
-                List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
-
-                //assign the available colors to the players without color
-                foreach (GameData.Team possibleColor in possibleColorList)
-                {
-                    bool oneShot = true;
-                    for (int index = 0; index < indexList.Length; index++)
-                    {
-                        if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
-                        {
-                            playerIndexColor[indexList[index]] = possibleColor;
-                            oneShot = false;
-                        }
-                    }
-                }
-                StartCoroutine(RestartLevel());
             }
         }
-    }
 
+        //make a list of available colors that hav't picked by the player(s)
+        List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
+
+        //assign the available colors to the players without color
+        foreach (GameData.Team possibleColor in possibleColorList)
+        {
+            bool oneShot = true;
+            for (int index = 0; index < indexList.Length; index++)
+            {
+                if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
+                {
+                    playerIndexColor[indexList[index]] = possibleColor;
+                    oneShot = false;
+                }
+            }
+        }
+        StartCoroutine(RestartLevel());
+    }
     IEnumerator RestartLevel()
     {
-
-
+        
         foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
         {
             switch (player.Key)
