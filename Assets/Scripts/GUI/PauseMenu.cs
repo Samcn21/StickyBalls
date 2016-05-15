@@ -12,40 +12,34 @@ public class PauseMenu : MonoBehaviour {
     private bool isPaused = false;
     private float stickSensivity = 0.25f;
     private Vector2 mousePos;
-    private GamepadState gamePadState;
 
     void Start () {
         isPaused = false;
         SetCursorPos(Screen.width / 2, Screen.height / 2);
         mousePos = new Vector2(Screen.width / 2, Screen.height / 2);
-        gamePadState = GamePad.GetState(GamePad.Index.Any);
 	}
 
 	void Update () {
-        if (isPaused) 
+
+        if (isPaused)
         {
+            GetComponentInChildren<Image>().enabled = true;
+
             if ((GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.Any)) != Vector2.zero)
             {
                 GamepadState state = GamePad.GetState(GamePad.Index.Any);
-                //mousePos += state.LeftStickAxis * mouseSensitivity;
-
                 mousePos.x += (state.LeftStickAxis.x * stickSensivity) * mouseSensitivity;
                 mousePos.y -= (state.LeftStickAxis.y * stickSensivity) * mouseSensitivity;
 
                 SetCursorPos(Mathf.CeilToInt(mousePos.x), (Mathf.CeilToInt(mousePos.y)));
             }
+
             if (GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.Any))
             {
                 MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp | MouseOperations.MouseEventFlags.LeftDown);
             }
         }
-
-
-        if (isPaused) 
-        {
-            GetComponentInChildren<Image>().enabled = true;
-        }
-        else
+        else 
         {
             GetComponentInChildren<Image>().enabled = false;
         }
