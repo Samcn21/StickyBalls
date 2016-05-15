@@ -20,7 +20,7 @@ namespace Assets.Scripts.States
 
             if (pauseMenu == null) 
             {
-                Debug.LogError("The scene must have a pause menu canvas");
+                Debug.LogError("The scene must have a image called pause menu in the canvas");
             }
             pauseMenu.GetComponent<PauseMenu>().DoPause(true);
         }
