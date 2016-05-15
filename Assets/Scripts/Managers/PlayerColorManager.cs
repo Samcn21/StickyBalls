@@ -109,7 +109,8 @@ public class PlayerColorManager : MonoBehaviour
     }
     IEnumerator RestartLevel()
     {
-        
+        //freeze controller (in 3 seconds if anyone didn't choose a color can choose a color but it's not acceptable
+        //so player controller should freeze)
         foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
         {
             switch (player.Key)
