@@ -27,7 +27,7 @@ namespace Assets.Scripts.States
 
         public void StateUpdate()
         {
-            if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.Any) || Input.GetKeyDown(KeyCode.A))
+            if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.Any) || Input.GetKeyDown(KeyCode.Escape))
             {
                 pauseMenu.GetComponent<PauseMenu>().DoPause(false);
 
