@@ -5,7 +5,7 @@ using System.Collections;
 public class ScreenFader : MonoBehaviour
 {
 	public Image FadeImg;
-	public float fadeSpeed = 2.0f;
+	public float fadeSpeed = 10.0f;
 	public bool sceneStarting = true;
 	
 	
@@ -16,7 +16,7 @@ public class ScreenFader : MonoBehaviour
 	
 	void Update()
 	{
-		if (sceneStarting) StartScene();
+		//if (sceneStarting) StartScene();
 	}
 	
 	
@@ -61,15 +61,13 @@ public class ScreenFader : MonoBehaviour
     public void enableImage() {
         FadeImg.enabled = true;
     }
-
-
 	
 	public void EndScene()
 	{
 		FadeImg.enabled = true;
 		FadeToBlack();
 		// If the screen is almost black...
-		if (FadeImg.color.a >= 0.95f)
-			Application.LoadLevel(Application.loadedLevel);
+		//if (FadeImg.color.a >= 0.95f)
+			//Application.LoadLevel(Application.loadedLevel);
 	}
 }   
