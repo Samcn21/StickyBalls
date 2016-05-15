@@ -35,7 +35,7 @@ namespace Assets.Scripts.States
 
         public void StateFixedUpdate() 
         {
-            //This gamePadIndex has nothing to do with fixed update  method. It's a setup gamePadIndex
+            //This state has nothing to do with fixed update  method. It's a setup state
         }
 
     }

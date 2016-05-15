@@ -10,6 +10,6 @@ namespace Assets.Scripts.Interfaces
         void StateFixedUpdate();
 
         //we can do the same thing for OnGUI
-        //in active gamePadIndex the gamePadIndex can use this unity functions if it needed
+        //in active state the state can use this unity functions if it needed
     }
 }
