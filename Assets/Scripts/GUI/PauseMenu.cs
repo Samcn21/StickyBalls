@@ -5,12 +5,12 @@ using UnityEngine.UI;
 using System.Runtime.InteropServices;
 
 public class PauseMenu : MonoBehaviour {
-    private bool isPaused = false;
-    public float mouseSensitivity = 50f;
-    private float stickSensivity = 0.25f;
-
     [DllImport("user32.dll")]
     public static extern bool SetCursorPos(int X, int Y);
+
+    public float mouseSensitivity = 50f;
+    private bool isPaused = false;
+    private float stickSensivity = 0.25f;
     private Vector2 mousePos;
     private GamepadState gamePadState;
 
@@ -34,8 +34,10 @@ public class PauseMenu : MonoBehaviour {
 
                 SetCursorPos(Mathf.CeilToInt(mousePos.x), (Mathf.CeilToInt(mousePos.y)));
             }
-
-
+            if (GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.Any))
+            {
+                MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp | MouseOperations.MouseEventFlags.LeftDown);
+            }
         }
 
 
