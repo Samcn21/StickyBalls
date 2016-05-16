@@ -22,6 +22,7 @@ public class GameController : MonoBehaviour
     public PipeMan PipeMan;
     public GridController GridController;
     public PipeStatus PipeStatus;
+    public ExplosionData ExplosionData;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;

@@ -51,6 +51,25 @@ public class PushMechanic : MonoBehaviour {
         }
     }
 
+    void OnCollisionStay(Collision col)
+    {
+        if(col.gameObject.tag== "Player")
+        {
+            Vector3 midPoint = Vector3.Lerp(transform.position, col.transform.position, 0.5f);
+            if (col.gameObject.GetComponent<InputController>().team == GetComponent<InputController>().team)
+            {
+                col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce/2, ForceMode.Impulse);
+                GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce/2, ForceMode.Impulse);
+
+            }
+            else
+            {
+                col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce, ForceMode.Impulse);
+                GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce, ForceMode.Impulse);
+            }
+        }
+    }
+
     private void stealCarryingPipe(GameObject opponent)
     {
         Player opponentPlayerRef = opponent.GetComponent<Player>();

@@ -215,4 +215,57 @@ public class Pipe : MonoBehaviour
         }
         return true;
     }
+
+    public void UpdateColor(GameData.Team color, List<GameData.Coordinate> exploredPipes)
+    {
+        if (!exploredPipes.Contains(positionCoordinate)) {
+            if (!CheckSourceConnection())
+            {
+                GetComponent<PipesSprite>().FindPipeStatus(pipeType, color);
+                exploredPipes.Add(positionCoordinate);
+                foreach (GameData.Coordinate coord in connections)
+                    if (gridController.Grid[coord.x, coord.y].pipe != null)
+                        gridController.Grid[coord.x, coord.y].pipe.UpdateColor(color, exploredPipes);
+        }
+        }
+    }
+
+    public void DestroyFlameMachine()
+    {
+        StartCoroutine(ExplosionReaction(GameController.Instance.ExplosionData.flameMachineDelay));
+    }
+
+    private IEnumerator ExplosionReaction(float delay)
+    {
+
+        List<GameData.Coordinate> toExplode = new List<GameData.Coordinate>();
+        toExplode.Add(positionCoordinate);
+        do
+        {
+            List<GameData.Coordinate> temp = new List<GameData.Coordinate>();
+            foreach (GameData.Coordinate pipeCoord in toExplode)
+            {
+                if (!gridController.Grid[pipeCoord.x, pipeCoord.y].pipe.isFlameMachine)
+                {
+                    foreach (GameData.Coordinate coord in gridController.Grid[pipeCoord.x, pipeCoord.y].pipe.connections)
+                        if (gridController.Grid[coord.x, coord.y].pipe != null)
+                        {
+                            temp.Add(gridController.Grid[coord.x, coord.y].pipe.positionCoordinate);
+                        }
+                }
+            }
+            for (int i=toExplode.Count-1;i>=0;i--)
+            {
+                Pipe p = gridController.Grid[toExplode[i].x, toExplode[i].y].pipe;
+                if (p != null)
+                {
+                    Instantiate(GameController.Instance.ExplosionData.smallExplosionEffect, p.gameObject.transform.position, Quaternion.identity);
+                    p.DestroyPipe();
+                    toExplode.RemoveAt(i);
+                }
+            }
+            toExplode = temp;
+            yield return new WaitForSeconds(delay);
+        } while (toExplode.Count > 0);
+    }
 }
