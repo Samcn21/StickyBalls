@@ -5,25 +5,19 @@ using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 //Controls input on controllers as well as placing pipe. (It is a bit too highly coupled, I'm sorry.)
 public class InputController : MonoBehaviour
 {
-    [SerializeField] private float stickSensivity = 0.25f;
-    [SerializeField] private float velocityThreshold = 0.1f;
-    [SerializeField] private float holdTimerLimit = 1.25f;
+    [SerializeField]
+    private float stickSensivity = 0.25f;
+    [SerializeField]
+    private float velocityThreshold = 0.1f;
+    [SerializeField]
+    private float holdTimerLimit = 1.25f;
     public GamePad.Index index;
     public GameData.Team team;
-
-    //TODO: Remove animation and sprite variables after instalation of new animation system
-    public RuntimeAnimatorController redAnim;
-    public RuntimeAnimatorController blueAnim;
-    public RuntimeAnimatorController yellowAnim;
-    public RuntimeAnimatorController blackAnim;
-    public Sprite redSprite;
-    public Sprite blueSprite;
-    public Sprite yellowSprite;
-    public Sprite blackSprite;
 
     private AudioManager AudioManager;
     private Player player;
@@ -43,8 +37,11 @@ public class InputController : MonoBehaviour
     private bool isLegalRotation = false;
     private List<Pipe> closePipes;
     public GameData.Direction characterFacing = GameData.Direction.South;
-    public bool colorPicked { get; private set; }
-    public bool colorPickPermit = false;
+
+    //Color Assign Variables
+    public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
+    private bool pickedPipe = true;
+
     private Pipe pipeToDestroyRef = null;
     public CharacterSprite CharacterSprite { get; private set; }
 
@@ -56,6 +53,7 @@ public class InputController : MonoBehaviour
     private float resetDestroyTimer;
     private bool isPressingX;
     private float holdTimer = 0;
+    private Text text;
 
     //Ghost trail vars
     protected int fixedUpdateCounter;
@@ -63,6 +61,8 @@ public class InputController : MonoBehaviour
     protected Vector3 playerForce;
     protected bool isRecording = false;
 
+    //State Machine
+    private StateManager StateManager;
 
     public bool isPressingDelete { get; private set; }
     public bool isDead { get; private set; }
@@ -70,8 +70,10 @@ public class InputController : MonoBehaviour
 
 
     //TEST VARIABLES
-    [SerializeField] private bool TEST_DELETE = false;
-    [SerializeField] private bool TEST_INFINITEXPIPE = false;
+    [SerializeField]
+    private bool TEST_DELETE = false;
+    [SerializeField]
+    private bool TEST_INFINITEXPIPE = false;
 
     public void Initialize(GameData.Team t, GamePad.Index padIndex)
     {
@@ -81,15 +83,19 @@ public class InputController : MonoBehaviour
         rigidBody = GetComponent<Rigidbody>();
         ColorInit(t);  //Color initialization 
         initialized = true;
-        colorPicked = false;
+        pickedPipe = true;
         isPressingDelete = false;
         resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
-        player.Initialize();
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            player.Initialize();
+        }
     }
 
     // Use this for initialization
     void Start()
     {
+        StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
         CharacterSprite = GetComponentInChildren<CharacterSprite>();
         player = GetComponent<Player>();
@@ -110,7 +116,7 @@ public class InputController : MonoBehaviour
     void FixedUpdate()
     {
         fixedUpdateCounter++;
-        
+
         if (isLocked)
             return;
         Rigidbody playerRigidbody = GetComponent<Rigidbody>();
@@ -118,24 +124,17 @@ public class InputController : MonoBehaviour
         velocityZ = playerRigidbody.velocity.z;
         velocityTotal = Mathf.Abs(velocityX + velocityZ);
 
-        //This method check player's states for movement animation sound and player facing 
+        //This method player player's states for movement animation sound and player facing 
         PlayerState();
 
         if (!initialized) return;
         gamepadState = GamePad.GetState(gamepadIndex);
 
-        //TODO: These lines must be removed after adding new animation system
-        float velocity = rigidBody.velocity.x + rigidBody.velocity.z;
-        Animator myAnim = GetComponentInChildren<Animator>();
-        if (myAnim != null)
-        {
-            myAnim.SetFloat("velocity", Mathf.Abs(velocity));
-        }
         if (holdTimer >= 0)
         {
 
-                rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
-                playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
+            rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
+            playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
 
 
         }
@@ -149,29 +148,34 @@ public class InputController : MonoBehaviour
         {
             player.PickupPipe(PipeData.PipeType.Cross, 0);
         }
-        
+
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
 
 
         if (TEST_DELETE)
         {
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex)) {
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
+            {
                 isPressingX = true;
                 isPressingDelete = true;
             }
-            else {
+            else
+            {
                 isPressingDelete = false;
             }
 
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex)) {
+            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
+            {
                 isPressingX = false;
                 destroyTimer = resetDestroyTimer;
             }
-            if (isPressingX && pipeToDestroyRef != null) {
+            if (isPressingX && pipeToDestroyRef != null)
+            {
                 destroyTimer -= Time.deltaTime;
-                if (pipeToDestroyRef != null && destroyTimer <= 0) {
-                //    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
+                if (pipeToDestroyRef != null && destroyTimer <= 0)
+                {
+                    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                     pipeToDestroyRef = null;
                 }
             }
@@ -179,8 +183,10 @@ public class InputController : MonoBehaviour
 
         if (gamepadState.A)
         {
-            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null) {
-                if (holdTimer >= holdTimerLimit) {
+            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
+            {
+                if (holdTimer >= holdTimerLimit)
+                {
                     PickUpPipe(pipeToDestroyRef);
                     holdTimer = 0;
                 }
@@ -207,12 +213,8 @@ public class InputController : MonoBehaviour
                 holdTimer = 0;
             }
             else
-                holdTimer = 0;
-
-            //color pick 
-            if (colorPickPermit && team == GameData.Team.Neutral)
             {
-                colorPicked = true;
+                holdTimer = 0;
             }
         }
 
@@ -323,8 +325,11 @@ public class InputController : MonoBehaviour
                 isLegalRotation = true;
             }
         }
-        if (closePipes.Count == 0)
-            closePipeConnections.Clear();
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            if (closePipes.Count == 0)
+                closePipeConnections.Clear();
+        }
     }
 
     void OnTriggerStay(Collider col)
@@ -332,32 +337,36 @@ public class InputController : MonoBehaviour
         OnTriggerEnter(col);
     }
 
-    //If player is not holding a pipe, check if the collider is a conveyor pipe
-    //Else check if it was a pipe, and get it's connections where you could possible place the pipe you're holding
+    //If player is not holding a pipe, player if the collider is a conveyor pipe
+    //Else player if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
         if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
         {
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
-            if (pipe.Team != team) {
+            if (pipe.Team != team)
+            {
                 goto next;
             }
-            if (pipeToDestroyRef == null)
+            if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
             {
-                pipeToDestroyRef = pipe;
-            }
-            else
-            {
-                if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
-                    Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                if (pipeToDestroyRef == null)
                 {
-                    pipeToDestroyRef.SetHightlight(false);
-                    pipeToDestroyRef = col.GetComponent<Pipe>();
-                    pipeToDestroyRef.SetHightlight(true);
+                    pipeToDestroyRef = pipe;
+                }
+                else
+                {
+                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    {
+                        pipeToDestroyRef.SetHightlight(false);
+                        pipeToDestroyRef = col.GetComponent<Pipe>();
+                        pipeToDestroyRef.SetHightlight(true);
+                    }
                 }
             }
         }
-next:   
+    next:
         if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
@@ -391,12 +400,12 @@ next:
     //If it was a pipe remove it.
     void OnTriggerExit(Collider col)
     {
-        if (col.gameObject.tag == "Pipe"&&pipeToDestroyRef==col.GetComponent<Pipe>())
+        if (col.gameObject.tag == "Pipe" && pipeToDestroyRef == col.GetComponent<Pipe>())
         {
             pipeToDestroyRef.SetHightlight(false);
             pipeToDestroyRef = null;
         }
-            
+
 
         ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
         if (conveyorPipe != null)
@@ -422,11 +431,11 @@ next:
             if (closePipeConnections.Contains(c))
             {
 
-            closePipeConnections.Remove(c);
-                
+                closePipeConnections.Remove(c);
+
                 if (closePipeConnections.Count == 0)
                 {
-                   
+
                     selectedPipeConnection = null;
                     if (selectedPipePlaceholder != null)
                         Destroy(selectedPipePlaceholder.gameObject);
@@ -511,8 +520,6 @@ next:
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
-        Vector3 pipeOffset = new Vector3(0, 1, 0);
-        Vector3 dynamiteOffset = new Vector3(0, 2, 0);
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             GameObject newPipe = Instantiate(pipeMan.pipePrefab,
@@ -524,16 +531,50 @@ next:
             foreach (Pipe father in closePipes)
             {
                 found = false;
-                if (father.connections.Contains(selectedPipeConnection)&&father.PipeType!=PipeData.PipeType.Void)
+                if (father.connections.Contains(selectedPipeConnection) && father.PipeType != PipeData.PipeType.Void)
                 {
                     found = true;
-                    //pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
+                    pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
                     closePipes = new List<Pipe>();
                     break;
                 }
             }
-           // if(!found)
-               // pipeStatus.AddFirstPipe(pipe.Team, pipe);
+            if (!found)
+                pipeStatus.AddFirstPipe(pipe.Team, pipe);
+
+            //place a pipe in chosen color pipeline in color assign scene
+            if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+            {
+                team = pipe.Team;
+
+                switch (index)
+                {
+                    case GamePad.Index.One:
+                        text = GameObject.Find("Player1").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Two:
+                        text = GameObject.Find("Player2").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Three:
+                        text = GameObject.Find("Player3").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                    case GamePad.Index.Four:
+                        text = GameObject.Find("Player4").GetComponent<Text>();
+                        text.color = GameData.TeamColors[team];
+                        break;
+                }
+
+                GameObject[] virtualPlayers = GameObject.FindGameObjectsWithTag("VirtualPlayer");
+                foreach (GameObject vp in virtualPlayers)
+                {
+                    if (vp.GetComponent<VirtualPlayer>().index == index)
+                        vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(team);
+                }
+            }
+
             player.PlacePipe();
             selectedPipeConnection = null;
             closePipeConnections.Remove(selectedPipeConnection);
@@ -557,14 +598,6 @@ next:
 
     private void PickUpPipe()
     {
-        //TODO Animation and sound for pipe pickup
-        Animator myAnim = GetComponentInChildren<Animator>();
-
-        if (myAnim != null)
-        {
-            myAnim.SetTrigger("grabPipe");
-        }
-
         //Animation
         CharacterSprite.FindGrabPipeAnimation();
 
@@ -574,23 +607,31 @@ next:
 
     private void PickUpPipe(ConveyorPipe conveyorPipe)
     {
-        PickUpPipe();
-        conveyorPipe.PickPipe();
-        player.PickupPipe(conveyorPipe.PipeType, rotationIndex * 90);
-        closeConveyorPipes.Remove(selectedConveyorPipe);
-        Destroy(selectedConveyorPipe.gameObject);
-        selectedConveyorPipe = null;
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+            pickedPipe = true;
+
+        if (pickedPipe)
+        {
+            PickUpPipe();
+            conveyorPipe.PickPipe();
+            player.PickupPipe(conveyorPipe.PipeType, rotationIndex * 90);
+            closeConveyorPipes.Remove(selectedConveyorPipe);
+            Destroy(selectedConveyorPipe.gameObject);
+            selectedConveyorPipe = null;
+            pickedPipe = false;
+        }
+
     }
 
     private void PickUpPipe(Pipe pipeToPick)
     {
-        PickUpPipe();
-        player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
-        pipeToDestroyRef = null;
-        pipeToPick.DestroyPipe();
-        foreach (GameData.Coordinate coord in pipeToPick.connections)
-            if (gridController.Grid[coord.x, coord.y].pipe != null)
-                gridController.Grid[coord.x, coord.y].pipe.UpdateColor(GameData.Team.Neutral,new List<GameData.Coordinate>());
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            PickUpPipe();
+            player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
+            pipeToDestroyRef = null;
+            pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
+        }
     }
 
     private void PlayerState()
@@ -646,49 +687,39 @@ next:
 
     void ColorInit(GameData.Team t)
     {
-        Animator myAnim = GetComponentInChildren<Animator>();
-        SpriteRenderer mySprite = GetComponentInChildren<SpriteRenderer>();
-        GameObject purpleSpot = GameObject.Find("Purple");
-        GameObject blueSpot = GameObject.Find("Blue");
-        GameObject yellowSpot = GameObject.Find("Yellow");
-        GameObject cyanSpot = GameObject.Find("Cyan");
-        
-        //I'm using new animation system don't need this part, I'll replace this part as soon as new system replaced
-        if (mySprite != null)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
+            GameObject purpleSpot = GameObject.Find("Purple");
+            GameObject blueSpot = GameObject.Find("Blue");
+            GameObject yellowSpot = GameObject.Find("Yellow");
+            GameObject cyanSpot = GameObject.Find("Cyan");
+
             //change the color of the player in order to the gamePad index number and move the player
             // to the related respawn spots (next to their source) that have the same color as the player
             if (t.ToString().Contains("Purple"))
             {
-                mySprite.sprite = redSprite;
-                myAnim.runtimeAnimatorController = redAnim;
                 transform.position = purpleSpot.transform.position;
             }
             else if (t.ToString().Contains("Blue"))
             {
-                mySprite.sprite = blueSprite;
-                myAnim.runtimeAnimatorController = blueAnim;
                 transform.position = blueSpot.transform.position;
             }
             else if (t.ToString().Contains("Yellow"))
             {
-                mySprite.sprite = yellowSprite;
-                myAnim.runtimeAnimatorController = yellowAnim;
                 transform.position = yellowSpot.transform.position;
             }
             else if (t.ToString().Contains("Cyan"))
             {
-                mySprite.sprite = blackSprite;
-                myAnim.runtimeAnimatorController = blackAnim;
                 transform.position = cyanSpot.transform.position;
             }
+
         }
     }
 
     void AssignColorsToPlayers()
     {
         //Gives default color to the players
-        if (SceneManager.GetActiveScene().name != "PlayerColorAssign")
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
             //If PlayerPrefs in not null, it means that either PlayerColorAssign level has been played before 
             //or this level invokes directly from PlayerColorAssign level
@@ -733,16 +764,16 @@ next:
                 }
                 else
                 {
-                //if playerPrefs is null then assign this colors to the players
+                    //if playerPrefs is null then assign this colors to the players
                     defaultPlayerIndexColor = new Dictionary<GamePad.Index, GameData.Team>()
                     {
-                        {GamePad.Index.One, GameData.Team.Cyan},
-                        {GamePad.Index.Two, GameData.Team.Yellow},
-                        {GamePad.Index.Three, GameData.Team.Blue},
-                        {GamePad.Index.Four, GameData.Team.Purple}
+                        {GamePad.Index.One, GameData.Team.Blue},
+                        {GamePad.Index.Two, GameData.Team.Cyan},
+                        {GamePad.Index.Three, GameData.Team.Purple},
+                        {GamePad.Index.Four, GameData.Team.Yellow}
                     };
                 }
-                
+
 
                 foreach (KeyValuePair<GamePad.Index, GameData.Team> eachPlayer in defaultPlayerIndexColor)
                 {
@@ -771,3 +802,5 @@ next:
         isLocked = true;
     }
 }
+
+
