@@ -232,40 +232,8 @@ public class Pipe : MonoBehaviour
 
     public void DestroyFlameMachine()
     {
-        StartCoroutine(ExplosionReaction(GameController.Instance.ExplosionData.flameMachineDelay));
+        GameController.Instance.ExplosionData.ExplodeFlameMachine(this);
     }
 
-    private IEnumerator ExplosionReaction(float delay)
-    {
-
-        List<GameData.Coordinate> toExplode = new List<GameData.Coordinate>();
-        toExplode.Add(positionCoordinate);
-        do
-        {
-            List<GameData.Coordinate> temp = new List<GameData.Coordinate>();
-            foreach (GameData.Coordinate pipeCoord in toExplode)
-            {
-                if (!gridController.Grid[pipeCoord.x, pipeCoord.y].pipe.isFlameMachine)
-                {
-                    foreach (GameData.Coordinate coord in gridController.Grid[pipeCoord.x, pipeCoord.y].pipe.connections)
-                        if (gridController.Grid[coord.x, coord.y].pipe != null)
-                        {
-                            temp.Add(gridController.Grid[coord.x, coord.y].pipe.positionCoordinate);
-                        }
-                }
-            }
-            for (int i=toExplode.Count-1;i>=0;i--)
-            {
-                Pipe p = gridController.Grid[toExplode[i].x, toExplode[i].y].pipe;
-                if (p != null)
-                {
-                    Instantiate(GameController.Instance.ExplosionData.smallExplosionEffect, p.gameObject.transform.position, Quaternion.identity);
-                    p.DestroyPipe();
-                    toExplode.RemoveAt(i);
-                }
-            }
-            toExplode = temp;
-            yield return new WaitForSeconds(delay);
-        } while (toExplode.Count > 0);
-    }
+   
 }
