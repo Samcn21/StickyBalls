@@ -30,13 +30,16 @@ public class ExplosionData : MonoBehaviour {
             List<GameData.Coordinate> temp = new List<GameData.Coordinate>();
             foreach (GameData.Coordinate toDestroyCoord in toDestroy)
             {
-                Pipe pipeToDestroy = gridController.Grid[toDestroyCoord.x, toDestroyCoord.y].pipe;
-                foreach (GameData.Coordinate coord in pipeToDestroy.connections)
-                    if (IsPipeDestroyable(gridController.Grid[coord.x, coord.y].pipe))
-                    {
-                        if(!visited.ContainsKey(new Vector2(coord.x,coord.y)))
-                        temp.Add(coord);
-                    }
+                if (!visited.ContainsKey(new Vector2(toDestroyCoord.x, toDestroyCoord.y)))
+                {
+                    Pipe pipeToDestroy = gridController.Grid[toDestroyCoord.x, toDestroyCoord.y].pipe;
+                    foreach (GameData.Coordinate coord in pipeToDestroy.connections)
+                        if (IsPipeDestroyable(gridController.Grid[coord.x, coord.y].pipe))
+                        {
+                            if (!visited.ContainsKey(new Vector2(coord.x, coord.y)))
+                                temp.Add(coord);
+                        }
+                }
             }
             for(int i=toDestroy.Count-1;i>=0;i--)
             {
