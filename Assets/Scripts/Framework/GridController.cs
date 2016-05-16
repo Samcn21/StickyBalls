@@ -24,7 +24,7 @@ public class GridController : MonoBehaviour
     private StateManager StateManager;
     private GameObject gameController;
 
-    void Start()
+    void Awake()
     {
         enabled = !GameController.Instance.isPregame;
         if (!enabled) return;

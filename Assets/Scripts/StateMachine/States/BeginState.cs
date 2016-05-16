@@ -12,7 +12,10 @@ namespace Assets.Scripts.States
         public BeginState(StateManager managerRef)
         {
             StateManager = managerRef;
+        }
 
+        public void StateUpdate()
+        {
             switch (StateManager.CurrentActiveState)
             {
                 case GameData.GameStates.PlayFFA:
@@ -28,12 +31,6 @@ namespace Assets.Scripts.States
                     StateManager.SwitchState(new ColorAssign2vs2(StateManager));
                     break;
             }
-
-        }
-
-        public void StateUpdate()
-        {
-            //This state has nothing to do with update  method. It's a setup state
         }
 
         public void StateFixedUpdate() 

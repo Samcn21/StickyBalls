@@ -6,8 +6,6 @@ public class SourceMachineSprites : AnimationController
     public GameData.SourceMachineStates sourceMachine;
     public int spriteSheetColumns = 8;
     public int spriteSheetRows = 8;
-    [SerializeField] int currentFrameShow = 1;
-
 
     //SPRITE FRAMES SOURCE MACHINE
     private int smCyan = 1;
@@ -43,7 +41,5 @@ public class SourceMachineSprites : AnimationController
         }
 
         ReadSpriteSheet(GameData.SpriteSheet.SourceMachine);
-        currentFrameShow = currentFrame;
-
     }
 }

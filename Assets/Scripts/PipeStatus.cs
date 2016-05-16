@@ -94,7 +94,7 @@ public class PipeStatus : MonoBehaviour {
                 {
                     exploredPipes = new List<RecursivePipe>();
                     if (pipesPerPlayer[team].ContainsKey(new Vector2(coord.x, coord.y))) { 
-                    RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
+                    //RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
                     if (start.SearchAndAddAsParent(r, coord))
                         break;
                 }
@@ -615,7 +615,7 @@ public class PipeStatus : MonoBehaviour {
         /// <summary>
         /// Function that checks if the current tree type pipe is actually connected to the passed coordinate
         /// </summary>
-        /// <param name="coordinate">The coordinate to check if the tree is connected</param>
+        /// <param name="coordinate">The coordinate to player if the tree is connected</param>
         /// <returns>True or false</returns>
         public bool CheckIfTreeIsConnected(GameData.Coordinate coordinate)
         {
