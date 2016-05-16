@@ -171,7 +171,7 @@ public class InputController : MonoBehaviour
             if (isPressingX && pipeToDestroyRef != null) {
                 destroyTimer -= Time.deltaTime;
                 if (pipeToDestroyRef != null && destroyTimer <= 0) {
-                    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
+                //    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                     pipeToDestroyRef = null;
                 }
             }
@@ -527,13 +527,13 @@ next:
                 if (father.connections.Contains(selectedPipeConnection)&&father.PipeType!=PipeData.PipeType.Void)
                 {
                     found = true;
-                    pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
+                    //pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
                     closePipes = new List<Pipe>();
                     break;
                 }
             }
-            if(!found)
-                pipeStatus.AddFirstPipe(pipe.Team, pipe);
+           // if(!found)
+               // pipeStatus.AddFirstPipe(pipe.Team, pipe);
             player.PlacePipe();
             selectedPipeConnection = null;
             closePipeConnections.Remove(selectedPipeConnection);
@@ -587,8 +587,10 @@ next:
         PickUpPipe();
         player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
         pipeToDestroyRef = null;
-        pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
-
+        pipeToPick.DestroyPipe();
+        foreach (GameData.Coordinate coord in pipeToPick.connections)
+            if (gridController.Grid[coord.x, coord.y].pipe != null)
+                gridController.Grid[coord.x, coord.y].pipe.UpdateColor(GameData.Team.Neutral,new List<GameData.Coordinate>());
     }
 
     private void PlayerState()

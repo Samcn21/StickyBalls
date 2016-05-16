@@ -15,8 +15,11 @@ namespace Assets.Scripts.States
 
         public void StateUpdate()
         {
-            //TODO if all colors are chosen or press start / enter then goes to PlayFFA
-            // StateManager.SwitchState(new PlayFFA(StateManager));
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                StateManager.PreActiveState = GameData.GameStates.ColorAssignFFA;
+                StateManager.SwitchState(new Pause(StateManager));
+            }
         }
 
         public void StateFixedUpdate()

@@ -60,7 +60,7 @@ namespace DigitalRuby.PyroParticles
             }
             else if (Input.GetKeyDown(KeyCode.R))
             {
-                Application.LoadLevel(Application.loadedLevel);
+                //Application.LoadLevel(Application.loadedLevel);
             }
             else if (Input.GetKeyDown(KeyCode.O))
             {

@@ -5,6 +5,7 @@ using GamepadInput;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+
 public class GameController : MonoBehaviour
 {
     public GameObject winningGUI;
@@ -22,24 +23,33 @@ public class GameController : MonoBehaviour
     public PipeMan PipeMan;
     public GridController GridController;
     public PipeStatus PipeStatus;
+    public ExplosionData ExplosionData;
+    public StateManager StateManager;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
-    private PipesSprite PipesSprite;
     public bool Gamemode_IsCoop = false;
+
+    private GameObject gameController;
 
     void Start()
     {
+        gameController = GameObject.FindGameObjectWithTag("GameController");
+        StateManager = gameController.GetComponent<StateManager>();
+
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
-        PipesSprite = GameObject.FindObjectOfType<PipesSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
-        Players = new Dictionary<GameData.Team, Player>();
-        PlayersCoop = new Dictionary<GameData.Team, List<Player>>();
-        PlayerSources = new Dictionary<GameData.Team, PlayerSource>();
-        PlayersCoop.Add(GameData.Team.Cyan, new List<Player>());
-        PlayersCoop.Add(GameData.Team.Purple, new List<Player>());
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            Players = new Dictionary<GameData.Team, Player>();
+            PlayersCoop = new Dictionary<GameData.Team, List<Player>>();
+            PlayerSources = new Dictionary<GameData.Team, PlayerSource>();
+            PlayersCoop.Add(GameData.Team.Cyan, new List<Player>());
+            PlayersCoop.Add(GameData.Team.Purple, new List<Player>());
+        }
+
         gameRunning = true;
 
         winningGUI = GameObject.Find("WinningText");
@@ -52,15 +62,17 @@ public class GameController : MonoBehaviour
 
     void Update()
     {
-        List<Player> winningPlayers = new List<Player>();
-        foreach (KeyValuePair<GameData.Team, Player> pair in Players)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA && StateManager.CurrentActiveState != GameData.GameStates.Pause)
         {
-            if (!pair.Value.isDead)
-                winningPlayers.Add(pair.Value);
+            List<Player> winningPlayers = new List<Player>();
+            foreach (KeyValuePair<GameData.Team, Player> pair in Players)
+            {
+                if (!pair.Value.isDead)
+                    winningPlayers.Add(pair.Value);
+            }
+            if (winningPlayers.Count == 1)
+                PlayerWon(winningPlayers[0].Team);
         }
-        if (winningPlayers.Count == 1)
-            PlayerWon(winningPlayers[0].Team);
-
     }
 
     public void SpawnPlayer(GameData.Team team, GamePad.Index gamepadIndex)
@@ -70,19 +82,24 @@ public class GameController : MonoBehaviour
 
     public void PlayerWon(GameData.Team winningTeam)
     {
-        if (!gameRunning)
-            return;
 
-        GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
-        foreach (GameObject pipe in allPipes)
+
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
+            if (!gameRunning)
+                return;
+
+            GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+            foreach (GameObject pipe in allPipes)
+            {
+                pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
+            }
+            CenterMachineSprite.FindCentralMachineStatus(winningTeam);
+
+            gameRunning = false;
+
+            StartCoroutine(ShowWinnerGUI(winningTeam));
         }
-        CenterMachineSprite.FindCentralMachineStatus(winningTeam);
-
-        gameRunning = false;
-
-        StartCoroutine(ShowWinnerGUI(winningTeam));
     }
 
     public void Lose(GameData.Team team)

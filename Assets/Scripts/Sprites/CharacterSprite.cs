@@ -6,8 +6,6 @@ public class CharacterSprite : AnimationController {
     public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Character;
     public int spriteSheetColumns   = 8;
     public int spriteSheetRows      = 8;
-    [SerializeField]
-    int currentFrameShow = 1;
 
     public GameData.PlayerState currentAnim = GameData.PlayerState.IdleFront;
     public GameData.PlayerState previousAnim = GameData.PlayerState.IdleFront;
@@ -25,6 +23,7 @@ public class CharacterSprite : AnimationController {
     public float fpsMovement            = 15;
     public float fpsPipeGrab            = 6;
     public float fpsPipePlace           = 6;
+    public float fpsDance               = 3;
 
     public bool hasMovementPermit = true;
 
@@ -46,43 +45,19 @@ public class CharacterSprite : AnimationController {
     private int[] pipePlaceBack         = new int[2] { 47, 48 };
     private int[] pipePlaceRight        = new int[2] { 43, 44 };
     private int[] pipePlaceLeft         = new int[2] { 45, 46 };
+    private int[] dance = new int[12] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
+    void Start() 
+    {
+        if (this.tag != "VirtualPlayer")
+            InputController = transform.parent.GetComponent<InputController>();
+    }
 
-	// Use this for initialization
-	void Start () {
-        InputController = transform.parent.GetComponent<InputController>();
-        if (InputController != null)
-        {
-            //switch (InputController.team)
-            //{ 
-            //    case GameData.Team.Blue:
-            //        rend.material = charBlueMat;
-            //        break;
-
-            //    case GameData.Team.Cyan:
-            //        rend.material = charCyanMat;
-            //        break;
-
-            //    case GameData.Team.Purple:
-            //        rend.material = charPurpleMat;
-            //        break;
-
-            //    case GameData.Team.Yellow:
-            //        rend.material = charYellowMat;
-            //        break;
-
-            //    case GameData.Team.Neutral:
-            //        rend.material = charNeutralMat;
-            //        break;
-
-            //}
-        }
-	}
-
-    void Settings()
+    public void Settings()
     {
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
+        FindMaterial();
     }
 
     void Update()
@@ -91,7 +66,66 @@ public class CharacterSprite : AnimationController {
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(mySpriteSheet);
-        currentFrameShow = currentFrame;
+    }
+
+    public void FindMaterial() 
+    {
+        if (InputController != null)
+        {
+            switch (InputController.team)
+            {
+                case GameData.Team.Blue:
+                    rend.material = charBlueMat;
+                    break;
+
+                case GameData.Team.Cyan:
+                    rend.material = charCyanMat;
+                    break;
+
+                case GameData.Team.Purple:
+                    rend.material = charPurpleMat;
+                    break;
+
+                case GameData.Team.Yellow:
+                    rend.material = charYellowMat;
+                    break;
+
+                case GameData.Team.Neutral:
+                    rend.material = charNeutralMat;
+                    break;
+            }
+        }
+    }
+
+    public void FindMaterialVirtualPlayer(GameData.Team color)
+    {
+        switch (color)
+        {
+            case GameData.Team.Blue:
+                rend.material = charBlueMat;
+                break;
+
+            case GameData.Team.Cyan:
+                rend.material = charCyanMat;
+                break;
+
+            case GameData.Team.Purple:
+                rend.material = charPurpleMat;
+                break;
+
+            case GameData.Team.Yellow:
+                rend.material = charYellowMat;
+                break;
+
+            case GameData.Team.Neutral:
+                rend.material = charNeutralMat;
+                break;
+        }
+    }
+
+    public void FindDanceAnimation() 
+    {
+        currentAnim = GameData.PlayerState.Dance;
     }
 
     public void FindGrabPipeAnimation()
@@ -226,6 +260,12 @@ public class CharacterSprite : AnimationController {
                 fps = fpsMovement;
                 LoopingAnimation(movementLeft);
                 break;    
+
+
+            case GameData.PlayerState.Dance:
+                fps = fpsDance;
+                LoopingAnimation(dance);
+                break;
     }
     }
 

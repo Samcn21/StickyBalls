@@ -94,7 +94,7 @@ public class PipeStatus : MonoBehaviour {
                 {
                     exploredPipes = new List<RecursivePipe>();
                     if (pipesPerPlayer[team].ContainsKey(new Vector2(coord.x, coord.y))) { 
-                    RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
+                    //RecursivePipe f = pipesPerPlayer[team][new Vector2(coord.x, coord.y)];
                     if (start.SearchAndAddAsParent(r, coord))
                         break;
                 }
@@ -106,10 +106,10 @@ public class PipeStatus : MonoBehaviour {
             {
                 foreach (GameData.Coordinate coord in pipe.connections)
                 {
-                    if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                    if (gridController.IsInsideGrid(coord)&&neutralPipes[i].CheckIfTreeIsConnected(coord))
                     {
                         r.AddChild(neutralPipes[i]);
-                        neutralPipes[i].UpdateColor(team);
+                        UpdateColor(team,team);
                         neutralPipes.RemoveAt(i);
                         break;
                     }
@@ -138,10 +138,10 @@ public class PipeStatus : MonoBehaviour {
         {
             foreach (GameData.Coordinate coord in pipe.connections)
             {
-                if (neutralPipes[i].CheckIfTreeIsConnected(coord))
+                if (gridController.IsInsideGrid(coord) && neutralPipes[i].CheckIfTreeIsConnected(coord))
                 {
                     r.AddChild(neutralPipes[i]);
-                    neutralPipes[i].UpdateColor(team);
+                    UpdateColor(team,team);
                     neutralPipes.RemoveAt(i);
                     break;
                 }
@@ -195,7 +195,7 @@ public class PipeStatus : MonoBehaviour {
         foreach (RecursivePipe p in pipesPerPlayer[team][ROOT_POSITION].DestroyPipe(pipe,explosionEffect,instantiateEffect))
         {
             neutralPipes.Add(p);
-            p.UpdateColor(GameData.Team.Neutral);
+            UpdateColor(team,GameData.Team.Neutral);
         }
     }
 
@@ -233,7 +233,7 @@ public class PipeStatus : MonoBehaviour {
                 {
                     Instantiate(explosionEffect, leave.current.gameObject.transform.position, Quaternion.identity);
                     leave.current.DestroyPipe();
-                    leave.UpdateColor(GameData.Team.Neutral);
+                    UpdateColor(team,GameData.Team.Neutral);
                     Vector2 pos = new Vector2(leave.current.positionCoordinate.x, leave.current.positionCoordinate.y);
                     RecursivePipe p = pipesPerPlayer[team][pos];
                     if (p != null)
@@ -246,6 +246,24 @@ public class PipeStatus : MonoBehaviour {
         foreach (GameData.Team team in teamsToDestroy)
             GameController.Instance.Lose(team);
     }
+
+    public void UpdateColor(GameData.Team teamColor, GameData.Team toColor)
+    {
+        foreach(Vector2 pos in pipesPerPlayer[teamColor].Keys)
+        {
+            if (pos != new Vector2(-1, -1)&&pipesPerPlayer[teamColor][pos].current!=null)
+            {
+                if (!pipesPerPlayer[teamColor][pos].current.CheckSourceConnection())
+                {
+                    pipesPerPlayer[teamColor][pos].current.TurnConnectedPipesToTeam(toColor);
+                    pipesPerPlayer[teamColor][pos].current.GetComponent<PipesSprite>().FindPipeStatus(pipesPerPlayer[teamColor][pos].current.PipeType, toColor);
+                }
+            }
+        }
+    }
+
+
+ 
 
     public void Annhilation(GameData.Team winningTeam)
     {
@@ -344,8 +362,9 @@ public class PipeStatus : MonoBehaviour {
                     }
                     else {
                         Instantiate(explosionEffect, toDestroy[i].current.gameObject.transform.position, Quaternion.identity);
+                        UpdateColor(team,GameData.Team.Neutral);
                         toDestroy[i].current.DestroyPipe(); 
-                        toDestroy[i].UpdateColor(GameData.Team.Neutral);
+                        
 
                         if (p != null)
                             p.DisconnectPipe();
@@ -566,8 +585,17 @@ public class PipeStatus : MonoBehaviour {
             }
             else
             {
-                RecursivePipe last = firstChild.LastBrother();
-                last.nextBrother = pipe;
+                RecursivePipe p = firstChild;
+                while (p.nextBrother != null) {
+                    if (!p.current.positionCoordinate.Equals(pipe.current.positionCoordinate))
+                    {
+                        p = p.nextBrother;
+                    }
+                    else
+                        return;
+                }
+                p.nextBrother = pipe;
+
             }
             
         }
@@ -587,7 +615,7 @@ public class PipeStatus : MonoBehaviour {
         /// <summary>
         /// Function that checks if the current tree type pipe is actually connected to the passed coordinate
         /// </summary>
-        /// <param name="coordinate">The coordinate to check if the tree is connected</param>
+        /// <param name="coordinate">The coordinate to player if the tree is connected</param>
         /// <returns>True or false</returns>
         public bool CheckIfTreeIsConnected(GameData.Coordinate coordinate)
         {
@@ -964,17 +992,6 @@ public class PipeStatus : MonoBehaviour {
             return r;
         }
 
-        public void UpdateColor(GameData.Team color)
-        {
-            if (current != null && current.GetComponent<PipesSprite>() != null)
-            {
-                current.GetComponent<PipesSprite>().FindPipeStatus(current.PipeType, color);
-                if (firstChild != null)
-                    firstChild.UpdateColor(color);
-                if (nextBrother != null)
-                    nextBrother.UpdateColor(color);
-            }
-        }
 
         /// <summary>
         /// Function that attempts to find a tree type pipe in the current tree type pipe

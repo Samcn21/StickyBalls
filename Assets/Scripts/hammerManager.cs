@@ -5,7 +5,6 @@ public class hammerManager : MonoBehaviour {
     private GameObject _player;
 
 
-    private bool _loadPower;
     private bool _releasePower;
     private float _power;
     [SerializeField]
@@ -16,7 +15,6 @@ public class hammerManager : MonoBehaviour {
     private float stunSpeedTreshold;
     void Awake()
     {
-        _loadPower = false;
         _player = null;
         _releasePower = false;
     }

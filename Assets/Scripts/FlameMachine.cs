@@ -59,7 +59,7 @@ public class FlameMachine : Pipe {
             {
                 if (gridController.Grid[connection.x, connection.y].pipe.Team != GameData.Team.Neutral)
                 {
-                    GameController.Instance.PipeStatus.DestroyPipesFromFlameMachine(positionCoordinate, gridController.Grid[connection.x, connection.y].pipe.Team);
+                    GameController.Instance.GridController.Grid[connection.x,connection.y].pipe.DestroyFlameMachine();
                 }
             }
         }

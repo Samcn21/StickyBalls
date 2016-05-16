@@ -4,8 +4,6 @@ using System.Collections;
 public class CenterMachineSprite : AnimationController {
     public int spriteSheetColumns       = 4;
     public int spriteSheetRows          = 4;
-    [SerializeField]
-    int currentFrameShow = 1;
 
     public GameData.CenterMachineStates currentAnim = GameData.CenterMachineStates.CenterMachineNeutral;
 
@@ -28,8 +26,6 @@ public class CenterMachineSprite : AnimationController {
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
         currentFrame = cmNeutral;
-        currentFrameShow = currentFrame;
-
     }
 
     void Update()
@@ -38,8 +34,6 @@ public class CenterMachineSprite : AnimationController {
         FPSController();
         PlayAnimation();
         ReadSpriteSheet(GameData.SpriteSheet.CenterMachine);
-        currentFrameShow = currentFrame;
-
     }
 
     void PlayAnimation() 
