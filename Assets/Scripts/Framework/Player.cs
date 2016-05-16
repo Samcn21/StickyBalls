@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class Player : MonoBehaviour
 {
@@ -19,10 +20,8 @@ public class Player : MonoBehaviour
     public GameData.Team Team { get; private set; }
 
     //State Machine
-    private StateManager StateManager;
     void Start()
     {
-        StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         pipeMan = GameController.Instance.PipeMan;
         heldPipeRenderer = heldPipe.GetComponent<MeshRenderer>();
         InputController = GetComponent<InputController>();
@@ -101,10 +100,10 @@ public class Player : MonoBehaviour
 
     public void Initialize()
     {
-        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        if (GameController.Instance.StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            if (!GameController.Instance.Gamemode_IsCoop)
-                GameController.Instance.Players.Add(InputController.team, this);
+            if (!GameController.Instance.Gamemode_IsCoop)          
+                GameController.Instance.Players.Add(InputController.team, this);     
             else
                 GameController.Instance.PlayersCoop[InputController.team].Add(this);
             Team = InputController.team;

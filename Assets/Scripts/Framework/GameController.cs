@@ -24,6 +24,7 @@ public class GameController : MonoBehaviour
     public GridController GridController;
     public PipeStatus PipeStatus;
     public ExplosionData ExplosionData;
+    public StateManager StateManager;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
@@ -31,8 +32,6 @@ public class GameController : MonoBehaviour
     public bool isPregame = false;
     public bool Gamemode_IsCoop = false;
 
-    //State Machine
-    private StateManager StateManager;
     private GameObject gameController;
 
     void Start()
