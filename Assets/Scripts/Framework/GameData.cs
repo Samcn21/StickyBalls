@@ -258,6 +258,8 @@ public class GameData
         Music,
         PickupPipe,
         PlacePipe,
+        PushOthers,
+        Walking,
         Explosion,
         Winning,
         RotatePipe

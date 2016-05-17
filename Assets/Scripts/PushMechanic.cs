@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
 public class PushMechanic : MonoBehaviour {
     [SerializeField]
@@ -10,12 +11,16 @@ public class PushMechanic : MonoBehaviour {
     private GameObject particleEffect;
     private Rigidbody body;
     private Player playerRef;
+    private AudioManager AudioManager;
+    private GamePad.Index gamepadIndex;
     private Vector3 lastPosition = Vector3.zero;
     public float speed { get; private set; }
     void Awake()
     {
         body = GetComponent<Rigidbody>();
         playerRef = GetComponent<Player>();
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+        gamepadIndex = GetComponent<InputController>().index;  
     }
    
     void FixedUpdate()
@@ -32,7 +37,8 @@ public class PushMechanic : MonoBehaviour {
                
             Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
             Instantiate(particleEffect, Vector3.Lerp(transform.position,col.transform.position,0.5f), Quaternion.identity);
-          
+
+            AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PushOthers, gamepadIndex, false);
             if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
             {
                 Vector3 direction = (transform.position - col.transform.position);

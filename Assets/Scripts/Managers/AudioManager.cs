@@ -4,27 +4,38 @@ using GamepadInput;
 
 public class AudioManager : MonoBehaviour
 {
+    //Music Clip
+    public AudioClip musicClip;
+    public AudioClip menuMusicClip;
 
-    public AudioClip MusicClip;
+    //Player Clips
     public AudioClip pickupPipeClip;
     public AudioClip placePipeClip;
+    public AudioClip pushClip;
+    public AudioClip rotatePipeClip;
+    public AudioClip walkingClip;
+
+    //Level Clips
     public AudioClip bombExplosionClip;
     public AudioClip winSoundClip;
-    public AudioClip rotatePipeClip;
+    
+    //GUI Clips
+    public AudioClip menuNavClip;
 
 
     public AudioSource audioControllerSFX;
     public AudioSource audioControllerMusic;
-    public static AudioManager instantiate = null;
     private InputController InputController;
     private GameObject[] players;
     private AudioSource playerAS;
 
     //We need to get the volume settings from the menu in the end to apply to all sounds and music
     private float SFXVolume = 1;
-    private float SFXVolumeSetting = 50;
+    [Range (0,100)]
+    public float SFXVolumeSetting = 50;
     private float MusicVolume = 1;
-    private float MusicVolumeSetting = 50;
+    [Range(0, 100)]
+    public float MusicVolumeSetting = 30;
 
     public float[] playerPitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
     [SerializeField] private float pitchRange = 1;
@@ -34,7 +45,48 @@ public class AudioManager : MonoBehaviour
         SFXVolume = SFXVolume * (SFXVolumeSetting / 100);
         MusicVolume = MusicVolume * (MusicVolumeSetting / 100);
 
+        PlayMusic(true);
         players = GameObject.FindGameObjectsWithTag("Player");
+    }
+
+    public void PlayMusic(bool play) 
+    {
+        if (play)
+        {
+            audioControllerMusic.loop = true;
+            audioControllerMusic.clip = musicClip;
+            audioControllerMusic.volume = MusicVolume;
+            audioControllerMusic.Play();
+        }
+        else 
+        {
+            audioControllerMusic.Stop();
+
+        }
+    }
+
+    public void PlayMenuNav()
+    {
+        audioControllerSFX.clip = menuNavClip;
+        audioControllerSFX.volume = SFXVolume;
+        audioControllerSFX.Play();
+
+    }
+
+    public void StopPlayerAudio(GamePad.Index playerNumber)
+    {
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<InputController>().index == playerNumber)
+            {
+                playerAS = player.GetComponent<AudioSource>();
+            }
+        }
+
+        if (playerAS.isPlaying) 
+        {
+            playerAS.Stop();
+        }
     }
 
     public void PlayOneShotPlayer(GameData.AudioClipState state, GamePad.Index playerNumber, bool needsPitch)
@@ -45,6 +97,11 @@ public class AudioManager : MonoBehaviour
             {
                 playerAS = player.GetComponent<AudioSource>();
             }
+        }
+
+        if (playerAS.isPlaying) 
+        {
+            return;
         }
 
         switch (state)
@@ -59,6 +116,14 @@ public class AudioManager : MonoBehaviour
 
             case GameData.AudioClipState.RotatePipe:
                 playerAS.clip = rotatePipeClip;
+                break;
+
+            case GameData.AudioClipState.PushOthers:
+                playerAS.clip = pushClip;
+                break;
+
+            case GameData.AudioClipState.Walking:
+                playerAS.clip = walkingClip;
                 break;
         }
 

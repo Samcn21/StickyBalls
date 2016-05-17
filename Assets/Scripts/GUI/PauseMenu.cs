@@ -20,7 +20,7 @@ public class PauseMenu : MonoBehaviour {
     private string levelName;
     public string mainMenu = "MainMenu";
     private GameObject tc;
-
+    private AudioManager AudioManager;
 
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
@@ -42,12 +42,17 @@ public class PauseMenu : MonoBehaviour {
             Debug.LogError("The scene must have screen fader prefab. it's in Prefabs > GUI > pfbScreenFader");
         }
         buttons = GameObject.FindGameObjectsWithTag("PauseMenuButton");
+
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+
 	}
 
 	void Update () {
 
         if (isPaused)
         {
+                        
+
             GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
 
             if (tc != null)
@@ -84,7 +89,10 @@ public class PauseMenu : MonoBehaviour {
             if (holdTimer <= 0 || !firstMove)
             {
                 if (selectIndex < 3)
+                { 
                     selectIndex++;
+                    AudioManager.PlayMenuNav();
+                }
                 firstMove = true;
             }
             else
@@ -97,7 +105,11 @@ public class PauseMenu : MonoBehaviour {
             if (holdTimer <= 0 || !firstMove)
             {
                 if (selectIndex > 0)
+                { 
                     selectIndex--;
+                    AudioManager.PlayMenuNav();
+
+                }
                 firstMove = true;
             }
             else

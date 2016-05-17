@@ -6,6 +6,7 @@ public class MenuOption : MonoBehaviour
 {
     [SerializeField] Image buttonImage;
     [SerializeField] Text optionText;
+
     public void Select(bool isSelected, Sprite newSprite)
     {
         if (isSelected)

@@ -135,8 +135,6 @@ public class InputController : MonoBehaviour
 
             rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
             playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
-
-
         }
     }
 
@@ -676,6 +674,8 @@ public class InputController : MonoBehaviour
 
             if (velocityTotal <= velocityThreshold)
             {
+                AudioManager.StopPlayerAudio(index);
+
                 if (CharacterSprite.previousAnim.ToString().Contains("Front"))
                 {
                     CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
@@ -695,6 +695,9 @@ public class InputController : MonoBehaviour
             }
             else
             {
+                AudioManager.PlayOneShotPlayer(GameData.AudioClipState.Walking, index, true);
+
+
                 if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.East;
