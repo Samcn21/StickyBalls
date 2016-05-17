@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
+using UnityEngine.SceneManagement;
+
 
 public class MainMenu : MonoBehaviour
 {
@@ -68,13 +70,13 @@ public class MainMenu : MonoBehaviour
             switch (selectIndex)
             {
                 case 0:
-
+                    SceneManager.LoadScene(sceneColorAssign);
                     break;
                 case 1:
-
+                    SceneManager.LoadScene(scene2vs2);
                     break;
                 case 2:
-
+                    SceneManager.LoadScene(credits);
                     break;
                 case 3:
                     Application.Quit();

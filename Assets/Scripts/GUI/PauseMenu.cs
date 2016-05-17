@@ -19,13 +19,14 @@ public class PauseMenu : MonoBehaviour {
     private bool firstMove = false;
     private string levelName;
     public string mainMenu = "MainMenu";
+    private GameObject tc;
 
 
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
     [SerializeField] private List<Sprite> deselectedOption;
 
-    void Start () {
+    void Awake () {
         levelName = SceneManager.GetActiveScene().name;
         mainMenu = "MainMenu";
 
@@ -47,7 +48,11 @@ public class PauseMenu : MonoBehaviour {
 
         if (isPaused)
         {
-            GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 0;
+            GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
+
+            if (tc != null)
+                GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 0;
+
             ScreenFader.FadeToBlack();
             foreach(GameObject btn in buttons)
             {
@@ -62,7 +67,11 @@ public class PauseMenu : MonoBehaviour {
             {
                 btn.GetComponent<Image>().enabled = false;
             }
-            GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 1;
+
+            GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
+
+            if (tc != null)
+                GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 1;
 
         }
 	}
