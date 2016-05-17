@@ -111,6 +111,11 @@ public class PlayerColorManager : MonoBehaviour
     {
         //freeze controller (in 3 seconds if anyone didn't choose a color can choose a color but it's not acceptable
         //so player controller should freeze)
+        foreach (GameObject player in players)
+        {
+            player.GetComponent<InputController>().enabled = false;
+        }
+
         foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
         {
             switch (player.Key)
@@ -144,7 +149,7 @@ public class PlayerColorManager : MonoBehaviour
             PlayerPrefs.SetInt("isDataSaved", 1);
         }
 
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         SceneManager.LoadScene("LevelFFA");
     }
 }
