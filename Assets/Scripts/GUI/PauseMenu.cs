@@ -47,12 +47,12 @@ public class PauseMenu : MonoBehaviour {
 
         if (isPaused)
         {
+            GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 0;
             ScreenFader.FadeToBlack();
             foreach(GameObject btn in buttons)
             {
                 btn.GetComponent<Image>().enabled = true;
             }
-
             PauseMenuOperation();
         }
         else 
@@ -62,6 +62,8 @@ public class PauseMenu : MonoBehaviour {
             {
                 btn.GetComponent<Image>().enabled = false;
             }
+            GameObject.FindGameObjectWithTag("TutorialCanvas").GetComponent<CanvasGroup>().alpha = 1;
+
         }
 	}
 
