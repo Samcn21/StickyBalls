@@ -12,14 +12,19 @@ public class MainMenu : MonoBehaviour
     private bool firstMove = false;
     
     [SerializeField] private List<MenuOption> menuOptions;
-    [SerializeField] private Sprite selectedOption;
-    [SerializeField] private Sprite deselectedOption;
+    [SerializeField] private List<Sprite> selectedOption;
+    [SerializeField] private List<Sprite> deselectedOption;
+
+    public string sceneColorAssign = "ColorAssignFFA";
+    public string scene2vs2        = "Level2vs2";
+    public string credits          = "Credits";
+
 
 	// Use this for initialization
 	void Start ()
 	{
 	    holdTimer = holdTimerMax;
-        menuOptions[selectIndex].Select(true, selectedOption);
+        menuOptions[selectIndex].Select(true, selectedOption[selectIndex]);
 	}
 
     void FixedUpdate()
@@ -29,7 +34,7 @@ public class MainMenu : MonoBehaviour
         {
             if (holdTimer <= 0 || !firstMove)
             {
-                if (selectIndex < 2)
+                if (selectIndex < 3)
                     selectIndex++;
                 firstMove = true;
             }
@@ -63,12 +68,15 @@ public class MainMenu : MonoBehaviour
             switch (selectIndex)
             {
                 case 0:
-                    //Run FFA
+
                     break;
                 case 1:
-                    //Run 2vs2
+
                     break;
                 case 2:
+
+                    break;
+                case 3:
                     Application.Quit();
                     break;
             }
@@ -77,11 +85,17 @@ public class MainMenu : MonoBehaviour
 
     public void UpdateSelection()
     {
-        foreach (MenuOption menuOption in menuOptions)
+        for (int i = 0; i < menuOptions.Count; i++)
         {
-            menuOption.Select(false, deselectedOption);
+            if (i == selectIndex)
+            {
+                menuOptions[i].Select(true, selectedOption[i]);
+            }
+            else
+            {
+                menuOptions[i].Select(false, deselectedOption[i]);
+            }
         }
-        menuOptions[selectIndex].Select(true, selectedOption);
     }
 
 }
