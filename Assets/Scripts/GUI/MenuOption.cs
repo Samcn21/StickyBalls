@@ -4,18 +4,17 @@ using UnityEngine.UI;
 
 public class MenuOption : MonoBehaviour
 {
-    [SerializeField] Image pipeImage;
+    [SerializeField] Image optionImage;
     [SerializeField] Text optionText;
     public void Select(bool isSelected, Sprite newSprite)
     {
         if (isSelected)
         {
-            pipeImage.sprite = newSprite;
-
+            optionImage.sprite = newSprite;
         }
         else
         {
-            pipeImage.sprite = newSprite;
+            optionImage.sprite = newSprite;
         }
     }
 }
