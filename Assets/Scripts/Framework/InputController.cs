@@ -95,6 +95,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        closePipes = new List<Pipe>();
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
         CharacterSprite = GetComponentInChildren<CharacterSprite>();
@@ -104,8 +105,7 @@ public class InputController : MonoBehaviour
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
         pipeStatus = GameController.Instance.PipeStatus;
-        AssignColorsToPlayers();
-        closePipes = new List<Pipe>();
+        AssignColorsToPlayers();     
         isPressingX = false;
         destroyTimer = resetDestroyTimer;
         isDead = false;
@@ -143,6 +143,7 @@ public class InputController : MonoBehaviour
     void Update()
     {
         updateCounter++;
+        
         if (!initialized || isLocked) return;
         if (player.HeldPipeType == PipeData.PipeType.Void && TEST_INFINITEXPIPE)
         {
@@ -335,13 +336,33 @@ public class InputController : MonoBehaviour
     void OnTriggerStay(Collider col)
     {
         OnTriggerEnter(col);
+        if (col.gameObject.tag == "Pipe") {
+            Pipe p = col.gameObject.GetComponent<Pipe>();
+            if (p == null) return;
+            if (p.Team ==GameData.Team.Neutral)
+            {
+                foreach (GameData.Coordinate coord in p.connections)
+                {
+                    closePipeConnections.Remove(coord);
+                    if (coord.Equals(selectedPipeConnection))
+                    {
+                        selectedPipeConnection = null;
+                        if (selectedPipePlaceholder != null)
+                            Destroy(selectedPipePlaceholder.gameObject);
+                    }
+                }
+                closePipes.Remove(p);
+
+            }
+
+        }
     }
 
     //If player is not holding a pipe, player if the collider is a conveyor pipe
     //Else player if it was a pipe, and get it's connections where you could possible place the pipe you're holding
     void OnTriggerEnter(Collider col)
     {
-        if (GameController.Instance.PipeStatus.DestroySinglePipeActive && col.gameObject.tag == "Pipe")
+        if (col.gameObject.tag == "Pipe")
         {
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
             if (pipe.Team != team)
@@ -388,9 +409,9 @@ public class InputController : MonoBehaviour
             {
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
                 {
-                    if (!closePipes.Contains(pipe))
-                        closePipes.Add(pipe);
-                    closePipeConnections.Add(c);
+                        if (!closePipes.Contains(pipe))
+                            closePipes.Add(pipe);
+                        closePipeConnections.Add(c);
                 }
             }
         }
@@ -638,10 +659,10 @@ public class InputController : MonoBehaviour
                     if (!p.CheckSourceConnection())
                     {
                         p.TurnConnectedPipesToTeam(GameData.Team.Neutral);
-                        p.GetComponent<PipesSprite>().FindPipeStatus(p.PipeType, GameData.Team.Neutral);
                     }
                 }
             }
+            pipeToPick.DestroyPipe();
             closePipeConnections.Clear();
             selectedPipeConnection = null;
         }

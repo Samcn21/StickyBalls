@@ -136,10 +136,8 @@ public class Pipe : MonoBehaviour
             {
                 if (!connectedPipe.CheckSourceConnection())
                 {
-                    connectedPipe.TurnConnectedPipesToTeam(GameData.Team.Neutral);
-                    connectedPipe.GetComponent<PipesSprite>().FindPipeStatus(connectedPipe.PipeType, GameData.Team.Neutral);
+                    connectedPipe.TurnConnectedPipesToTeam(GameData.Team.Neutral);                }
                 }
-            }
         }
         Destroy(gameObject);
     }
@@ -177,9 +175,11 @@ public class Pipe : MonoBehaviour
         GetConnectedPipes(positionCoordinate);
         foreach (Pipe pipe in connectedPipes)
         {
-            pipe.Team = newTeam;  
-            //TurnConnectedPipesToTeam        
+                pipe.Team = newTeam;
+            if(pipe.gameObject.GetComponent<PipesSprite>()!=null)
+                pipe.gameObject.GetComponent<PipesSprite>().FindPipeStatus(pipe.PipeType, newTeam);
         }
+        
     }
 
     private void GetConnectedPipes(GameData.Coordinate coord)
@@ -187,11 +187,9 @@ public class Pipe : MonoBehaviour
         List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
         visited.Add(new Vector2(coord.x,coord.y));
         foreach (GameData.Coordinate c in cons) {
-            if (c == coord) continue;
-            if (gridController.Grid[c.x, c.y].pipe == null) continue;
+            if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
             if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
             if (visited.Contains(new Vector2(c.x,c.y))) continue;
-
             connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
             GetConnectedPipes(c);
         }
@@ -200,6 +198,7 @@ public class Pipe : MonoBehaviour
     
     public void SetHightlight(bool val)
     {
+        Debug.Log(val);
         if(val)
         {
             gameObject.GetComponent<MeshRenderer>().material.color = Color.red;
