@@ -50,10 +50,17 @@ public class Pipe : MonoBehaviour
 
     //TODO: REMOVE TEST
     public bool todestroy = false;
+    private GameData.Team colorToChange;
+    private bool changeColor;
 
     void Update()
     {
         if (todestroy) DestroyPipe();
+        if(changeColor)
+        {
+            GetComponent<PipesSprite>().FindPipeStatus(PipeType, colorToChange);
+            changeColor = false;
+        }
     }
 
 
@@ -63,7 +70,7 @@ public class Pipe : MonoBehaviour
         gridController = GameController.Instance.GridController;
         meshRenderer = GetComponent<MeshRenderer>();
         connections = new List<GameData.Coordinate>();
-
+        changeColor = false;
 
 
         PipeType = pipeType;
@@ -125,11 +132,12 @@ public class Pipe : MonoBehaviour
         foreach (GameData.Coordinate c in connections)
         {
             Pipe connectedPipe = gridController.Grid[c.x, c.y].pipe;
-            if (connectedPipe != null)
+            if (connectedPipe != null && !connectedPipe.isFlameMachine)
             {
                 if (!connectedPipe.CheckSourceConnection())
                 {
                     connectedPipe.TurnConnectedPipesToTeam(GameData.Team.Neutral);
+                    connectedPipe.GetComponent<PipesSprite>().FindPipeStatus(connectedPipe.PipeType, GameData.Team.Neutral);
                 }
             }
         }
@@ -169,7 +177,8 @@ public class Pipe : MonoBehaviour
         GetConnectedPipes(positionCoordinate);
         foreach (Pipe pipe in connectedPipes)
         {
-            pipe.Team = newTeam;          
+            pipe.Team = newTeam;  
+            //TurnConnectedPipesToTeam        
         }
     }
 

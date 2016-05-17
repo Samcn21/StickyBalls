@@ -23,7 +23,7 @@ public class FlameMachine : Pipe {
         int xBase = coords.x;
         int yBase = coords.y;
         me = new GameData.Coordinate(xBase, yBase);
-        if (xBase + 1 < gridController.GridHeight)
+        if (xBase + 1 < gridController.GridWidth)
         {
             con = new GameData.Coordinate(xBase + 1, yBase);
             connections.Add(con);
@@ -59,7 +59,12 @@ public class FlameMachine : Pipe {
             {
                 if (gridController.Grid[connection.x, connection.y].pipe.Team != GameData.Team.Neutral)
                 {
-                    GameController.Instance.GridController.Grid[connection.x,connection.y].pipe.DestroyFlameMachine();
+                    foreach (GameData.Coordinate coord in gridController.Grid[connection.x, connection.y].pipe.connections)
+                        if (coord.Equals(positionCoordinate))
+                        {
+                            GameController.Instance.GridController.Grid[connection.x, connection.y].pipe.DestroyFlameMachine();
+                            break;
+                        }
                 }
             }
         }

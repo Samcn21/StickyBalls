@@ -630,7 +630,20 @@ public class InputController : MonoBehaviour
             PickUpPipe();
             player.PickupPipe(pipeToPick.PipeType, Mathf.RoundToInt(pipeToPick.transform.rotation.y));
             pipeToDestroyRef = null;
-            pipeStatus.DestroyPipeOfPlayer(pipeToPick.Team, pipeToPick, false);
+            foreach(GameData.Coordinate coord in pipeToPick.connections)
+            {
+                Pipe p = gridController.Grid[coord.x, coord.y].pipe;
+                if (p != null && p.gameObject != null && !p.isFlameMachine)
+                {
+                    if (!p.CheckSourceConnection())
+                    {
+                        p.TurnConnectedPipesToTeam(GameData.Team.Neutral);
+                        p.GetComponent<PipesSprite>().FindPipeStatus(p.PipeType, GameData.Team.Neutral);
+                    }
+                }
+            }
+            closePipeConnections.Clear();
+            selectedPipeConnection = null;
         }
     }
 
