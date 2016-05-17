@@ -144,7 +144,7 @@ public class PlayerColorManager : MonoBehaviour
             PlayerPrefs.SetInt("isDataSaved", 1);
         }
 
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1);
         SceneManager.LoadScene("LevelFFA");
     }
 }
