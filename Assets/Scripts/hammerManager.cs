@@ -5,7 +5,6 @@ public class hammerManager : MonoBehaviour {
     private GameObject _player;
 
 
-    private bool _loadPower;
     private bool _releasePower;
     private float _power;
     [SerializeField]
@@ -16,13 +15,13 @@ public class hammerManager : MonoBehaviour {
     private float stunSpeedTreshold;
     void Awake()
     {
-        _loadPower = false;
         _player = null;
         _releasePower = false;
     }
 
     void Update()
     {
+        /*
         if (_player != null)
         {
             if (_player.GetComponent<PlayerInputManager>().pressHitHammer == 1)
@@ -37,6 +36,7 @@ public class hammerManager : MonoBehaviour {
             else
                 _releasePower = true;
         }
+        */
     }
 
     void FixedUpdate()
@@ -70,9 +70,10 @@ public class hammerManager : MonoBehaviour {
     {
         if(col.gameObject.tag=="Player")
         {
+            /*
             if (col.relativeVelocity.magnitude > stunSpeedTreshold*stunSpeedTreshold)
                 Debug.Log("I stunned the player " + col.gameObject.GetComponent<PlayerManager>().index);
-
+                */
         }
     }
     

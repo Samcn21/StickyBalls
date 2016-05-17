@@ -7,8 +7,6 @@ public class ConveyorPipe : MonoBehaviour
 
     [SerializeField]
     private float moveSpeed = 0.5f;
-    private MeshRenderer meshRender;
-    private PipeManager pipeManager;
     private ConveyorBelt conveyorBelt;
     private Transform prevTravelTarget;
     private float moveProgress = 0;
@@ -22,8 +20,14 @@ public class ConveyorPipe : MonoBehaviour
     [SerializeField]
     private bool Pick = false;
 
+    //State Machine
+    private StateManager StateManager;
+    private GameObject gameController;
+
     void Start()
     {
+        gameController = GameObject.FindGameObjectWithTag("GameController");
+        StateManager = gameController.GetComponent<StateManager>();
     }
 
     // Update is called once per frame
@@ -64,7 +68,6 @@ public class ConveyorPipe : MonoBehaviour
     {
         travelPointIndex = travelIndex;
         pipeMan = GameController.Instance.PipeMan;
-        meshRender = GetComponent<MeshRenderer>();
         PipeType = pipeType;
         conveyorBelt = belt;
         GetComponent<MeshRenderer>().material = pipeMan.pipeTextures[PipeType];
@@ -75,7 +78,10 @@ public class ConveyorPipe : MonoBehaviour
     //Should return pipe that you can place, and remove this pipe from the belt.
     public void PickPipe()
     {
-        conveyorBelt.PickConveyorPipe(travelPointIndex);
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            conveyorBelt.PickConveyorPipe(travelPointIndex);
+        }
         Destroy(gameObject);
     }
 

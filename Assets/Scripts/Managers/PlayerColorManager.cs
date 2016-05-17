@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using GamepadInput;
 using System.Linq;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerColorManager : MonoBehaviour
 {
@@ -13,7 +15,10 @@ public class PlayerColorManager : MonoBehaviour
         {GamePad.Index.Three, GameData.Team.Neutral},
         {GamePad.Index.Four, GameData.Team.Neutral},
     };
-    public GameObject[] players;
+    private GameObject[] players;
+    private InputController InputController;
+    private int counter = 0;
+    private Text text;
 
     void Start()
     {
@@ -22,72 +27,124 @@ public class PlayerColorManager : MonoBehaviour
 
     void Update()
     {
-        foreach (GameObject check in players)
+        counter = 0;
+        foreach (GameObject player in players)
         {
-            InputController InputController;
-            InputController = check.gameObject.GetComponent<InputController>();
+            InputController = player.gameObject.GetComponent<InputController>();
             if (InputController.team != GameData.Team.Neutral)
             {
                 playerIndexColor[InputController.index] = InputController.team;
+                counter++;
             }
         }
 
-        //this part starts the game from PlayerColorAssign level!
-        if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One) || Input.GetKeyDown(KeyCode.Return))
+        //if all characters choose a color level automatically changes
+        if (counter == 4) 
+        {
+            StartCoroutine(RestartLevel());
+        }
+        
+        //this part starts the game from PlayerColorAssign level when player "ONE" press start and shouldn't be neutral!
+        if (GamePad.GetButtonDown(GamePad.Button.Start, GamePad.Index.One))
         {
             if (playerIndexColor[GamePad.Index.One] != GameData.Team.Neutral)
             {
-                List<GameData.Team> colorList = new List<GameData.Team>(){
+                AssignColors();
+            }
+        }
+
+        //anytime press enter on keyboard automatically choose a color
+        if (Input.GetKeyDown(KeyCode.Return)) 
+        {
+            AssignColors();
+        }
+    }
+
+    private void AssignColors() 
+    {
+        List<GameData.Team> colorList = new List<GameData.Team>(){
                                 GameData.Team.Yellow, 
                                 GameData.Team.Blue, 
-                                GameData.Team.Red, 
-                                GameData.Team.Black
+                                GameData.Team.Purple, 
+                                GameData.Team.Cyan
                         };
-                List<GameData.Team> impossibleColorList = new List<GameData.Team>();
-                GamePad.Index[] indexList = new GamePad.Index[] {
+        List<GameData.Team> impossibleColorList = new List<GameData.Team>();
+
+        GamePad.Index[] indexList = new GamePad.Index[] {
                                 GamePad.Index.One,
                                 GamePad.Index.Two,
                                 GamePad.Index.Three,
                                 GamePad.Index.Four
                         };
 
-                //make a list of colors that alredy picked by the player(s)
-                for (int index = 0; index < indexList.Length; index++)
+        //make a list of colors that alredy picked by the player(s)
+        for (int index = 0; index < indexList.Length; index++)
+        {
+            foreach (GameData.Team color in colorList)
+            {
+                if (playerIndexColor[indexList[index]] == color)
                 {
-                    foreach (GameData.Team color in colorList)
-                    {
-                        if (playerIndexColor[indexList[index]] == color)
-                        {
-                            impossibleColorList.Add(color);
-                        }
-                    }
+                    impossibleColorList.Add(color);
                 }
-
-                //make a list of available colors that hav't picked by the player(s)
-                List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
-
-                //assign the available colors to the players without color
-                foreach (GameData.Team possibleColor in possibleColorList)
-                {
-                    bool oneShot = true;
-                    for (int index = 0; index < indexList.Length; index++)
-                    {
-                        if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
-                        {
-                            playerIndexColor[indexList[index]] = possibleColor;
-                            oneShot = false;
-                        }
-                    }
-                }
-                foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
-                {
-                    //Debug.Log(player.Key + " - " + player.Value);
-                    //TODO: Show which game pad picked what color in a GUI
-                    PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
-                }
-                Application.LoadLevel("Level01");
             }
         }
-    }
 
+        //make a list of available colors that hav't picked by the player(s)
+        List<GameData.Team> possibleColorList = colorList.Except(impossibleColorList).ToList();
+
+        //assign the available colors to the players without color
+        foreach (GameData.Team possibleColor in possibleColorList)
+        {
+            bool oneShot = true;
+            for (int index = 0; index < indexList.Length; index++)
+            {
+                if (playerIndexColor[indexList[index]] == GameData.Team.Neutral && oneShot)
+                {
+                    playerIndexColor[indexList[index]] = possibleColor;
+                    oneShot = false;
+                }
+            }
+        }
+        StartCoroutine(RestartLevel());
+    }
+    IEnumerator RestartLevel()
+    {
+        //freeze controller (in 3 seconds if anyone didn't choose a color can choose a color but it's not acceptable
+        //so player controller should freeze)
+        foreach (KeyValuePair<GamePad.Index, GameData.Team> player in playerIndexColor)
+        {
+            switch (player.Key)
+            {
+                case GamePad.Index.One:
+                    text = GameObject.Find("Player1").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Two:
+                    text = GameObject.Find("Player2").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Three:
+                    text = GameObject.Find("Player3").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+                case GamePad.Index.Four:
+                    text = GameObject.Find("Player4").GetComponent<Text>();
+                    text.color = GameData.TeamColors[player.Value];
+                    break;
+            }
+
+            GameObject[] virtualPlayers = GameObject.FindGameObjectsWithTag("VirtualPlayer");
+            foreach (GameObject vp in virtualPlayers)
+            {
+                if (vp.GetComponent<VirtualPlayer>().index == player.Key)
+                    vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(player.Value);
+            }
+
+            PlayerPrefs.SetString(player.Key.ToString(), player.Value.ToString());
+            PlayerPrefs.SetInt("isDataSaved", 1);
+        }
+
+        yield return new WaitForSeconds(1);
+        SceneManager.LoadScene("LevelFFA");
+    }
 }
