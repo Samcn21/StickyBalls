@@ -38,7 +38,6 @@ public class GameController : MonoBehaviour
     {
         gameController = GameObject.FindGameObjectWithTag("GameController");
         StateManager = gameController.GetComponent<StateManager>();
-        PlayerPrefs.DeleteAll();
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
         isPregame = (SceneManager.GetActiveScene().buildIndex == 0);
         if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
