@@ -59,7 +59,7 @@ public class CenterMachine : Pipe
                         GameController.Instance.PlayerWon(gridController.Grid[connection.x, connection.y].pipe.Team);
                         if (!calledAnnhilation)
                         {
-                            GameController.Instance.PipeStatus.Annhilation(gridController.Grid[connection.x, connection.y].pipe.Team);
+                            GameController.Instance.ExplosionData.ExplodeAnnhilation(gridController.Grid[connection.x, connection.y].pipe.Team);
                             calledAnnhilation = true;
                         }
                     }

@@ -206,6 +206,7 @@ public class PlayerSource : Pipe
         }
 
         coordinateOfOutingPoints[0] = new GameData.Coordinate(me.x, me.y);
+        positionCoordinate = me;
         gridController.Grid[me.x, me.y].SetPipe(this);
 
         if (me2 != null)

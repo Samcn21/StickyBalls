@@ -1,40 +1,27 @@
 ﻿using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 using GamepadInput;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
+using System.Runtime.InteropServices;
 
 public class PauseMenu : MonoBehaviour {
+    [DllImport("user32.dll")]
+    public static extern bool SetCursorPos(int X, int Y);
+
+    public float mouseSensitivity = 50f;
     private bool isPaused = false;
     private float stickSensivity = 0.25f;
+    private Vector2 mousePos;
     private ScreenFader ScreenFader;
     private GameObject[] buttons;
     private bool screenFader = false;
 
-    private GamepadState gamepadState;
-    private float holdTimer = 0;
-    private float holdTimerMax = 0.5f;
-    private int selectIndex = 0;
-    private bool firstMove = false;
-    private string levelName;
-    public string mainMenu = "MainMenu";
-
-
-    [SerializeField] private List<MenuOption> menuOptions;
-    [SerializeField] private List<Sprite> selectedOption;
-    [SerializeField] private List<Sprite> deselectedOption;
 
     void Start () {
-        levelName = SceneManager.GetActiveScene().name;
-        mainMenu = "MainMenu";
-
-        holdTimer = holdTimerMax;
-        menuOptions[selectIndex].Select(true, selectedOption[selectIndex]);
-
         screenFader = true;
         isPaused = false;
-
+        SetCursorPos(Screen.width / 2, Screen.height / 2);
+        mousePos = new Vector2(Screen.width / 2, Screen.height / 2);
         ScreenFader = GameObject.FindGameObjectWithTag("FadeImg").GetComponent<ScreenFader>();
         if (ScreenFader == null)
         {
@@ -53,7 +40,19 @@ public class PauseMenu : MonoBehaviour {
                 btn.GetComponent<Image>().enabled = true;
             }
 
-            PauseMenuOperation();
+            if ((GamePad.GetAxis(GamePad.Axis.LeftStick, GamePad.Index.Any)) != Vector2.zero)
+            {
+                GamepadState state = GamePad.GetState(GamePad.Index.Any);
+                mousePos.x += (state.LeftStickAxis.x * stickSensivity) * mouseSensitivity;
+                mousePos.y -= (state.LeftStickAxis.y * stickSensivity) * mouseSensitivity;
+
+                SetCursorPos(Mathf.CeilToInt(mousePos.x), (Mathf.CeilToInt(mousePos.y)));
+            }
+
+            if (GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.Any))
+            {
+                MouseOperations.MouseEvent(MouseOperations.MouseEventFlags.LeftUp | MouseOperations.MouseEventFlags.LeftDown);
+            }
         }
         else 
         {
@@ -64,77 +63,6 @@ public class PauseMenu : MonoBehaviour {
             }
         }
 	}
-
-    private void PauseMenuOperation() 
-    {
-        gamepadState = GamePad.GetState(GamePad.Index.Any);
-        if (gamepadState.Down || gamepadState.LeftStickAxis.y < -0.2f)
-        {
-            if (holdTimer <= 0 || !firstMove)
-            {
-                if (selectIndex < 3)
-                    selectIndex++;
-                firstMove = true;
-            }
-            else
-            {
-                holdTimer -= Time.deltaTime;
-            }
-        }
-        else if (gamepadState.Up || gamepadState.LeftStickAxis.y > 0.2f)
-        {
-            if (holdTimer <= 0 || !firstMove)
-            {
-                if (selectIndex > 0)
-                    selectIndex--;
-                firstMove = true;
-            }
-            else
-            {
-                holdTimer -= Time.deltaTime;
-            }
-        }
-        else
-        {
-            holdTimer = holdTimerMax;
-            firstMove = false;
-        }
-        UpdateSelection();
-
-        if (gamepadState.A)
-        {
-            switch (selectIndex)
-            {
-                case 0:
-                    isPaused = false;
-                    break;
-                case 1:
-                    SceneManager.LoadScene(levelName);
-                    break;
-                case 2:
-                    SceneManager.LoadScene(mainMenu);
-                    break;
-                case 3:
-                    Application.Quit();
-                    break;
-            }
-        }
-    }
-
-    public void UpdateSelection()
-    {
-        for (int i = 0; i < menuOptions.Count; i++)
-        {
-            if (i == selectIndex)
-            {
-                menuOptions[i].Select(true, selectedOption[i]);
-            }
-            else
-            {
-                menuOptions[i].Select(false, deselectedOption[i]);
-            }
-        }
-    }
 
     public void DoPause(bool state)
     {

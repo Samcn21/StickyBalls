@@ -101,8 +101,10 @@ public class Player : MonoBehaviour
 
     public void Initialize()
     {
-        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        if (GameController.Instance.StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
+            if(InputController==null)
+                InputController = GetComponent<InputController>();
             if (!GameController.Instance.Gamemode_IsCoop)
                 GameController.Instance.Players.Add(InputController.team, this);
             else
