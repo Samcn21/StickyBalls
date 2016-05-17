@@ -8,11 +8,6 @@ public class SplashScreen : MonoBehaviour
 {
     public string levelName = "MainMenu";
     public float waitForSec = 10f;
-
-    void Start() 
-    {
-        waitForSec = 7;
-    }
 	
 	void Update () 
     {
