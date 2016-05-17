@@ -99,11 +99,6 @@ public class AudioManager : MonoBehaviour
             }
         }
 
-        if (playerAS.isPlaying) 
-        {
-            return;
-        }
-
         switch (state)
         {
             case GameData.AudioClipState.PickupPipe:

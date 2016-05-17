@@ -674,7 +674,7 @@ public class InputController : MonoBehaviour
 
             if (velocityTotal <= velocityThreshold)
             {
-                AudioManager.StopPlayerAudio(index);
+                //AudioManager.StopPlayerAudio(index);
 
                 if (CharacterSprite.previousAnim.ToString().Contains("Front"))
                 {
@@ -695,7 +695,7 @@ public class InputController : MonoBehaviour
             }
             else
             {
-                AudioManager.PlayOneShotPlayer(GameData.AudioClipState.Walking, index, true);
+                //AudioManager.PlayOneShotPlayer(GameData.AudioClipState.Walking, index, true);
 
 
                 if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
