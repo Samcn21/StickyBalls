@@ -65,11 +65,6 @@ public class Pipe : MonoBehaviour
 
     private Dictionary<Vector2, GameObject>  particleByPosition;
 
-    private void InstantiateParticles()
-    {
-        particleByPosition = new Dictionary<Vector2, GameObject>();
-        UpdateParticles();
-    }
 
     public void UpdateParticles()
     {
@@ -77,43 +72,48 @@ public class Pipe : MonoBehaviour
         {
             if (particleByPosition == null)
             {
-                InstantiateParticles();
+                particleByPosition=new Dictionary<Vector2, GameObject>();
             }
             else {
                 if (Team == GameData.Team.Neutral)
                 {
                     List<Vector2> toDestroy = new List<Vector2>();
                     foreach (Vector2 pos in particleByPosition.Keys)
-                        if(particleByPosition.ContainsKey(pos))
+                        if (particleByPosition.ContainsKey(pos))
                         {
                             toDestroy.Add(pos);
                         }
                     foreach (Vector2 vec in toDestroy)
+                    {
+                        Destroy(particleByPosition[vec]);
                         particleByPosition.Remove(vec);
-                }
-                foreach (GameData.Coordinate connection in connections)
-                {
-                    Vector2 pos = new Vector2(connection.x, connection.y);
-                    if (gridController.Grid[connection.x, connection.y].pipe != null)
-                    {
-
-                        if (particleByPosition.ContainsKey(pos))
-                        {
-                            Destroy(particleByPosition[pos]);
-                            particleByPosition.Remove(pos);
-                        }
-
-                    } else
-                    {
-
-                        if (!particleByPosition.ContainsKey(pos))
-                        {
-                            GameObject g= (GameObject)Instantiate(SelectParticlePrefabFromPosition(pos), GetTransformPositionFromVector2(pos), Quaternion.Euler(270, 0, 0));
-                            g.transform.parent = transform;
-                            particleByPosition.Add(pos, g);
-                        }
                     }
-                    
+                }
+                else {
+                    foreach (GameData.Coordinate connection in connections)
+                    {
+                        Vector2 pos = new Vector2(connection.x, connection.y);
+                        if (gridController.Grid[connection.x, connection.y].pipe != null)
+                        {
+
+                            if (particleByPosition.ContainsKey(pos))
+                            {
+                                Destroy(particleByPosition[pos]);
+                                particleByPosition.Remove(pos);
+                            }
+
+                        }
+                        else
+                        {
+                            if (!particleByPosition.ContainsKey(pos))
+                            {
+                                GameObject g = (GameObject)Instantiate(SelectParticlePrefabFromPosition(pos), GetTransformPositionFromVector2(pos), Quaternion.Euler(270, 0, 0));
+                                g.transform.parent = transform;
+                                particleByPosition.Add(pos, g);
+                            }
+                        }
+
+                    }
                 }
             }
         }
@@ -141,7 +141,7 @@ public class Pipe : MonoBehaviour
     private GameObject SelectParticlePrefabFromPosition(Vector2 position)
     {
         position -= new Vector2(positionCoordinate.x, positionCoordinate.y);
-        Debug.Log(position.ToString());
+        Debug.Log(Team+" "+position.ToString());
         switch (Team)
         {
             case GameData.Team.Blue:
@@ -248,7 +248,7 @@ public class Pipe : MonoBehaviour
 
         //Animation SpriteSheet Setup
         GetComponent<PipesSprite>().FindPipeStatus(pipeType, Team);
-        InstantiateParticles();
+        UpdateParticles();
     }
 
     public void DestroyPipe() {
