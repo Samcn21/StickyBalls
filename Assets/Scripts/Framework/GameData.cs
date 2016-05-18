@@ -78,6 +78,14 @@ public class GameData
         PsStart
     }
 
+    public enum ConveyorBeltStates 
+    {
+        CornerTopRight,
+        CornerTopLeft,
+        CornerBottomRight,
+        CornerBottomLeft,
+        Straight
+    }
     public enum PipesStates
     {
         PipeNeutralEmptyCorner,
@@ -163,6 +171,7 @@ public class GameData
 
     public enum SpriteSheet
     {
+        ConveyorBelt,
         Character,
         Pipe,
         PipeNeutral,
