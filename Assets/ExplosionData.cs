@@ -133,8 +133,7 @@ public class ExplosionData : MonoBehaviour {
     {
         List<GameData.Coordinate> toDestroy = new List<GameData.Coordinate>();
         if (mode == AnnhilationMode.FromSourceToLeaves)
-            foreach (GameData.Coordinate coord in pipe.connections)
-                toDestroy.Add(coord);
+            toDestroy.Add(pipe.positionCoordinate);
         else
         {
          

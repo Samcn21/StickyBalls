@@ -114,11 +114,13 @@ public class GameController : MonoBehaviour
 
             foreach (Player player in toLose)
             {
+                player.EnableCryParticles();
                 player.Die();
             }
         }
         else
         {
+            Players[team].EnableCryParticles();
             Players[team].Die();
         }
         
