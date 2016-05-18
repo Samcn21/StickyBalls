@@ -90,7 +90,11 @@ public class InputController : MonoBehaviour
         {
             player.Initialize();
         }
-        GameController.Instance.ProgressBarManager.SetProgressBarColor(transform);
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA) 
+        {
+            GameController.Instance.ProgressBarManager.SetProgressBarColor(transform);
+        }
+        
     }
 
     // Use this for initialization
@@ -181,7 +185,7 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-        
+
         if (gamepadState.A)
         {
             if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
@@ -191,20 +195,28 @@ public class InputController : MonoBehaviour
                     PickUpPipe(pipeToDestroyRef);
                     holdTimer = 0;
                 }
-                else {
+                else
+                {
                     holdTimer += Time.deltaTime;
                 }
             }
         }
         else
-            holdTimer = 0;
-        if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
-        {
-            GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
+        { 
+            if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+            { 
+                holdTimer = 0;
+                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
+                {
+                    GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
+                }
+                else 
+                {
+                    GameController.Instance.ProgressBarManager.HideProgressBarAt(transform);
+                }
+            }
         }
-        else {
-            GameController.Instance.ProgressBarManager.HideProgressBarAt(transform);
-        }
+
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //Else If A is pressed and you are not holding pipe, or near a conveyor pipe, you pick up a pipe that is already placed
