@@ -198,10 +198,10 @@ public class InputController : MonoBehaviour
             }
         }
         else
-        { 
+            holdTimer = 0;
+
             if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
             { 
-                holdTimer = 0;
                 if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
                 {
                     GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
@@ -211,7 +211,7 @@ public class InputController : MonoBehaviour
                     GameController.Instance.ProgressBarManager.HideProgressBarAt(transform);
                 }
             }
-        }
+        
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
