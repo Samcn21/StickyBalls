@@ -73,29 +73,25 @@ public class Pipe : MonoBehaviour
         Vector3 halfWidthOffset = new Vector3(0, 0, 0.3f);
         Vector3 halfHeightOffset = new Vector3(0.3f, 0,0);
         Vector3 heightOffset = new Vector3(0, 5, 0);
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleBottomToTop, position + heightOffset, Quaternion.Euler(270, 0, 0));
+        g.transform.parent = transform;
+        particleByPosition.Add(new Vector2(0, 1), g);
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
+        g.transform.parent = transform;
+        particleByPosition.Add(new Vector2(1, 0), g);
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleTopToBottom, position + heightOffset, Quaternion.Euler(270, 0, 0));
+        g.transform.parent = transform;
+        particleByPosition.Add(new Vector2(0, -1), g);
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
+        g.transform.parent = transform;
+        particleByPosition.Add(new Vector2(-1, 0), g);
         switch (PipeType)
         {
             case PipeData.PipeType.Corner:
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(0, 1), g);
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(1, 0), g);
+                
                 break;
             case PipeData.PipeType.Cross:
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position+heightOffset, Quaternion.Euler(270,0,0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(0, 1), g);
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(1,0), g);
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleTopToBottom, position  + heightOffset, Quaternion.Euler(270, 0, 0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(0, -1), g);
-                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleBottomToTop, position  + heightOffset, Quaternion.Euler(270, 0, 0));
-                g.transform.parent = transform;
-                particleByPosition.Add(new Vector2(-1, 0), g);
+               
                 break;
             case PipeData.PipeType.Straight:
                 g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
