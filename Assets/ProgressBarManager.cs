@@ -55,10 +55,11 @@ public class ProgressBarManager : MonoBehaviour {
     void Update()
     {
         foreach (Transform t in toDisplay.Keys)
-        {
-            var transformPosition = Camera.main.WorldToScreenPoint(t.position);
+        {      
             if (toDisplay[t] > 0)
             {
+                var transformPosition = Camera.main.WorldToScreenPoint(t.position);
+                transformPosition.y += 30f;
                 progressBars[t].GetComponent<RectTransform>().position = transformPosition;
                 progressBars[t].GetComponent<ProgressBar>().SetAmount(toDisplay[t] / pickUpTimer);
             }
