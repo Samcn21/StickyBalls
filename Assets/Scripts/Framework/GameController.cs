@@ -34,9 +34,13 @@ public class GameController : MonoBehaviour
     public bool Gamemode_IsCoop = false;
     public float pickupTimer;
     private GameObject gameController;
+    private AudioManager AudioManager;
+
 
     void Start()
     {
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+
         gameController = GameObject.FindGameObjectWithTag("GameController");
         StateManager = gameController.GetComponent<StateManager>();
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
@@ -94,6 +98,7 @@ public class GameController : MonoBehaviour
             {
                 pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
             }
+            AudioManager.PlayCenterMachineConnection();
             CenterMachineSprite.FindCentralMachineStatus(winningTeam);
 
             gameRunning = false;

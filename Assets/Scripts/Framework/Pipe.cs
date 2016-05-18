@@ -198,7 +198,7 @@ public class Pipe : MonoBehaviour
     
     public void SetHightlight(bool val)
     {
-        Debug.Log(val);
+        //Debug.Log(val);
         if(val)
         {
             gameObject.GetComponent<MeshRenderer>().material.color = Color.red;

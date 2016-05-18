@@ -3,9 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 public class FlameMachine : Pipe {
+    private AudioManager AudioManager;
+
     void Start()
     {
         gridController = GameController.Instance.GridController;
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+
     }
 
     public void Instantiate(GameData.Coordinate coords)
@@ -62,6 +66,7 @@ public class FlameMachine : Pipe {
                     foreach (GameData.Coordinate coord in gridController.Grid[connection.x, connection.y].pipe.connections)
                         if (coord.Equals(positionCoordinate))
                         {
+                            AudioManager.PlayFlameMachineConnection(this.transform.position);
                             GameController.Instance.GridController.Grid[connection.x, connection.y].pipe.DestroyFlameMachine();
                             break;
                         }

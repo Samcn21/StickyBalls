@@ -21,8 +21,6 @@ public class PauseMenu : MonoBehaviour {
     public string mainMenu = "MainMenu";
     private GameObject tc;
     private AudioManager AudioManager;
-    public float buttonPressedDelay = 0.7f;
-    private float buttonPressedDelayReset; 
 
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
@@ -50,7 +48,7 @@ public class PauseMenu : MonoBehaviour {
 	}
 
 	void Update () {
-
+        
         if (isPaused)
         {
             GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
@@ -64,10 +62,11 @@ public class PauseMenu : MonoBehaviour {
                 btn.GetComponent<Image>().enabled = true;
             }
             PauseMenuOperation();
+            
         }
         else 
         {
-            buttonPressedDelay = buttonPressedDelayReset;
+            //buttonPressedDelay = buttonPressedDelayReset;
             ScreenFader.FadeToClear();
             foreach (GameObject btn in buttons)
             {
@@ -124,24 +123,26 @@ public class PauseMenu : MonoBehaviour {
             firstMove = false;
         }
         UpdateSelection();
-
         if (gamepadState.A)
         {
+           
             AudioManager.PlayMenuNav(false);
-            switch (selectIndex)
-            {
-                case 0:
-                    isPaused = false;
-                    break;
-                case 1:
-                    SceneManager.LoadScene(levelName);
-                    break;
-                case 2:
-                    SceneManager.LoadScene(mainMenu);
-                    break;
-                case 3:
-                    Application.Quit();
-                    break;
+
+                switch (selectIndex)
+                {
+                    case 0:
+                        isPaused = false;
+                        break;
+                    case 1:
+                        SceneManager.LoadScene(levelName);
+                        break;
+                    case 2:
+                        SceneManager.LoadScene(mainMenu);
+                        break;
+                    case 3:
+                        Application.Quit();
+                        break;
+                
             }
         }
     }

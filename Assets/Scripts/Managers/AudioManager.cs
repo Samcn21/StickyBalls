@@ -17,13 +17,14 @@ public class AudioManager : MonoBehaviour
 
     //Level Clips
     public AudioClip bombExplosionClip;
-    public AudioClip winSoundClip;
+    public AudioClip centerMachineConnectionClip;
+    public AudioClip centerMachineConnectionBGClip;
     public AudioClip pipeExplosion;
     public AudioClip sourceMachineExplosion;
+    public AudioClip flameMachineAlarm;
     
     //GUI Clips
     public AudioClip menuNavClip;
-
 
     public AudioSource audioControllerSFX;
     public AudioSource audioControllerSFXsmExplosion;
@@ -31,6 +32,8 @@ public class AudioManager : MonoBehaviour
     private InputController InputController;
     private GameObject[] players;
     private AudioSource playerAS;
+    private bool dropVolume;
+    public float cmContinueVolume = 0.2f;
 
     //We need to get the volume settings from the menu in the end to apply to all sounds and music
     private float SFXVolume = 1;
@@ -50,6 +53,8 @@ public class AudioManager : MonoBehaviour
 
         PlayMusic(true);
         players = GameObject.FindGameObjectsWithTag("Player");
+
+        dropVolume = false;
     }
 
     public void PlayMusic(bool play) 
@@ -65,6 +70,49 @@ public class AudioManager : MonoBehaviour
         {
             audioControllerMusic.Stop();
 
+        }
+    }
+
+    public void PlayCenterMachineConnection() 
+    {
+        audioControllerSFX.clip = centerMachineConnectionClip;
+        audioControllerSFX.volume = SFXVolume * 0.2f;
+        audioControllerSFX.Play();
+        StartCoroutine(PlayCneterMachineBG());
+    }
+    IEnumerator PlayCneterMachineBG()
+    {
+        yield return new WaitForSeconds(7.45f);
+        audioControllerSFX.clip = centerMachineConnectionBGClip;
+        audioControllerSFX.loop = true;
+        audioControllerSFX.volume = SFXVolume * cmContinueVolume;
+        dropVolume = true;
+        audioControllerSFX.Play();
+    }
+
+    void Update() 
+    {
+        if (dropVolume) 
+        {
+            cmContinueVolume -= Time.deltaTime * 0.04f;
+            audioControllerSFX.volume = SFXVolume * cmContinueVolume;
+            Debug.Log(cmContinueVolume);
+            if (cmContinueVolume <= 0.04f)
+                dropVolume = false;
+        }
+    }
+    public void PlayFlameMachineConnection(Vector3 pos) 
+    {
+        GameObject[] flameMachines = GameObject.FindGameObjectsWithTag("FlameMachine");
+        foreach (GameObject fm in flameMachines) 
+        {
+            if (fm.transform.position == pos) 
+            {
+                AudioSource flameMachineAS = fm.GetComponent<AudioSource>();
+                flameMachineAS.clip = flameMachineAlarm;
+                flameMachineAS.volume = SFXVolume * 0.5f;
+                flameMachineAS.Play();
+            }
         }
     }
 
