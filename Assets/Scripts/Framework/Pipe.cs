@@ -70,63 +70,78 @@ public class Pipe : MonoBehaviour
         particleByPosition = new Dictionary<GameData.Team, Dictionary<Vector2, GameObject>>();
         GameObject g;
         Vector3 position = transform.position;
-        Vector3 halfWidthOffset = new Vector3(0.75f, 0, 0);
-        Vector3 halfHeightOffset = new Vector3(0, 0, 0.75f);
-        Vector3 heightOffset = new Vector3(0, 1, 0);
+        Vector3 halfWidthOffset = new Vector3(0.7f, 0, 0);
+        Vector3 halfHeightOffset = new Vector3(0, 0, 0.7f);
+        Vector3 heightOffset = new Vector3(0, 1f, 0);
         Dictionary<Vector2, GameObject> dictionary = new Dictionary<Vector2, GameObject>();
-        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleBottomToTop, position+halfHeightOffset + heightOffset, Quaternion.Euler(0, 0, 0));
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleBottomToTop, position+halfHeightOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, 1), g);
-        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleLeftToRight, position + halfWidthOffset+ heightOffset, Quaternion.Euler(0,-270,0));
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleLeftToRight, position + halfWidthOffset+ heightOffset, Quaternion.Euler(270,0,0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(1, 0), g);
-        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleTopToBottom, position - halfHeightOffset + heightOffset, Quaternion.Euler(0, 180, 0));
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleTopToBottom, position - halfHeightOffset + heightOffset, Quaternion.Euler(270,0 , 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, -1), g);
-        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleRightToLeft, position - halfWidthOffset + heightOffset, Quaternion.Euler(0, 270,0));
+        g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleRightToLeft, position - halfWidthOffset + heightOffset, Quaternion.Euler(270, 0,0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(-1, 0), g);
         particleByPosition.Add(GameData.Team.Blue, dictionary);
         dictionary = new Dictionary<Vector2, GameObject>();
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleBottomToTop, position + halfHeightOffset +heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, 1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleLeftToRight, position + halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(1, 0), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleTopToBottom, position - halfHeightOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, -1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleRightToLeft, position - halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(-1, 0), g);
         particleByPosition.Add(GameData.Team.Cyan, dictionary);
         dictionary = new Dictionary<Vector2, GameObject>();
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleBottomToTop, position + halfHeightOffset +heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, 1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleLeftToRight, position + halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
         dictionary.Add(new Vector2(1, 0), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleTopToBottom, position - halfHeightOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, -1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleRightToLeft, position - halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(-1, 0), g);
         particleByPosition.Add(GameData.Team.Purple, dictionary);
         dictionary = new Dictionary<Vector2, GameObject>();
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleBottomToTop, position + halfHeightOffset +heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, 1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleLeftToRight, position + halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(1, 0), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleTopToBottom, position -halfHeightOffset+ heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(0, -1), g);
         g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleRightToLeft, position - halfWidthOffset + heightOffset, Quaternion.Euler(270, 0, 0));
         g.SetActive(false);
+        g.transform.parent = transform;
         dictionary.Add(new Vector2(-1, 0), g);
         particleByPosition.Add(GameData.Team.Yellow, dictionary);
         UpdateParticles();
@@ -143,12 +158,14 @@ public class Pipe : MonoBehaviour
             else {
                 if (Team == GameData.Team.Neutral)
                 {
-                    foreach (GameData.Coordinate connection in connections)
-                        foreach (GameData.Team team in particleByPosition.Keys)
+                    foreach (GameData.Team team in particleByPosition.Keys)
+                    {
+                        foreach (GameData.Coordinate connection in connections)
                         {
                             GameData.Coordinate coord = new GameData.Coordinate(connection.x - positionCoordinate.x, connection.y - positionCoordinate.y);
                             particleByPosition[team][new Vector2(coord.x, coord.y)].SetActive(false);
                         }
+                    }
                 }
                 foreach (GameData.Coordinate connection in connections)
                 {
