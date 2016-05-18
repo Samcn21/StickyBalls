@@ -7,10 +7,15 @@ public class ExplosionDecrease : MonoBehaviour {
 
     private float timer;
     private ExplosionMat explosionMat;
+
+    private AudioManager AudioManager;
+
     void Awake()
     {        
         timer = timerDecay;
         explosionMat = GetComponent<ExplosionMat>();
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+        AudioManager.PlayPipeExplosion(this.name, this.transform.position);
     }
 
 

@@ -18,12 +18,15 @@ public class AudioManager : MonoBehaviour
     //Level Clips
     public AudioClip bombExplosionClip;
     public AudioClip winSoundClip;
+    public AudioClip pipeExplosion;
+    public AudioClip sourceMachineExplosion;
     
     //GUI Clips
     public AudioClip menuNavClip;
 
 
     public AudioSource audioControllerSFX;
+    public AudioSource audioControllerSFXsmExplosion;
     public AudioSource audioControllerMusic;
     private InputController InputController;
     private GameObject[] players;
@@ -71,6 +74,55 @@ public class AudioManager : MonoBehaviour
         audioControllerSFX.volume = SFXVolume;
         audioControllerSFX.Play();
 
+    }
+    public void PlayPipeExplosion(string explosionName, Vector3 pos)
+    {
+        GameObject go = GameObject.Find(explosionName);
+        if (go.transform.position.x == pos.x || go.transform.position.y == pos.y)
+        {
+            if (pos.z % 2 == 0)
+            {
+                pitchRange = playerPitchRanges[4];
+            }
+            else
+            {
+                pitchRange = playerPitchRanges[1];
+            }
+            //TODO: if it is Source Machine don't play
+            AudioSource pipeAS = go.GetComponent<AudioSource>();
+            pipeAS.clip = pipeExplosion;
+            pipeAS.volume = SFXVolume;
+            pipeAS.pitch = pitchRange;
+            pipeAS.Play();
+        }
+    }
+
+    public void PlaySourceExplosion(GameData.PlayerSourceDirection smPos) 
+    {
+        switch (smPos)
+        { 
+            case GameData.PlayerSourceDirection.BottomLeft:
+                pitchRange = playerPitchRanges[1];
+                break;
+
+            case GameData.PlayerSourceDirection.BottomRight:
+                pitchRange = playerPitchRanges[2];
+                break;
+
+            case GameData.PlayerSourceDirection.TopLeft:
+                pitchRange = playerPitchRanges[3];
+                break;
+
+            case GameData.PlayerSourceDirection.TopRight:
+                pitchRange = playerPitchRanges[4];
+                break;
+
+        }
+
+        audioControllerSFXsmExplosion.clip = sourceMachineExplosion;
+        audioControllerSFXsmExplosion.volume = SFXVolume;
+        audioControllerSFXsmExplosion.pitch = pitchRange;
+        audioControllerSFXsmExplosion.Play();
     }
 
     public void StopPlayerAudio(GamePad.Index playerNumber)
@@ -120,6 +172,8 @@ public class AudioManager : MonoBehaviour
             case GameData.AudioClipState.Walking:
                 playerAS.clip = walkingClip;
                 break;
+
+        
         }
 
         if (needsPitch)
