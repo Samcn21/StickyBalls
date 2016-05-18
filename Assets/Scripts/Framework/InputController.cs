@@ -704,49 +704,100 @@ public class InputController : MonoBehaviour
 
             if (velocityTotal <= velocityThreshold)
             {
-                //AudioManager.StopPlayerAudio(index);
-
                 if (CharacterSprite.previousAnim.ToString().Contains("Front"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabFront;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Right"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleRight;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabRight;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleRight;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Left"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleLeft;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabLeft;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleLeft;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Back"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleBack;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabBack;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleBack;
+                    }
                 }
             }
             else
             {
-                //AudioManager.PlayOneShotPlayer(GameData.AudioClipState.Walking, index, true);
-
-
                 if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.East;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementRight;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementRightCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementRight;
+                    }
                 }
                 else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.North;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementBack;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementBackCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementBack;
+                    }
                 }
                 else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.South;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementFront;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementFrontCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementFront;
+                    }
                 }
                 else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.West;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementLeft;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementLeftCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementLeft;
+                    }
                 }
             }
         }
