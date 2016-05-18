@@ -68,8 +68,17 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    public void PlayMenuNav()
+    public void PlayMenuNav(bool status)
     {
+        if (status)
+        {
+            pitchRange = playerPitchRanges[2];
+        }
+        else
+        {
+            pitchRange = playerPitchRanges[4];
+        }
+        audioControllerSFX.pitch = pitchRange;
         audioControllerSFX.clip = menuNavClip;
         audioControllerSFX.volume = SFXVolume;
         audioControllerSFX.Play();

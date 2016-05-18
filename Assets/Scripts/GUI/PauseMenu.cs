@@ -11,7 +11,7 @@ public class PauseMenu : MonoBehaviour {
     private ScreenFader ScreenFader;
     private GameObject[] buttons;
     private bool screenFader = false;
-
+    
     private GamepadState gamepadState;
     private float holdTimer = 0;
     private float holdTimerMax = 0.5f;
@@ -21,6 +21,8 @@ public class PauseMenu : MonoBehaviour {
     public string mainMenu = "MainMenu";
     private GameObject tc;
     private AudioManager AudioManager;
+    public float buttonPressedDelay = 0.7f;
+    private float buttonPressedDelayReset; 
 
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
@@ -51,8 +53,6 @@ public class PauseMenu : MonoBehaviour {
 
         if (isPaused)
         {
-                        
-
             GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
 
             if (tc != null)
@@ -67,6 +67,7 @@ public class PauseMenu : MonoBehaviour {
         }
         else 
         {
+            buttonPressedDelay = buttonPressedDelayReset;
             ScreenFader.FadeToClear();
             foreach (GameObject btn in buttons)
             {
@@ -91,7 +92,7 @@ public class PauseMenu : MonoBehaviour {
                 if (selectIndex < 3)
                 { 
                     selectIndex++;
-                    AudioManager.PlayMenuNav();
+                    AudioManager.PlayMenuNav(true);
                 }
                 firstMove = true;
             }
@@ -107,7 +108,7 @@ public class PauseMenu : MonoBehaviour {
                 if (selectIndex > 0)
                 { 
                     selectIndex--;
-                    AudioManager.PlayMenuNav();
+                    AudioManager.PlayMenuNav(true);
 
                 }
                 firstMove = true;
@@ -126,6 +127,7 @@ public class PauseMenu : MonoBehaviour {
 
         if (gamepadState.A)
         {
+            AudioManager.PlayMenuNav(false);
             switch (selectIndex)
             {
                 case 0:
