@@ -250,6 +250,7 @@ public class GameData
         CenterMachine,
         SourceMachine,
         XboxController,
+        FlameMachine,
         PsController
     }
 
