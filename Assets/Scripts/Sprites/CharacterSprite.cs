@@ -36,25 +36,25 @@ public class CharacterSprite : AnimationController
     private int idleRight = 9;
     private int idleLeft = 17;
 
-    private int[] movementFront = new int[3] { 1, 2, 3 };
-    private int[] movementBack = new int[3] { 25, 26, 27 };
-    private int[] movementRight = new int[3] { 9, 10, 11 };
-    private int[] movementLeft = new int[3] { 17, 18, 19 };
+    private int[] movementFront         = new int[3] { 1, 2, 3 };
+    private int[] movementBack          = new int[3] { 25, 26, 27 };
+    private int[] movementRight         = new int[3] { 9, 10, 11 };
+    private int[] movementLeft          = new int[3] { 17, 18, 19 };
 
-    private int[] movementFrontCarry = new int[3] { 4, 5, 6 };
-    private int[] movementBackCarry = new int[3] { 28, 29, 30 };
-    private int[] movementRightCarry = new int[3] { 12, 13, 14 };
-    private int[] movementLeftCarry = new int[3] { 20, 21, 22 };
+    private int[] movementFrontCarry    = new int[3] { 4, 5, 6 };
+    private int[] movementBackCarry     = new int[3] { 28, 29, 30 };
+    private int[] movementRightCarry    = new int[3] { 12, 13, 14 };
+    private int[] movementLeftCarry     = new int[3] { 20, 21, 22 };
 
-    private int pipeGrabFront = 4;
-    private int pipeGrabBack = 28;
-    private int pipeGrabRight = 12;
-    private int pipeGrabLeft = 20;
+    private int pipeGrabFront           = 4;
+    private int pipeGrabBack            = 28;
+    private int pipeGrabRight           = 12;
+    private int pipeGrabLeft            = 20;
 
-    private int pipePlaceFront = 4;
-    private int pipePlaceBack = 28;
-    private int pipePlaceRight = 12;
-    private int pipePlaceLeft = 20;
+    private int pipePlaceFront          = 4;
+    private int pipePlaceBack           = 28;
+    private int pipePlaceRight          = 12;
+    private int pipePlaceLeft           = 20;
 
     private int[] dance = new int[8] { 2, 3, 5, 6, 10, 11, 18, 19 };
 
