@@ -25,13 +25,14 @@ public class GameController : MonoBehaviour
     public PipeStatus PipeStatus;
     public ExplosionData ExplosionData;
     public StateManager StateManager;
+    public ProgressBarManager ProgressBarManager;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
     public bool Gamemode_IsCoop = false;
-
+    public float pickupTimer;
     private GameObject gameController;
 
     void Start()

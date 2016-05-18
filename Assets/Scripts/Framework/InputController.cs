@@ -14,8 +14,8 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     [SerializeField]
     private float velocityThreshold = 0.1f;
-    [SerializeField]
-    private float holdTimerLimit = 1.25f;
+   
+    private float holdTimerLimit;
     public GamePad.Index index;
     public GameData.Team team;
 
@@ -90,11 +90,13 @@ public class InputController : MonoBehaviour
         {
             player.Initialize();
         }
+        GameController.Instance.ProgressBarManager.SetProgressBarColor(transform);
     }
 
     // Use this for initialization
     void Start()
     {
+        holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
@@ -179,7 +181,7 @@ public class InputController : MonoBehaviour
                 }
             }
         }
-
+        
         if (gamepadState.A)
         {
             if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
@@ -189,11 +191,20 @@ public class InputController : MonoBehaviour
                     PickUpPipe(pipeToDestroyRef);
                     holdTimer = 0;
                 }
-                else
+                else {
                     holdTimer += Time.deltaTime;
+                }
             }
         }
-
+        else
+            holdTimer = 0;
+        if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
+        {
+            GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
+        }
+        else {
+            GameController.Instance.ProgressBarManager.HideProgressBarAt(transform);
+        }
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
         //Else If A is pressed and you are not holding pipe, or near a conveyor pipe, you pick up a pipe that is already placed
@@ -333,20 +344,26 @@ public class InputController : MonoBehaviour
 
     void OnTriggerStay(Collider col)
     {
-        OnTriggerEnter(col);
+        HashSet<Vector2> validCoords = new HashSet<Vector2>();
         if (col.gameObject.tag == "Pipe") {
             Pipe p = col.gameObject.GetComponent<Pipe>();
             if (p == null) return;
             if (p.Team ==GameData.Team.Neutral)
             {
+                foreach (Pipe pipe in closePipes)
+                    if (pipe.Team != GameData.Team.Neutral)
+                        foreach (GameData.Coordinate coord in pipe.connections)
+                            validCoords.Add(new Vector2(coord.x,coord.y));
                 foreach (GameData.Coordinate coord in p.connections)
                 {
-                    closePipeConnections.Remove(coord);
-                    if (coord.Equals(selectedPipeConnection))
-                    {
-                        selectedPipeConnection = null;
-                        if (selectedPipePlaceholder != null)
-                            Destroy(selectedPipePlaceholder.gameObject);
+                    if (!validCoords.Contains(new Vector2(coord.x, coord.y))){
+                        closePipeConnections.Remove(coord);
+                        if (coord.Equals(selectedPipeConnection))
+                        {
+                            selectedPipeConnection = null;
+                            if (selectedPipePlaceholder != null)
+                                Destroy(selectedPipePlaceholder.gameObject);
+                        }
                     }
                 }
                 closePipes.Remove(p);
@@ -354,6 +371,7 @@ public class InputController : MonoBehaviour
             }
 
         }
+        OnTriggerEnter(col);
     }
 
     //If player is not holding a pipe, player if the collider is a conveyor pipe
