@@ -259,7 +259,7 @@ public class AudioManager : MonoBehaviour
             pitchRange = playerPitchRanges[0];
         }
         playerAS.pitch = pitchRange;
-        playerAS.volume = SFXVolume;
+        playerAS.volume = SFXVolume * 0.7f;
         playerAS.Play();
     }
 
