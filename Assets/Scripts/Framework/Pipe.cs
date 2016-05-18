@@ -63,7 +63,61 @@ public class Pipe : MonoBehaviour
         }
     }
 
+    private Dictionary<Vector2, GameObject> particleByPosition;
 
+    private void InstantiateParticles(int rotationAngle)
+    {
+        particleByPosition = new Dictionary<Vector2, GameObject>();
+        GameObject g;
+        Vector3 position = transform.position;
+        Vector3 halfWidthOffset = new Vector3(0, 0, 0.3f);
+        Vector3 halfHeightOffset = new Vector3(0.3f, 0,0);
+        Vector3 heightOffset = new Vector3(0, 5, 0);
+        switch (PipeType)
+        {
+            case PipeData.PipeType.Corner:
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, 1), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(1, 0), g);
+                break;
+            case PipeData.PipeType.Cross:
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position+heightOffset, Quaternion.Euler(270,0,0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, 1), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(1,0), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleTopToBottom, position  + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, -1), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleBottomToTop, position  + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(-1, 0), g);
+                break;
+            case PipeData.PipeType.Straight:
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, 1), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, -1), g);
+                break;
+            case PipeData.PipeType.T:
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(-1, 0), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleLeftToRight, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(1, 0), g);
+                g = (GameObject)Instantiate(GameController.Instance.PipeParticleSystemManager.DrippingParticleRightToLeft, position + heightOffset, Quaternion.Euler(270, 0, 0));
+                g.transform.parent = transform;
+                particleByPosition.Add(new Vector2(0, -1), g);
+                break;
+        }
+    }
 
     public void Initialize(PipeData.PipeType pipeType, GameData.Coordinate coord, int rotationAngle) {
         pipeMan = GameController.Instance.PipeMan;
@@ -71,12 +125,12 @@ public class Pipe : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         connections = new List<GameData.Coordinate>();
         changeColor = false;
-
+        
 
         PipeType = pipeType;
         positionCoordinate = coord;
         List<GameData.Team> connectedTeams = new List<GameData.Team>();
-
+        InstantiateParticles(rotationAngle);
         //Foreach connection in the pipes default rotation-set, rotate the connection to fit the actual placement.
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
@@ -125,6 +179,7 @@ public class Pipe : MonoBehaviour
 
         //Animation SpriteSheet Setup
         GetComponent<PipesSprite>().FindPipeStatus(pipeType, Team);
+       
     }
 
     public void DestroyPipe() {

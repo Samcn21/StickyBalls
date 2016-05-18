@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour
     public PipeStatus PipeStatus;
     public ExplosionData ExplosionData;
     public StateManager StateManager;
+    public PipeParticleSystemManager PipeParticleSystemManager;
     public ProgressBarManager ProgressBarManager;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
