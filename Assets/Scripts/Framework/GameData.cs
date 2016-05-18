@@ -230,6 +230,10 @@ public class GameData
             return (x == c.x) && (y == c.y);
         }
 
+        public override string ToString()
+        {
+            return "[" + x + "," + y + "]";
+        }
     }
 
 

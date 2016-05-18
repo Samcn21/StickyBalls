@@ -30,7 +30,6 @@ public class InputController : MonoBehaviour
     private ConveyorPipe selectedConveyorPipe;
     private List<GameData.Coordinate> closePipeConnections;
     private GameData.Coordinate selectedPipeConnection;
-    private PipeStatus pipeStatus;
     private Transform selectedPipePlaceholder;
     private int rotationIndex = 0;
     private bool initialized = false;
@@ -85,7 +84,6 @@ public class InputController : MonoBehaviour
         initialized = true;
         pickedPipe = true;
         isPressingDelete = false;
-        resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
         if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
             player.Initialize();
@@ -110,7 +108,6 @@ public class InputController : MonoBehaviour
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
-        pipeStatus = GameController.Instance.PipeStatus;
         AssignColorsToPlayers();     
         isPressingX = false;
         destroyTimer = resetDestroyTimer;
@@ -180,7 +177,6 @@ public class InputController : MonoBehaviour
                 destroyTimer -= Time.deltaTime;
                 if (pipeToDestroyRef != null && destroyTimer <= 0)
                 {
-                    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                     pipeToDestroyRef = null;
                 }
             }
@@ -576,20 +572,11 @@ public class InputController : MonoBehaviour
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
             Pipe pipe = newPipe.GetComponent<Pipe>();
             pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
-            bool found = false;
-            foreach (Pipe father in closePipes)
-            {
-                found = false;
-                if (father.connections.Contains(selectedPipeConnection) && father.PipeType != PipeData.PipeType.Void)
-                {
-                    found = true;
-                    pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
-                    closePipes = new List<Pipe>();
-                    break;
-                }
+            foreach (GameData.Coordinate coord in pipe.connections) {
+                Pipe p = gridController.Grid[coord.x, coord.y].pipe;
+                if ( p!= null && !p.isSource&& !p.isFlameMachine && !p.isCenterMachine)
+                    gridController.Grid[coord.x, coord.y].pipe.UpdateParticles();
             }
-            if (!found)
-                pipeStatus.AddFirstPipe(pipe.Team, pipe);
 
             //place a pipe in chosen color pipeline in color assign scene
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
