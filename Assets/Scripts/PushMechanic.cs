@@ -15,8 +15,10 @@ public class PushMechanic : MonoBehaviour {
     private GamePad.Index gamepadIndex;
     private Vector3 lastPosition = Vector3.zero;
     public float speed { get; private set; }
+    private bool bounced;
     void Awake()
     {
+        bounced = false;
         body = GetComponent<Rigidbody>();
         playerRef = GetComponent<Player>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
@@ -34,26 +36,27 @@ public class PushMechanic : MonoBehaviour {
         {
             if (col.gameObject.GetComponent<InputController>().team == GetComponent<InputController>().team && GetComponent<InputController>().team != GameData.Team.Neutral)
                 return;
-               
-            Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
-            Instantiate(particleEffect, Vector3.Lerp(transform.position,col.transform.position,0.5f), Quaternion.identity);
+            if (!bounced)
+            {
+                Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
+                Instantiate(particleEffect, Vector3.Lerp(transform.position, col.transform.position, 0.5f), Quaternion.identity);
 
-            AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PushOthers, gamepadIndex, false);
-            if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
-            {
-                Vector3 direction = (transform.position - col.transform.position);
-                direction.y = 0;
-                body.AddForce( direction* pushForce, ForceMode.Impulse);
+                AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PushOthers, gamepadIndex, false);
+                if (speed < col.gameObject.GetComponent<PushMechanic>().speed)
+                {
+                    Vector3 direction = (transform.position - col.transform.position);
+                    direction.y = 0;
+                    body.AddForce(direction * pushForce, ForceMode.Impulse);
+                }
+                else
+                {
+                    Vector3 direction = (col.transform.position - transform.position);
+                    direction.y = 0;
+                    opponentBody.AddForce(direction * pushForce, ForceMode.Impulse);
+                    if (stealMechanicActive)
+                        stealCarryingPipe(col.gameObject);
+                }
             }
-            else
-            {
-                Vector3 direction = (col.transform.position - transform.position);
-                direction.y = 0;
-                opponentBody.AddForce(direction * pushForce, ForceMode.Impulse);
-                if (stealMechanicActive)
-                    stealCarryingPipe(col.gameObject);
-            }
-            
         }
     }
 
