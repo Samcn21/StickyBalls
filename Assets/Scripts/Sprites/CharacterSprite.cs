@@ -141,7 +141,6 @@ public class CharacterSprite : AnimationController
 
     public void FindGrabPipeAnimation()
     {
-        hasMovementPermit = false;
         previousAnim = currentAnim;
         if (previousAnim.ToString().Contains("Front"))
         {
@@ -164,7 +163,6 @@ public class CharacterSprite : AnimationController
 
     public void FindPlacePipeAnimation()
     {
-        hasMovementPermit = false;
         previousAnim = currentAnim;
         if (previousAnim.ToString().Contains("Front"))
         {
