@@ -15,7 +15,9 @@ public class PushMechanic : MonoBehaviour {
     private GamePad.Index gamepadIndex;
     private Vector3 lastPosition = Vector3.zero;
     public float speed { get; private set; }
-    private bool bounced;
+    public bool bounced { get; private set; }
+
+    private float timer;
     void Awake()
     {
         bounced = false;
@@ -29,6 +31,12 @@ public class PushMechanic : MonoBehaviour {
     {
         speed = (transform.position - lastPosition).magnitude;
         lastPosition = transform.position;
+        if(bounced)
+        {
+            timer -= Time.deltaTime;
+            if (timer <= 0)
+                bounced = false;
+        }
     }
     void OnCollisionEnter(Collision col)
     {
@@ -36,7 +44,7 @@ public class PushMechanic : MonoBehaviour {
         {
             if (col.gameObject.GetComponent<InputController>().team == GetComponent<InputController>().team && GetComponent<InputController>().team != GameData.Team.Neutral)
                 return;
-            if (!bounced)
+            if (!bounced && !col.gameObject.GetComponent<PushMechanic>().bounced)
             {
                 Rigidbody opponentBody = col.gameObject.GetComponent<Rigidbody>();
                 Instantiate(particleEffect, Vector3.Lerp(transform.position, col.transform.position, 0.5f), Quaternion.identity);
@@ -56,6 +64,8 @@ public class PushMechanic : MonoBehaviour {
                     if (stealMechanicActive)
                         stealCarryingPipe(col.gameObject);
                 }
+                bounced = true;
+                timer = 0.1f;
             }
         }
     }
@@ -64,17 +74,22 @@ public class PushMechanic : MonoBehaviour {
     {
         if(col.gameObject.tag== "Player")
         {
-            Vector3 midPoint = Vector3.Lerp(transform.position, col.transform.position, 0.5f);
-            if (col.gameObject.GetComponent<InputController>().team == GetComponent<InputController>().team)
+            if (!bounced && !col.gameObject.GetComponent<PushMechanic>().bounced)
             {
-                col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce/2, ForceMode.Impulse);
-                GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce/2, ForceMode.Impulse);
+                Vector3 midPoint = Vector3.Lerp(transform.position, col.transform.position, 0.5f);
+                if (col.gameObject.GetComponent<InputController>().team == GetComponent<InputController>().team)
+                {
+                    col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce, ForceMode.Impulse);
+                    GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce , ForceMode.Impulse);
 
-            }
-            else
-            {
-                col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce, ForceMode.Impulse);
-                GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce, ForceMode.Impulse);
+                }
+                else
+                {
+                    col.gameObject.GetComponent<Rigidbody>().AddForce((col.transform.position - midPoint) * pushForce, ForceMode.Impulse);
+                    GetComponent<Rigidbody>().AddForce((transform.position - midPoint) * pushForce, ForceMode.Impulse);
+                }
+                bounced = true;
+                timer = 0.1f;
             }
         }
     }
