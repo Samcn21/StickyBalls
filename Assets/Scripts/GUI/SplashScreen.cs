@@ -7,7 +7,7 @@ using GamepadInput;
 public class SplashScreen : MonoBehaviour
 {
     public string levelName = "MainMenu";
-    public float waitForSec = 10f;
+    public float waitForSec = 60f;
 	
 	void Update () 
     {

@@ -57,6 +57,15 @@ public class AudioManager : MonoBehaviour
         dropVolume = false;
     }
 
+    public void PlayMenuMusic() 
+    {
+        audioControllerMusic.loop = true;
+        audioControllerMusic.clip = menuMusicClip;
+        audioControllerMusic.volume = MusicVolume;
+        audioControllerMusic.Play();
+
+    }
+
     public void PlayMusic(bool play) 
     {
         if (play)
