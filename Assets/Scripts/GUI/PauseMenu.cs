@@ -25,6 +25,7 @@ public class PauseMenu : MonoBehaviour {
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
     [SerializeField] private List<Sprite> deselectedOption;
+    [SerializeField] private Canvas canvas;
 
     void Awake () {
         levelName = SceneManager.GetActiveScene().name;
@@ -171,6 +172,7 @@ public class PauseMenu : MonoBehaviour {
             foreach(GameObject player in players)
             {
                 player.GetComponent<InputController>().enabled = false;
+                canvas.enabled = false;
             }
             //Time.timeScale = 0;   //if I use timescale the screen fader doesn;t work so I disable input controller
             //in this case we could still have the music countining 
@@ -182,6 +184,7 @@ public class PauseMenu : MonoBehaviour {
             foreach (GameObject player in players)
             {
                 player.GetComponent<InputController>().enabled = true;
+                canvas.enabled = true;
             }
             //Time.timeScale = 1;
             isPaused = false;
