@@ -141,8 +141,36 @@ public class InputController : MonoBehaviour
         }
     }
 
+    private void CleanPlaceholder()
+    {
+        HashSet<Vector2> validCoords = new HashSet<Vector2>();
+        HashSet<Pipe> validPipes = new HashSet<Pipe>();
+        foreach (Pipe pipe in closePipes)
+        {
+            if (pipe != null && pipe.Team != GameData.Team.Neutral)
+            {
+                validPipes.Add(pipe);
+                foreach (GameData.Coordinate coord in pipe.connections)
+                {
+                    validCoords.Add(new Vector2(coord.x, coord.y));
+                }
+
+            }
+        }
+        for (int i = closePipes.Count - 1; i >= 0; i--)
+            if (!validPipes.Contains(closePipes[i]))
+                closePipes.Remove(closePipes[i]);
+        for (int i=closePipeConnections.Count-1; i>=0;i--)
+            if (!validCoords.Contains(new Vector2(closePipeConnections[i].x, closePipeConnections[i].y)))
+                closePipeConnections.Remove(closePipeConnections[i]);
+        if(selectedPipeConnection!=null)
+        if (!validCoords.Contains(new Vector2(selectedPipeConnection.x, selectedPipeConnection.y)))
+            selectedPipeConnection = null;
+    }
+
     void Update()
     {
+        CleanPlaceholder();
         updateCounter++;
         
         if (!initialized || isLocked) return;
@@ -352,33 +380,7 @@ public class InputController : MonoBehaviour
 
     void OnTriggerStay(Collider col)
     {
-        HashSet<Vector2> validCoords = new HashSet<Vector2>();
-        if (col.gameObject.tag == "Pipe") {
-            Pipe p = col.gameObject.GetComponent<Pipe>();
-            if (p == null) return;
-            if (p.Team ==GameData.Team.Neutral)
-            {
-                foreach (Pipe pipe in closePipes)
-                    if (pipe.Team != GameData.Team.Neutral)
-                        foreach (GameData.Coordinate coord in pipe.connections)
-                            validCoords.Add(new Vector2(coord.x,coord.y));
-                foreach (GameData.Coordinate coord in p.connections)
-                {
-                    if (!validCoords.Contains(new Vector2(coord.x, coord.y))){
-                        closePipeConnections.Remove(coord);
-                        if (coord.Equals(selectedPipeConnection))
-                        {
-                            selectedPipeConnection = null;
-                            if (selectedPipePlaceholder != null)
-                                Destroy(selectedPipePlaceholder.gameObject);
-                        }
-                    }
-                }
-                closePipes.Remove(p);
-
-            }
-
-        }
+        
         OnTriggerEnter(col);
     }
 
@@ -501,7 +503,7 @@ public class InputController : MonoBehaviour
             if ( p != null)
             {
                 
-                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team!=GameData.Team.Neutral && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
+                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team!=GameData.Team.Neutral && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(-1, 0));
             }
         }
@@ -511,7 +513,7 @@ public class InputController : MonoBehaviour
                 if (p != null)
                 {
                     if (!p.connections.Contains(toPlace)) return false;
-                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
+                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
@@ -521,7 +523,7 @@ public class InputController : MonoBehaviour
                 if (p != null)
                 {
                     if (!p.connections.Contains(toPlace)) return false;
-                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
+                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
@@ -532,7 +534,7 @@ public class InputController : MonoBehaviour
             if ( p!= null)
             {
                 if (!p.connections.Contains(toPlace)) return false;
-                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
+                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
         }

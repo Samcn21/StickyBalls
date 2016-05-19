@@ -40,7 +40,7 @@ public class Pipe : MonoBehaviour
     public bool isCenterMachine { get; protected set; }
     public bool isSource { get; protected set; }
     public bool isFlameMachine { get; protected set; }
-
+    public bool isDestroying;
     private HashSet<Vector2> visited;
     private List<Pipe> connectedPipes;
 
@@ -194,7 +194,7 @@ public class Pipe : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         connections = new List<GameData.Coordinate>();
         changeColor = false;
-        
+        isDestroying = false;
 
         PipeType = pipeType;
         positionCoordinate = coord;
