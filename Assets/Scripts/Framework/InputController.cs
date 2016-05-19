@@ -500,8 +500,8 @@ public class InputController : MonoBehaviour
             p = gridController.Grid[toPlace.x - 1, toPlace.y].pipe;
             if ( p != null)
             {
-                if (!p.connections.Contains(toPlace)) return false;
-                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
+                
+                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team!=GameData.Team.Neutral && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(-1, 0));
             }
         }
@@ -511,7 +511,7 @@ public class InputController : MonoBehaviour
                 if (p != null)
                 {
                     if (!p.connections.Contains(toPlace)) return false;
-                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
+                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
@@ -521,7 +521,7 @@ public class InputController : MonoBehaviour
                 if (p != null)
                 {
                     if (!p.connections.Contains(toPlace)) return false;
-                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
+                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
@@ -532,7 +532,7 @@ public class InputController : MonoBehaviour
             if ( p!= null)
             {
                 if (!p.connections.Contains(toPlace)) return false;
-                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
+                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
         }
