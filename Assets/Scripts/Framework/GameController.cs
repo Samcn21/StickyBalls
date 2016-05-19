@@ -56,12 +56,10 @@ public class GameController : MonoBehaviour
         }
 
         gameRunning = true;
-
-        winningGUI = GameObject.Find("WinningText");
+        
         if (winningGUI != null)
         {
-            Text text = winningGUI.GetComponent<Text>();
-            text.enabled = false;
+            winningGUI.gameObject.SetActive(false);
         }
     }
 
@@ -138,8 +136,9 @@ public class GameController : MonoBehaviour
 
         if (winningGUI != null)
         {
-            Text text = winningGUI.GetComponent<Text>();
-            text.enabled = true;
+            winningGUI.gameObject.SetActive(true);
+
+            Text text = winningGUI.GetComponentInChildren<Text>();
             text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[color];
         }
