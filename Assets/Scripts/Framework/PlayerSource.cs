@@ -13,6 +13,7 @@ public class PlayerSource : Pipe
     private List<GameData.Coordinate> openTiles;
     private GameData.Coordinate me;
     private GameData.Coordinate me2;
+    private AudioManager AudioManager;
 
     //State Machine
     private StateManager StateManager;
@@ -22,6 +23,7 @@ public class PlayerSource : Pipe
     {
         gameController = GameObject.FindGameObjectWithTag("GameController");
         StateManager = gameController.GetComponent<StateManager>();
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
 
         coordinateOfOutingPoints = new GameData.Coordinate[2];
         gridController = GameController.Instance.GridController;
@@ -230,7 +232,7 @@ public class PlayerSource : Pipe
             {
                 gridController.Grid[coordinate.x, coordinate.y].locked = false;
             }
-
+            AudioManager.PlaySourceExplosion(sourceLocation);
             Instantiate(GameController.Instance.PipeStatus.bigExplosionEffect, transform.position, Quaternion.identity);
             Destroy(gameObject);
         }

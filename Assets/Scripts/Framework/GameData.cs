@@ -78,6 +78,14 @@ public class GameData
         PsStart
     }
 
+    public enum ConveyorBeltStates 
+    {
+        CornerTopRight,
+        CornerTopLeft,
+        CornerBottomRight,
+        CornerBottomLeft,
+        Straight
+    }
     public enum PipesStates
     {
         PipeNeutralEmptyCorner,
@@ -161,95 +169,16 @@ public class GameData
         Dance
     }
 
-    public enum AnimationStates
-    {
-        //Character States
-        IdleFront,
-        MovementFront,
-        IdleBack,
-        MovementBack,
-        IdleRight,
-        MovementRight,
-        IdleLeft,
-        MovementLeft,
-        PipeGrabFront,
-        PipeGrabBack,
-        PipeGrabRight,
-        PipeGrabLeft,
-        PipePlaceFront,
-        PipePlaceBack,
-        PipePlaceRight,
-        PipePlaceLeft,
-
-        //Pipes States
-        PipeNeutralEmptyCorner,
-        PipeNeutralEmptyT,
-        PipeNeutralEmptyStraight,
-        PipeNeutralEmptyCross,
-
-        PipeBlueEmptyCorner,
-        PipeBlueEmptyT,
-        PipeBlueEmptyStraight,
-        PipeBlueEmptyCross,
-
-        PipeCyanEmptyCorner,
-        PipeCyanEmptyT,
-        PipeCyanEmptyStraight,
-        PipeCyanEmptyCross,
-
-        PipePurpleEmptyCorner,
-        PipePurpleEmptyT,
-        PipePurpleEmptyStraight,
-        PipePurpleEmptyCross,
-
-        PipeYellowEmptyCorner,
-        PipeYellowEmptyT,
-        PipeYellowEmptyStraight,
-        PipeYellowEmptyCross,
-
-        PipeBlueFullCorner,
-        PipeBlueFullT,
-        PipeBlueFullStraight,
-        PipeBlueFullCross,
-
-        PipeCyanFullCorner,
-        PipeCyanFullT,
-        PipeCyanFullStraight,
-        PipeCyanFullCross,
-
-        PipePurpleFullCorner,
-        PipePurpleFullT,
-        PipePurpleFullStraight,
-        PipePurpleFullCross,
-
-        PipeYellowFullCorner,
-        PipeYellowFullT,
-        PipeYellowFullStraight,
-        PipeYellowFullCross,
-
-        //Sources Machine
-        SourceMachineCyan,
-        SourceMachineBlue,
-        SourceMachinePurple,
-        SourceMachineYellow,
-
-        //Center Machine
-        CenterMachineNeutral,
-        CenterMachineBlue,
-        CenterMachineCyan,
-        CenterMachinePurple,
-        CenterMachineYellow
-
-    }
-
     public enum SpriteSheet
     {
+        ConveyorBelt,
         Character,
         Pipe,
         PipeNeutral,
         CenterMachine,
         SourceMachine,
         XboxController,
+        FlameMachine,
         PsController
     }
 
@@ -258,6 +187,8 @@ public class GameData
         Music,
         PickupPipe,
         PlacePipe,
+        PushOthers,
+        Walking,
         Explosion,
         Winning,
         RotatePipe
@@ -308,6 +239,10 @@ public class GameData
             return (x == c.x) && (y == c.y);
         }
 
+        public override string ToString()
+        {
+            return "[" + x + "," + y + "]";
+        }
     }
 
 

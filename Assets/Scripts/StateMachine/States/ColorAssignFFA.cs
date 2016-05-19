@@ -15,11 +15,11 @@ namespace Assets.Scripts.States
 
         public void StateUpdate()
         {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                StateManager.PreActiveState = GameData.GameStates.ColorAssignFFA;
-                StateManager.SwitchState(new Pause(StateManager));
-            }
+            //if (Input.GetKeyDown(KeyCode.Escape))
+            //{
+            //    StateManager.PreActiveState = GameData.GameStates.ColorAssignFFA;
+            //    StateManager.SwitchState(new Pause(StateManager));
+            //}
         }
 
         public void StateFixedUpdate()

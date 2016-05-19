@@ -21,12 +21,15 @@ public class MainMenu : MonoBehaviour
     public string scene2vs2        = "Level2vs2";
     public string credits          = "Credits";
 
+    private AudioManager AudioManager;
 
 	// Use this for initialization
 	void Start ()
 	{
 	    holdTimer = holdTimerMax;
         menuOptions[selectIndex].Select(true, selectedOption[selectIndex]);
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+        AudioManager.PlayMenuMusic();
 	}
 
     void FixedUpdate()

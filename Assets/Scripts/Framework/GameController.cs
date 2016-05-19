@@ -25,17 +25,23 @@ public class GameController : MonoBehaviour
     public PipeStatus PipeStatus;
     public ExplosionData ExplosionData;
     public StateManager StateManager;
+    public PipeParticleSystemManager PipeParticleSystemManager;
+    public ProgressBarManager ProgressBarManager;
     public Dictionary<GameData.Team, Player> Players;
     public Dictionary<GameData.Team, List<Player>> PlayersCoop;
     public Dictionary<GameData.Team, PlayerSource> PlayerSources;
     public bool gameRunning { get; private set; }
     public bool isPregame = false;
     public bool Gamemode_IsCoop = false;
-
+    public float pickupTimer;
     private GameObject gameController;
+    private AudioManager AudioManager;
+
 
     void Start()
     {
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+
         gameController = GameObject.FindGameObjectWithTag("GameController");
         StateManager = gameController.GetComponent<StateManager>();
         CenterMachineSprite = GameObject.FindObjectOfType<CenterMachineSprite>();
@@ -50,12 +56,10 @@ public class GameController : MonoBehaviour
         }
 
         gameRunning = true;
-
-        winningGUI = GameObject.Find("WinningText");
+        
         if (winningGUI != null)
         {
-            Text text = winningGUI.GetComponent<Text>();
-            text.enabled = false;
+            winningGUI.gameObject.SetActive(false);
         }
     }
 
@@ -93,6 +97,7 @@ public class GameController : MonoBehaviour
             {
                 pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
             }
+            AudioManager.PlayCenterMachineConnection();
             CenterMachineSprite.FindCentralMachineStatus(winningTeam);
 
             gameRunning = false;
@@ -113,11 +118,13 @@ public class GameController : MonoBehaviour
 
             foreach (Player player in toLose)
             {
+                player.EnableCryParticles();
                 player.Die();
             }
         }
         else
         {
+            Players[team].EnableCryParticles();
             Players[team].Die();
         }
         
@@ -129,8 +136,9 @@ public class GameController : MonoBehaviour
 
         if (winningGUI != null)
         {
-            Text text = winningGUI.GetComponent<Text>();
-            text.enabled = true;
+            winningGUI.gameObject.SetActive(true);
+
+            Text text = winningGUI.GetComponentInChildren<Text>();
             text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[color];
         }

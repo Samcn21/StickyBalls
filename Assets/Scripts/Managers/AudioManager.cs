@@ -4,27 +4,44 @@ using GamepadInput;
 
 public class AudioManager : MonoBehaviour
 {
+    //Music Clip
+    public AudioClip musicClip;
+    public AudioClip menuMusicClip;
 
-    public AudioClip MusicClip;
+    //Player Clips
     public AudioClip pickupPipeClip;
     public AudioClip placePipeClip;
-    public AudioClip bombExplosionClip;
-    public AudioClip winSoundClip;
+    public AudioClip pushClip;
     public AudioClip rotatePipeClip;
+    public AudioClip walkingClip;
 
+    //Level Clips
+    public AudioClip bombExplosionClip;
+    public AudioClip centerMachineConnectionClip;
+    public AudioClip centerMachineConnectionBGClip;
+    public AudioClip pipeExplosion;
+    public AudioClip sourceMachineExplosion;
+    public AudioClip flameMachineAlarm;
+    
+    //GUI Clips
+    public AudioClip menuNavClip;
 
     public AudioSource audioControllerSFX;
+    public AudioSource audioControllerSFXsmExplosion;
     public AudioSource audioControllerMusic;
-    public static AudioManager instantiate = null;
     private InputController InputController;
     private GameObject[] players;
     private AudioSource playerAS;
+    private bool dropVolume;
+    public float cmContinueVolume = 0.2f;
 
     //We need to get the volume settings from the menu in the end to apply to all sounds and music
     private float SFXVolume = 1;
-    private float SFXVolumeSetting = 50;
+    [Range (0,100)]
+    public float SFXVolumeSetting = 50;
     private float MusicVolume = 1;
-    private float MusicVolumeSetting = 50;
+    [Range(0, 100)]
+    public float MusicVolumeSetting = 30;
 
     public float[] playerPitchRanges = new float[5] { 1, 0.7f, 0.9f, 1.1f, 1.3f };
     [SerializeField] private float pitchRange = 1;
@@ -34,7 +51,160 @@ public class AudioManager : MonoBehaviour
         SFXVolume = SFXVolume * (SFXVolumeSetting / 100);
         MusicVolume = MusicVolume * (MusicVolumeSetting / 100);
 
+        PlayMusic(true);
         players = GameObject.FindGameObjectsWithTag("Player");
+
+        dropVolume = false;
+    }
+
+    public void PlayMenuMusic() 
+    {
+        audioControllerMusic.loop = true;
+        audioControllerMusic.clip = menuMusicClip;
+        audioControllerMusic.volume = MusicVolume;
+        audioControllerMusic.Play();
+
+    }
+
+    public void PlayMusic(bool play) 
+    {
+        if (play)
+        {
+            audioControllerMusic.loop = true;
+            audioControllerMusic.clip = musicClip;
+            audioControllerMusic.volume = MusicVolume;
+            audioControllerMusic.Play();
+        }
+        else 
+        {
+            audioControllerMusic.Stop();
+
+        }
+    }
+
+    public void PlayCenterMachineConnection() 
+    {
+        audioControllerSFX.clip = centerMachineConnectionClip;
+        audioControllerSFX.volume = SFXVolume * 0.2f;
+        audioControllerSFX.Play();
+        StartCoroutine(PlayCneterMachineBG());
+    }
+    IEnumerator PlayCneterMachineBG()
+    {
+        yield return new WaitForSeconds(7.45f);
+        audioControllerSFX.clip = centerMachineConnectionBGClip;
+        audioControllerSFX.loop = true;
+        audioControllerSFX.volume = SFXVolume * cmContinueVolume;
+        dropVolume = true;
+        audioControllerSFX.Play();
+    }
+
+    void Update() 
+    {
+        if (dropVolume) 
+        {
+            cmContinueVolume -= Time.deltaTime * 0.04f;
+            audioControllerSFX.volume = SFXVolume * cmContinueVolume;
+            Debug.Log(cmContinueVolume);
+            if (cmContinueVolume <= 0.04f)
+                dropVolume = false;
+        }
+    }
+    public void PlayFlameMachineConnection(Vector3 pos) 
+    {
+        GameObject[] flameMachines = GameObject.FindGameObjectsWithTag("FlameMachine");
+        foreach (GameObject fm in flameMachines) 
+        {
+            if (fm.transform.position == pos) 
+            {
+                AudioSource flameMachineAS = fm.GetComponent<AudioSource>();
+                flameMachineAS.clip = flameMachineAlarm;
+                flameMachineAS.volume = SFXVolume * 0.5f;
+                flameMachineAS.Play();
+            }
+        }
+    }
+
+    public void PlayMenuNav(bool status)
+    {
+        if (status)
+        {
+            pitchRange = playerPitchRanges[2];
+        }
+        else
+        {
+            pitchRange = playerPitchRanges[4];
+        }
+        audioControllerSFX.pitch = pitchRange;
+        audioControllerSFX.clip = menuNavClip;
+        audioControllerSFX.volume = SFXVolume;
+        audioControllerSFX.Play();
+
+    }
+    public void PlayPipeExplosion(string explosionName, Vector3 pos)
+    {
+        GameObject go = GameObject.Find(explosionName);
+        if (go.transform.position.x == pos.x || go.transform.position.y == pos.y)
+        {
+            if (pos.z % 2 == 0)
+            {
+                pitchRange = playerPitchRanges[4];
+            }
+            else
+            {
+                pitchRange = playerPitchRanges[1];
+            }
+            //TODO: if it is Source Machine don't play
+            AudioSource pipeAS = go.GetComponent<AudioSource>();
+            pipeAS.clip = pipeExplosion;
+            pipeAS.volume = SFXVolume;
+            pipeAS.pitch = pitchRange;
+            pipeAS.Play();
+        }
+    }
+
+    public void PlaySourceExplosion(GameData.PlayerSourceDirection smPos) 
+    {
+        switch (smPos)
+        { 
+            case GameData.PlayerSourceDirection.BottomLeft:
+                pitchRange = playerPitchRanges[1];
+                break;
+
+            case GameData.PlayerSourceDirection.BottomRight:
+                pitchRange = playerPitchRanges[2];
+                break;
+
+            case GameData.PlayerSourceDirection.TopLeft:
+                pitchRange = playerPitchRanges[3];
+                break;
+
+            case GameData.PlayerSourceDirection.TopRight:
+                pitchRange = playerPitchRanges[4];
+                break;
+
+        }
+
+        audioControllerSFXsmExplosion.clip = sourceMachineExplosion;
+        audioControllerSFXsmExplosion.volume = SFXVolume;
+        audioControllerSFXsmExplosion.pitch = pitchRange;
+        audioControllerSFXsmExplosion.Play();
+    }
+
+    public void StopPlayerAudio(GamePad.Index playerNumber)
+    {
+        foreach (GameObject player in players)
+        {
+            if (player.GetComponent<InputController>().index == playerNumber)
+            {
+                playerAS = player.GetComponent<AudioSource>();
+            }
+        }
+
+        if (playerAS.isPlaying) 
+        {
+            playerAS.Stop();
+        }
     }
 
     public void PlayOneShotPlayer(GameData.AudioClipState state, GamePad.Index playerNumber, bool needsPitch)
@@ -60,6 +230,16 @@ public class AudioManager : MonoBehaviour
             case GameData.AudioClipState.RotatePipe:
                 playerAS.clip = rotatePipeClip;
                 break;
+
+            case GameData.AudioClipState.PushOthers:
+                playerAS.clip = pushClip;
+                break;
+
+            case GameData.AudioClipState.Walking:
+                playerAS.clip = walkingClip;
+                break;
+
+        
         }
 
         if (needsPitch)
@@ -88,7 +268,7 @@ public class AudioManager : MonoBehaviour
             pitchRange = playerPitchRanges[0];
         }
         playerAS.pitch = pitchRange;
-        playerAS.volume = SFXVolume;
+        playerAS.volume = SFXVolume * 0.7f;
         playerAS.Play();
     }
 
