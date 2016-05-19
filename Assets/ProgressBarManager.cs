@@ -7,18 +7,24 @@ public class ProgressBarManager : MonoBehaviour {
     private Dictionary<Transform,float> toDisplay;
     private Dictionary<Transform,GameObject> progressBars;
     private float pickUpTimer;
+    private StateManager StateManager;
     void Awake()
     {
-        toDisplay = new Dictionary<Transform, float>();
-        progressBars = new Dictionary<Transform, GameObject>();
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        GameObject[] bars = GameObject.FindGameObjectsWithTag("ProgressBar");
-        for (int i = 0; i < players.Length; i++)
+        StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
+
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
-            toDisplay.Add(players[i].transform, 0);  
-            progressBars.Add(players[i].transform, bars[i]);
+            toDisplay = new Dictionary<Transform, float>();
+            progressBars = new Dictionary<Transform, GameObject>();
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            GameObject[] bars = GameObject.FindGameObjectsWithTag("ProgressBar");
+            for (int i = 0; i < players.Length; i++)
+            {
+                toDisplay.Add(players[i].transform, 0);
+                progressBars.Add(players[i].transform, bars[i]);
+            }
+            pickUpTimer = GameController.Instance.pickupTimer;
         }
-        pickUpTimer = GameController.Instance.pickupTimer;
     }
 
     public void SetProgressBarColor(Transform transform)
@@ -54,14 +60,17 @@ public class ProgressBarManager : MonoBehaviour {
 
     void Update()
     {
-        foreach (Transform t in toDisplay.Keys)
-        {      
-            if (toDisplay[t] > 0)
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+        {
+            foreach (Transform t in toDisplay.Keys)
             {
-                var transformPosition = Camera.main.WorldToScreenPoint(t.position);
-                transformPosition.y += 30f;
-                progressBars[t].GetComponent<RectTransform>().position = transformPosition;
-                progressBars[t].GetComponent<ProgressBar>().SetAmount(toDisplay[t] / pickUpTimer);
+                if (toDisplay[t] > 0)
+                {
+                    var transformPosition = Camera.main.WorldToScreenPoint(t.position);
+                    transformPosition.y += 30f;
+                    progressBars[t].GetComponent<RectTransform>().position = transformPosition;
+                    progressBars[t].GetComponent<ProgressBar>().SetAmount(toDisplay[t] / pickUpTimer);
+                }
             }
         }
     }
