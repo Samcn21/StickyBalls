@@ -310,16 +310,21 @@ public class Pipe : MonoBehaviour
 
     private void GetConnectedPipes(GameData.Coordinate coord)
     {
-        List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
-        visited.Add(new Vector2(coord.x,coord.y));
-        foreach (GameData.Coordinate c in cons) {
-            if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
-            if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
-            if (visited.Contains(new Vector2(c.x,c.y))) continue;
-            connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
-            GetConnectedPipes(c);
+        if (gridController.Grid[coord.x, coord.y].pipe != null)
+        {
+            List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
+            visited.Add(new Vector2(coord.x, coord.y));
+            foreach (GameData.Coordinate c in cons)
+            {
+                if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
+                if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
+                if (visited.Contains(new Vector2(c.x, c.y))) continue;
+                if (!gridController.Grid[c.x, c.y].pipe.connections.Contains(coord)) continue;
+                    connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
+                GetConnectedPipes(c);
+            }
+            return;
         }
-        return;
     }
     
     public void SetHightlight(bool val)
