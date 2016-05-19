@@ -283,6 +283,7 @@ public class Pipe : MonoBehaviour
             if (gridController.Grid[c.x, c.y].pipe == null) continue;
             if (gridController.Grid[c.x, c.y].pipe.Team != team) continue;
             if (visited.Contains(new Vector2(c.x,c.y))) continue;
+            if (!gridController.Grid[c.x, c.y].pipe.connections.Contains(coord)) continue;
 
             if (gridController.Grid[c.x, c.y].pipe.isSource) return true;
             if (isConnectedToSource(c)) return true;
@@ -315,19 +316,11 @@ public class Pipe : MonoBehaviour
             visited.Add(new Vector2(coord.x, coord.y));
             foreach (GameData.Coordinate c in cons)
             {
-                Debug.Log("1");
-
                 if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
-                Debug.Log("2");
-
                 if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
-                Debug.Log("3");
-
                 if (visited.Contains(new Vector2(c.x, c.y))) continue;
-                Debug.Log("4");
-
                 if (!gridController.Grid[c.x, c.y].pipe.connections.Contains(coord)) continue;
-                    connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
+                connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
                 GetConnectedPipes(c);
             }
             return;
