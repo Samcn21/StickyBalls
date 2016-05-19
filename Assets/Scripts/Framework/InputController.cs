@@ -494,35 +494,45 @@ public class InputController : MonoBehaviour
     private bool IsLegalRotation(GameData.Coordinate toPlace, PipeData.PipeType type)
     {
         List<Vector2> rotations = new List<Vector2>();
+        Pipe p;
         if (toPlace.x > 0)
         {
-            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
+            p = gridController.Grid[toPlace.x - 1, toPlace.y].pipe;
+            if ( p != null)
             {
-                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
+                
+                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team!=GameData.Team.Neutral && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(-1, 0));
             }
         }
         if (toPlace.x < gridController.Grid.GetLength(0) - 1)
         {
-            if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe != null)
-            {
-                if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
+            p = gridController.Grid[toPlace.x + 1, toPlace.y].pipe;
+                if (p != null)
+                {
+                    if (!p.connections.Contains(toPlace)) return false;
+                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
         if (toPlace.y > 0)
         {
-            if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe != null)
-            {
-                if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
+                p = gridController.Grid[toPlace.x, toPlace.y - 1].pipe;
+                if (p != null)
+                {
+                    if (!p.connections.Contains(toPlace)) return false;
+                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
+      
         if (toPlace.y < gridController.Grid.GetLength(1) - 1)
         {
-            if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe != null)
+            p = gridController.Grid[toPlace.x, toPlace.y + 1].pipe;
+            if ( p!= null)
             {
-                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
+                if (!p.connections.Contains(toPlace)) return false;
+                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
         }
