@@ -8,13 +8,14 @@ public class CenterMachineSprite : AnimationController {
     public GameData.CenterMachineStates currentAnim = GameData.CenterMachineStates.CenterMachineNeutral;
 
     //SPRITE FRAMES CENTER MACHINE
-    private int cmNeutral       = 1;
-    private int cmBlue          = 2;
-    private int cmCyan          = 3;
-    private int cmPurple        = 4;
-    private int cmYellow        = 5;
+    private int[] cmNeutral       = new int[8] { 1, 2, 3 , 4, 5, 6, 7, 8};
+    private int[] cmBlue          = new int[4] { 17, 18, 19, 20 };
+    private int[] cmCyan          = new int[4] { 13, 14, 15, 16 };
+    private int[] cmPurple        = new int[4] { 21, 22, 23, 24 };
+    private int[] cmYellow        = new int[4] { 9 , 10 , 11, 12};
 
-    public float fpsCM          = 30;
+    public float fpsCMNeutral     = 12;
+    public float fpsCMColor       = 8;
 
     void Start() 
     {
@@ -25,7 +26,9 @@ public class CenterMachineSprite : AnimationController {
     {
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
-        currentFrame = cmNeutral;
+
+        fps = fpsCMNeutral;
+        LoopingAnimation(cmNeutral);
     }
 
     void Update()
@@ -42,27 +45,27 @@ public class CenterMachineSprite : AnimationController {
         {
             //character pipe grab animations
             case GameData.CenterMachineStates.CenterMachineBlue:
-                fps = fpsCM;
-                currentFrame = cmBlue;
+                fps = fpsCMColor;
+                LoopingAnimation(cmBlue);
                 break;
 
             case GameData.CenterMachineStates.CenterMachineCyan:
-                fps = fpsCM;
-                currentFrame = cmCyan;
+                fps = fpsCMColor;
+                LoopingAnimation(cmCyan);
                 break;
 
             case GameData.CenterMachineStates.CenterMachinePurple:
-                fps = fpsCM;
-                currentFrame = cmPurple;
+                fps = fpsCMColor;
+                LoopingAnimation(cmPurple);
                 break;
 
             case GameData.CenterMachineStates.CenterMachineYellow:
-                fps = fpsCM;
-                currentFrame = cmYellow;
+                fps = fpsCMColor;
+                LoopingAnimation(cmYellow);
                 break;
             default:
-                fps = fpsCM;
-                currentFrame = cmNeutral;
+                fps = fpsCMNeutral;
+                LoopingAnimation(cmNeutral);
                 break;
         }
     }

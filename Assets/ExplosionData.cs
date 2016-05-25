@@ -94,7 +94,10 @@ public class ExplosionData : MonoBehaviour {
                         if (IsPipeDestroyable(gridController.Grid[coord.x, coord.y].pipe))
                         {
                             if (!visited.Contains(new Vector2(coord.x, coord.y)))
+                            {
+                                gridController.Grid[coord.x, coord.y].pipe.isDestroying = true;
                                 temp.Add(coord);
+                            }
                         }
                         else
                             visited.Add(new Vector2(coord.x, coord.y));
@@ -133,8 +136,7 @@ public class ExplosionData : MonoBehaviour {
     {
         List<GameData.Coordinate> toDestroy = new List<GameData.Coordinate>();
         if (mode == AnnhilationMode.FromSourceToLeaves)
-            foreach (GameData.Coordinate coord in pipe.connections)
-                toDestroy.Add(coord);
+            toDestroy.Add(pipe.positionCoordinate);
         else
         {
          

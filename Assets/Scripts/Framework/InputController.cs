@@ -14,8 +14,8 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     [SerializeField]
     private float velocityThreshold = 0.1f;
-    [SerializeField]
-    private float holdTimerLimit = 1.25f;
+   
+    private float holdTimerLimit;
     public GamePad.Index index;
     public GameData.Team team;
 
@@ -30,7 +30,6 @@ public class InputController : MonoBehaviour
     private ConveyorPipe selectedConveyorPipe;
     private List<GameData.Coordinate> closePipeConnections;
     private GameData.Coordinate selectedPipeConnection;
-    private PipeStatus pipeStatus;
     private Transform selectedPipePlaceholder;
     private int rotationIndex = 0;
     private bool initialized = false;
@@ -85,16 +84,21 @@ public class InputController : MonoBehaviour
         initialized = true;
         pickedPipe = true;
         isPressingDelete = false;
-        resetDestroyTimer = GameController.Instance.PipeStatus.TimerToDestroyPipe;
         if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
         {
             player.Initialize();
         }
+        if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA) 
+        {
+            GameController.Instance.ProgressBarManager.SetProgressBarColor(transform);
+        }
+        
     }
 
     // Use this for initialization
     void Start()
     {
+        holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
         AudioManager = GameObject.FindObjectOfType<AudioManager>();
@@ -104,7 +108,6 @@ public class InputController : MonoBehaviour
         closePipeConnections = new List<GameData.Coordinate>();
         pipeMan = GameController.Instance.PipeMan;
         gridController = GameController.Instance.GridController;
-        pipeStatus = GameController.Instance.PipeStatus;
         AssignColorsToPlayers();     
         isPressingX = false;
         destroyTimer = resetDestroyTimer;
@@ -135,13 +138,39 @@ public class InputController : MonoBehaviour
 
             rigidBody.AddForce(new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity) * player.moveSpeed);
             playerForce = new Vector3(gamepadState.LeftStickAxis.x * stickSensivity, 0, gamepadState.LeftStickAxis.y * stickSensivity);
-
-
         }
+    }
+
+    private void CleanPlaceholder()
+    {
+        HashSet<Vector2> validCoords = new HashSet<Vector2>();
+        HashSet<Pipe> validPipes = new HashSet<Pipe>();
+        foreach (Pipe pipe in closePipes)
+        {
+            if (pipe != null && pipe.Team != GameData.Team.Neutral)
+            {
+                validPipes.Add(pipe);
+                foreach (GameData.Coordinate coord in pipe.connections)
+                {
+                    validCoords.Add(new Vector2(coord.x, coord.y));
+                }
+
+            }
+        }
+        for (int i = closePipes.Count - 1; i >= 0; i--)
+            if (!validPipes.Contains(closePipes[i]))
+                closePipes.Remove(closePipes[i]);
+        for (int i=closePipeConnections.Count-1; i>=0;i--)
+            if (!validCoords.Contains(new Vector2(closePipeConnections[i].x, closePipeConnections[i].y)))
+                closePipeConnections.Remove(closePipeConnections[i]);
+        if(selectedPipeConnection!=null)
+        if (!validCoords.Contains(new Vector2(selectedPipeConnection.x, selectedPipeConnection.y)))
+            selectedPipeConnection = null;
     }
 
     void Update()
     {
+        CleanPlaceholder();
         updateCounter++;
         
         if (!initialized || isLocked) return;
@@ -176,7 +205,6 @@ public class InputController : MonoBehaviour
                 destroyTimer -= Time.deltaTime;
                 if (pipeToDestroyRef != null && destroyTimer <= 0)
                 {
-                    pipeStatus.DestroyPipeOfPlayer(team, pipeToDestroyRef, true);
                     pipeToDestroyRef = null;
                 }
             }
@@ -192,9 +220,26 @@ public class InputController : MonoBehaviour
                     holdTimer = 0;
                 }
                 else
+                {
                     holdTimer += Time.deltaTime;
+                }
             }
         }
+        else
+            holdTimer = 0;
+
+            if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
+            { 
+                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
+                {
+                    GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
+                }
+                else 
+                {
+                    GameController.Instance.ProgressBarManager.HideProgressBarAt(transform);
+                }
+            }
+        
 
         //If A is pressed and you are currently near a spot where a pipe can be placed, place the pipe
         //Else If A is pressed and you have a conveyor pipe selected, pick up the conveyor pipe
@@ -335,27 +380,8 @@ public class InputController : MonoBehaviour
 
     void OnTriggerStay(Collider col)
     {
+        
         OnTriggerEnter(col);
-        if (col.gameObject.tag == "Pipe") {
-            Pipe p = col.gameObject.GetComponent<Pipe>();
-            if (p == null) return;
-            if (p.Team ==GameData.Team.Neutral)
-            {
-                foreach (GameData.Coordinate coord in p.connections)
-                {
-                    closePipeConnections.Remove(coord);
-                    if (coord.Equals(selectedPipeConnection))
-                    {
-                        selectedPipeConnection = null;
-                        if (selectedPipePlaceholder != null)
-                            Destroy(selectedPipePlaceholder.gameObject);
-                    }
-                }
-                closePipes.Remove(p);
-
-            }
-
-        }
     }
 
     //If player is not holding a pipe, player if the collider is a conveyor pipe
@@ -470,35 +496,42 @@ public class InputController : MonoBehaviour
     private bool IsLegalRotation(GameData.Coordinate toPlace, PipeData.PipeType type)
     {
         List<Vector2> rotations = new List<Vector2>();
+        Pipe p;
         if (toPlace.x > 0)
         {
-            if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe != null)
+            p = gridController.Grid[toPlace.x - 1, toPlace.y].pipe;
+            if ( p != null)
             {
-                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
+                
+                if (gridController.Grid[toPlace.x - 1, toPlace.y].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team!=GameData.Team.Neutral && !gridController.Grid[toPlace.x - 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(-1, 0));
             }
         }
         if (toPlace.x < gridController.Grid.GetLength(0) - 1)
         {
-            if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe != null)
-            {
-                if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
+            p = gridController.Grid[toPlace.x + 1, toPlace.y].pipe;
+                if (p != null)
+                {
+                    if (gridController.Grid[toPlace.x + 1, toPlace.y].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x + 1, toPlace.y].pipe.isCenterMachine)
                     rotations.Add(new Vector2(1, 0));
             }
         }
         if (toPlace.y > 0)
         {
-            if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe != null)
-            {
-                if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
+                p = gridController.Grid[toPlace.x, toPlace.y - 1].pipe;
+                if (p != null)
+                {
+                    if (gridController.Grid[toPlace.x, toPlace.y - 1].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y - 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, -1));
             }
         }
+      
         if (toPlace.y < gridController.Grid.GetLength(1) - 1)
         {
-            if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe != null)
+            p = gridController.Grid[toPlace.x, toPlace.y + 1].pipe;
+            if ( p!= null)
             {
-                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
+                if (gridController.Grid[toPlace.x, toPlace.y + 1].pipe.connections.Contains(toPlace) && !p.isDestroying && p.Team != GameData.Team.Neutral && !gridController.Grid[toPlace.x, toPlace.y + 1].pipe.isCenterMachine)
                     rotations.Add(new Vector2(0, 1));
             }
         }
@@ -548,20 +581,11 @@ public class InputController : MonoBehaviour
                                Quaternion.Euler(90, rotationIndex * 90, 0)) as GameObject;
             Pipe pipe = newPipe.GetComponent<Pipe>();
             pipe.Initialize(player.HeldPipeType, selectedPipeConnection, rotationIndex * 90);
-            bool found = false;
-            foreach (Pipe father in closePipes)
-            {
-                found = false;
-                if (father.connections.Contains(selectedPipeConnection) && father.PipeType != PipeData.PipeType.Void)
-                {
-                    found = true;
-                    pipeStatus.AddPipeToTeam(pipe.Team, pipe, father);
-                    closePipes = new List<Pipe>();
-                    break;
-                }
+            foreach (GameData.Coordinate coord in pipe.connections) {
+                Pipe p = gridController.Grid[coord.x, coord.y].pipe;
+                if ( p!= null && !p.isSource&& !p.isFlameMachine && !p.isCenterMachine)
+                    gridController.Grid[coord.x, coord.y].pipe.UpdateParticles();
             }
-            if (!found)
-                pipeStatus.AddFirstPipe(pipe.Team, pipe);
 
             //place a pipe in chosen color pipeline in color assign scene
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
@@ -595,7 +619,7 @@ public class InputController : MonoBehaviour
                         vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(team);
                 }
             }
-
+            pipe.UpdateParticles();
             player.PlacePipe();
             selectedPipeConnection = null;
             closePipeConnections.Remove(selectedPipeConnection);
@@ -676,6 +700,8 @@ public class InputController : MonoBehaviour
 
             if (velocityTotal <= velocityThreshold)
             {
+                //AudioManager.StopPlayerAudio(index);
+
                 if (CharacterSprite.previousAnim.ToString().Contains("Front"))
                 {
                     CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
@@ -695,6 +721,9 @@ public class InputController : MonoBehaviour
             }
             else
             {
+                //AudioManager.PlayOneShotPlayer(GameData.AudioClipState.Walking, index, true);
+
+
                 if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.East;

@@ -40,7 +40,7 @@ public class Pipe : MonoBehaviour
     public bool isCenterMachine { get; protected set; }
     public bool isSource { get; protected set; }
     public bool isFlameMachine { get; protected set; }
-
+    public bool isDestroying;
     private HashSet<Vector2> visited;
     private List<Pipe> connectedPipes;
 
@@ -63,7 +63,129 @@ public class Pipe : MonoBehaviour
         }
     }
 
+    private Dictionary<Vector2, GameObject>  particleByPosition;
 
+
+    public void UpdateParticles()
+    {
+        if (!isSource && !isFlameMachine && !isCenterMachine)
+        {
+            if (particleByPosition == null)
+            {
+                particleByPosition=new Dictionary<Vector2, GameObject>();
+            }
+            else {
+                if (Team == GameData.Team.Neutral)
+                {
+                    List<Vector2> toDestroy = new List<Vector2>();
+                    foreach (Vector2 pos in particleByPosition.Keys)
+                        if (particleByPosition.ContainsKey(pos))
+                        {
+                            toDestroy.Add(pos);
+                        }
+                    foreach (Vector2 vec in toDestroy)
+                    {
+                        Destroy(particleByPosition[vec]);
+                        particleByPosition.Remove(vec);
+                    }
+                }
+                else {
+                    foreach (GameData.Coordinate connection in connections)
+                    {
+                        Vector2 pos = new Vector2(connection.x, connection.y);
+                        if (gridController.Grid[connection.x, connection.y].pipe != null)
+                        {
+
+                            if (particleByPosition.ContainsKey(pos))
+                            {
+                                Destroy(particleByPosition[pos]);
+                                particleByPosition.Remove(pos);
+                            }
+
+                        }
+                        else
+                        {
+                            if (!particleByPosition.ContainsKey(pos))
+                            {
+                                GameObject g = (GameObject)Instantiate(SelectParticlePrefabFromPosition(pos), GetTransformPositionFromVector2(pos), Quaternion.Euler(270, 0, 0));
+                                g.transform.parent = transform;
+                                particleByPosition.Add(pos, g);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    private Vector3 GetTransformPositionFromVector2(Vector2 position)
+    {
+        position -= new Vector2(positionCoordinate.x, positionCoordinate.y);
+        Vector3 halfWidthOffset = new Vector3(0.7f, 0, 0);
+        Vector3 halfHeightOffset = new Vector3(0, 0, 0.7f);
+        Vector3 heightOffset = new Vector3(0, 1f, 0);
+        if (position == new Vector2(1, 0))
+            return transform.position + halfWidthOffset + heightOffset;
+        if (position == new Vector2(-1, 0))
+            return transform.position - halfWidthOffset + heightOffset;
+        if (position == new Vector2(0, 1))
+            return transform.position + halfHeightOffset + heightOffset;
+        if (position == new Vector2(0, -1))
+            return transform.position - halfHeightOffset + heightOffset;
+        return new Vector3();
+    }
+
+    private GameObject SelectParticlePrefabFromPosition(Vector2 position)
+    {
+        position -= new Vector2(positionCoordinate.x, positionCoordinate.y);
+        switch (Team)
+        {
+            case GameData.Team.Blue:
+                if (position == new Vector2(1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleLeftToRight;
+                if (position == new Vector2(0, 1))
+                    return GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleBottomToTop;
+                if (position == new Vector2(-1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleRightToLeft;
+                if (position == new Vector2(0, -1))
+                    return GameController.Instance.PipeParticleSystemManager.BlueDrippingParticleTopToBottom;
+                break;
+            case GameData.Team.Cyan:
+                if (position == new Vector2(1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleLeftToRight;
+                if (position == new Vector2(0, 1))
+                    return GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleBottomToTop;
+                if (position == new Vector2(-1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleRightToLeft;
+                if (position == new Vector2(0, -1))
+                    return GameController.Instance.PipeParticleSystemManager.CyanDrippingParticleTopToBottom;
+                break;
+            case GameData.Team.Purple:
+                if(position == new Vector2(1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleLeftToRight;
+                if (position == new Vector2(0, 1))
+                    return GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleBottomToTop;
+                if (position == new Vector2(-1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleRightToLeft;
+                if (position == new Vector2(0, -1))
+                    return GameController.Instance.PipeParticleSystemManager.PurpleDrippingParticleTopToBottom;
+                break;
+            case GameData.Team.Yellow:
+                if (position == new Vector2(1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleLeftToRight;
+                if (position == new Vector2(0, 1))
+                    return GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleBottomToTop;
+                if (position == new Vector2(-1, 0))
+                    return GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleRightToLeft;
+                if (position == new Vector2(0, -1))
+                    return GameController.Instance.PipeParticleSystemManager.YellowDrippingParticleTopToBottom;
+                break;
+        }
+        return null;
+    }
 
     public void Initialize(PipeData.PipeType pipeType, GameData.Coordinate coord, int rotationAngle) {
         pipeMan = GameController.Instance.PipeMan;
@@ -71,12 +193,12 @@ public class Pipe : MonoBehaviour
         meshRenderer = GetComponent<MeshRenderer>();
         connections = new List<GameData.Coordinate>();
         changeColor = false;
-
+        isDestroying = false;
 
         PipeType = pipeType;
         positionCoordinate = coord;
         List<GameData.Team> connectedTeams = new List<GameData.Team>();
-
+        
         //Foreach connection in the pipes default rotation-set, rotate the connection to fit the actual placement.
         foreach (Vector2 v in pipeMan.pipeConnections[pipeType]) {
             Vector2 rotatedVector = Quaternion.Euler(0, 0, -rotationAngle) * v;
@@ -125,6 +247,7 @@ public class Pipe : MonoBehaviour
 
         //Animation SpriteSheet Setup
         GetComponent<PipesSprite>().FindPipeStatus(pipeType, Team);
+        UpdateParticles();
     }
 
     public void DestroyPipe() {
@@ -160,6 +283,7 @@ public class Pipe : MonoBehaviour
             if (gridController.Grid[c.x, c.y].pipe == null) continue;
             if (gridController.Grid[c.x, c.y].pipe.Team != team) continue;
             if (visited.Contains(new Vector2(c.x,c.y))) continue;
+            if (!gridController.Grid[c.x, c.y].pipe.connections.Contains(coord)) continue;
 
             if (gridController.Grid[c.x, c.y].pipe.isSource) return true;
             if (isConnectedToSource(c)) return true;
@@ -173,10 +297,12 @@ public class Pipe : MonoBehaviour
         connectedPipes = new List<Pipe>();
         connectedPipes.Add(this);
         GetConnectedPipes(positionCoordinate);
+        
         foreach (Pipe pipe in connectedPipes)
-        {
-                pipe.Team = newTeam;
-            if(pipe.gameObject.GetComponent<PipesSprite>()!=null)
+        {        
+            pipe.Team = newTeam;
+            pipe.UpdateParticles();
+            if (pipe.gameObject.GetComponent<PipesSprite>()!=null)
                 pipe.gameObject.GetComponent<PipesSprite>().FindPipeStatus(pipe.PipeType, newTeam);
         }
         
@@ -184,21 +310,25 @@ public class Pipe : MonoBehaviour
 
     private void GetConnectedPipes(GameData.Coordinate coord)
     {
-        List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
-        visited.Add(new Vector2(coord.x,coord.y));
-        foreach (GameData.Coordinate c in cons) {
-            if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
-            if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
-            if (visited.Contains(new Vector2(c.x,c.y))) continue;
-            connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
-            GetConnectedPipes(c);
+        if (gridController.Grid[coord.x, coord.y].pipe != null)
+        {
+            List<GameData.Coordinate> cons = gridController.Grid[coord.x, coord.y].pipe.connections;
+            visited.Add(new Vector2(coord.x, coord.y));
+            foreach (GameData.Coordinate c in cons)
+            {
+                if (gridController.Grid[c.x, c.y].pipe == null || gridController.Grid[c.x, c.y].pipe.isFlameMachine || gridController.Grid[c.x, c.y].pipe.gameObject == null) continue;
+                if (gridController.Grid[c.x, c.y].pipe.Team != team && gridController.Grid[c.x, c.y].pipe.Team != GameData.Team.Neutral) continue;
+                if (visited.Contains(new Vector2(c.x, c.y))) continue;
+                if (!gridController.Grid[c.x, c.y].pipe.connections.Contains(coord)) continue;
+                connectedPipes.Add(gridController.Grid[c.x, c.y].pipe);
+                GetConnectedPipes(c);
+            }
+            return;
         }
-        return;
     }
     
     public void SetHightlight(bool val)
     {
-        Debug.Log(val);
         if(val)
         {
             gameObject.GetComponent<MeshRenderer>().material.color = Color.red;

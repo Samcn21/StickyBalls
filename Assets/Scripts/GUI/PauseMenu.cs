@@ -11,7 +11,7 @@ public class PauseMenu : MonoBehaviour {
     private ScreenFader ScreenFader;
     private GameObject[] buttons;
     private bool screenFader = false;
-
+    
     private GamepadState gamepadState;
     private float holdTimer = 0;
     private float holdTimerMax = 0.5f;
@@ -20,11 +20,12 @@ public class PauseMenu : MonoBehaviour {
     private string levelName;
     public string mainMenu = "MainMenu";
     private GameObject tc;
-
+    private AudioManager AudioManager;
 
     [SerializeField] private List<MenuOption> menuOptions;
     [SerializeField] private List<Sprite> selectedOption;
     [SerializeField] private List<Sprite> deselectedOption;
+    [SerializeField] private Canvas canvas;
 
     void Awake () {
         levelName = SceneManager.GetActiveScene().name;
@@ -42,10 +43,13 @@ public class PauseMenu : MonoBehaviour {
             Debug.LogError("The scene must have screen fader prefab. it's in Prefabs > GUI > pfbScreenFader");
         }
         buttons = GameObject.FindGameObjectsWithTag("PauseMenuButton");
+
+        AudioManager = GameObject.FindObjectOfType<AudioManager>();
+
 	}
 
 	void Update () {
-
+        
         if (isPaused)
         {
             GameObject tc = GameObject.FindGameObjectWithTag("TutorialCanvas");
@@ -59,9 +63,11 @@ public class PauseMenu : MonoBehaviour {
                 btn.GetComponent<Image>().enabled = true;
             }
             PauseMenuOperation();
+            
         }
         else 
         {
+            //buttonPressedDelay = buttonPressedDelayReset;
             ScreenFader.FadeToClear();
             foreach (GameObject btn in buttons)
             {
@@ -84,7 +90,10 @@ public class PauseMenu : MonoBehaviour {
             if (holdTimer <= 0 || !firstMove)
             {
                 if (selectIndex < 3)
+                { 
                     selectIndex++;
+                    AudioManager.PlayMenuNav(true);
+                }
                 firstMove = true;
             }
             else
@@ -97,7 +106,11 @@ public class PauseMenu : MonoBehaviour {
             if (holdTimer <= 0 || !firstMove)
             {
                 if (selectIndex > 0)
+                { 
                     selectIndex--;
+                    AudioManager.PlayMenuNav(true);
+
+                }
                 firstMove = true;
             }
             else
@@ -111,23 +124,26 @@ public class PauseMenu : MonoBehaviour {
             firstMove = false;
         }
         UpdateSelection();
-
         if (gamepadState.A)
         {
-            switch (selectIndex)
-            {
-                case 0:
-                    isPaused = false;
-                    break;
-                case 1:
-                    SceneManager.LoadScene(levelName);
-                    break;
-                case 2:
-                    SceneManager.LoadScene(mainMenu);
-                    break;
-                case 3:
-                    Application.Quit();
-                    break;
+           
+            AudioManager.PlayMenuNav(false);
+
+                switch (selectIndex)
+                {
+                    case 0:
+                        isPaused = false;
+                        break;
+                    case 1:
+                        SceneManager.LoadScene(levelName);
+                        break;
+                    case 2:
+                        SceneManager.LoadScene(mainMenu);
+                        break;
+                    case 3:
+                        Application.Quit();
+                        break;
+                
             }
         }
     }
@@ -156,6 +172,7 @@ public class PauseMenu : MonoBehaviour {
             foreach(GameObject player in players)
             {
                 player.GetComponent<InputController>().enabled = false;
+                canvas.enabled = false;
             }
             //Time.timeScale = 0;   //if I use timescale the screen fader doesn;t work so I disable input controller
             //in this case we could still have the music countining 
@@ -167,6 +184,7 @@ public class PauseMenu : MonoBehaviour {
             foreach (GameObject player in players)
             {
                 player.GetComponent<InputController>().enabled = true;
+                canvas.enabled = true;
             }
             //Time.timeScale = 1;
             isPaused = false;

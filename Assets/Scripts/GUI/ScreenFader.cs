@@ -29,7 +29,11 @@ public class ScreenFader : MonoBehaviour
 
     public void FadeToBlack()
 	{
-		FadeImg.color = Color.Lerp(FadeImg.color, Color.black, fadeSpeed * Time.deltaTime);
+        if (FadeImg.color.a < 0.7f)
+        {
+        		FadeImg.color = Color.Lerp(FadeImg.color, Color.black, fadeSpeed * Time.deltaTime);
+        }
+
 	}
 
     public IEnumerator fadeToBlack(float timeToFade)

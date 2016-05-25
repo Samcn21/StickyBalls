@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CharacterSprite : AnimationController {
+public class CharacterSprite : AnimationController
+{
 
     public GameData.SpriteSheet mySpriteSheet = GameData.SpriteSheet.Character;
-    public int spriteSheetColumns   = 8;
-    public int spriteSheetRows      = 8;
+    public int spriteSheetColumns = 8;
+    public int spriteSheetRows = 8;
 
     public GameData.PlayerState currentAnim = GameData.PlayerState.IdleFront;
     public GameData.PlayerState previousAnim = GameData.PlayerState.IdleFront;
@@ -19,35 +20,45 @@ public class CharacterSprite : AnimationController {
 
     private InputController InputController;
 
-    public float fpsIdle                = 4;
-    public float fpsMovement            = 15;
-    public float fpsPipeGrab            = 6;
-    public float fpsPipePlace           = 6;
-    public float fpsDance               = 3;
+    public float fpsIdle = 4;
+    public float fpsMovement = 15;
+    public float fpsMovementCarry = 15;
+    public float fpsPipeGrab = 6;
+    public float fpsPipePlace = 6;
+    public float fpsDance = 3;
 
     public bool hasMovementPermit = true;
 
 
     //ANIMATION FRAMES FOR CHARACTERS
-    private int[] idleFront             = new int[3] { 1, 2, 3 };
-    private int[] idleBack              = new int[3] { 25, 26, 27 };
-    private int[] idleRight             = new int[3] { 9, 10, 11 };
-    private int[] idleLeft              = new int[3] { 17, 18, 19 };
-    private int[] movementFront         = new int[5] { 4, 5, 6, 7, 8 };
-    private int[] movementBack          = new int[5] { 28, 29, 30, 31, 32 };
-    private int[] movementRight         = new int[5] { 12, 13, 14, 15, 16 };
-    private int[] movementLeft          = new int[5] { 20, 21, 22, 23, 24 };
-    private int[] pipeGrabFront         = new int[2] { 33, 34 };
-    private int[] pipeGrabBack          = new int[2] { 39, 40 };
-    private int[] pipeGrabRight         = new int[2] { 35, 36 };
-    private int[] pipeGrabLeft          = new int[2] { 37, 38 };
-    private int[] pipePlaceFront        = new int[2] { 41, 42 };
-    private int[] pipePlaceBack         = new int[2] { 47, 48 };
-    private int[] pipePlaceRight        = new int[2] { 43, 44 };
-    private int[] pipePlaceLeft         = new int[2] { 45, 46 };
-    private int[] dance = new int[12] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+    private int idleFront = 1;
+    private int idleBack = 25;
+    private int idleRight = 9;
+    private int idleLeft = 17;
 
-    void Start() 
+    private int[] movementFront         = new int[3] { 1, 2, 3 };
+    private int[] movementBack          = new int[3] { 25, 26, 27 };
+    private int[] movementRight         = new int[3] { 9, 10, 11 };
+    private int[] movementLeft          = new int[3] { 17, 18, 19 };
+
+    private int[] movementFrontCarry    = new int[3] { 4, 5, 6 };
+    private int[] movementBackCarry     = new int[3] { 28, 29, 30 };
+    private int[] movementRightCarry    = new int[3] { 12, 13, 14 };
+    private int[] movementLeftCarry     = new int[3] { 20, 21, 22 };
+
+    private int pipeGrabFront           = 4;
+    private int pipeGrabBack            = 28;
+    private int pipeGrabRight           = 12;
+    private int pipeGrabLeft            = 20;
+
+    private int pipePlaceFront          = 4;
+    private int pipePlaceBack           = 28;
+    private int pipePlaceRight          = 12;
+    private int pipePlaceLeft           = 20;
+
+    private int[] dance = new int[8] { 2, 3, 5, 6, 10, 11, 18, 19 };
+
+    void Start()
     {
         if (this.tag != "VirtualPlayer")
             InputController = transform.parent.GetComponent<InputController>();
@@ -68,7 +79,7 @@ public class CharacterSprite : AnimationController {
         ReadSpriteSheet(mySpriteSheet);
     }
 
-    public void FindMaterial() 
+    public void FindMaterial()
     {
         if (InputController != null)
         {
@@ -123,14 +134,13 @@ public class CharacterSprite : AnimationController {
         }
     }
 
-    public void FindDanceAnimation() 
+    public void FindDanceAnimation()
     {
         currentAnim = GameData.PlayerState.Dance;
     }
 
     public void FindGrabPipeAnimation()
     {
-        hasMovementPermit = false;
         previousAnim = currentAnim;
         if (previousAnim.ToString().Contains("Front"))
         {
@@ -153,7 +163,6 @@ public class CharacterSprite : AnimationController {
 
     public void FindPlacePipeAnimation()
     {
-        hasMovementPermit = false;
         previousAnim = currentAnim;
         if (previousAnim.ToString().Contains("Front"))
         {
@@ -180,64 +189,64 @@ public class CharacterSprite : AnimationController {
             //character pipe grab animations
             case GameData.PlayerState.PipeGrabFront:
                 fps = fpsPipeGrab;
-                CharacterOneShotAnimation(pipeGrabFront);
+                currentFrame = pipeGrabFront;
                 break;
 
             case GameData.PlayerState.PipeGrabBack:
                 fps = fpsPipeGrab;
-                CharacterOneShotAnimation(pipeGrabBack);
+                currentFrame = pipeGrabBack;
                 break;
 
             case GameData.PlayerState.PipeGrabLeft:
                 fps = fpsPipeGrab;
-                CharacterOneShotAnimation(pipeGrabLeft);
+                currentFrame = pipeGrabLeft;
                 break;
 
             case GameData.PlayerState.PipeGrabRight:
                 fps = fpsPipeGrab;
-                CharacterOneShotAnimation(pipeGrabRight);
+                currentFrame = pipeGrabRight;
                 break;
 
             //character pipe place animations
             case GameData.PlayerState.PipePlaceFront:
                 fps = fpsPipePlace;
-                CharacterOneShotAnimation(pipePlaceFront);
+                currentFrame = pipePlaceFront;
                 break;
 
             case GameData.PlayerState.PipePlaceBack:
                 fps = fpsPipePlace;
-                CharacterOneShotAnimation(pipePlaceBack);
+                currentFrame = pipePlaceBack;
                 break;
 
             case GameData.PlayerState.PipePlaceLeft:
                 fps = fpsPipePlace;
-                CharacterOneShotAnimation(pipePlaceLeft);
+                currentFrame = pipePlaceLeft;
                 break;
 
             case GameData.PlayerState.PipePlaceRight:
                 fps = fpsPipePlace;
-                CharacterOneShotAnimation(pipePlaceRight);
+                currentFrame = pipePlaceRight;
                 break;
 
             //character idle animations
             case GameData.PlayerState.IdleFront:
                 fps = fpsIdle;
-                LoopingAnimation(idleFront);
+                currentFrame = idleFront;
                 break;
 
             case GameData.PlayerState.IdleBack:
                 fps = fpsIdle;
-                LoopingAnimation(idleBack);
+                currentFrame = idleBack;
                 break;
 
             case GameData.PlayerState.IdleRight:
                 fps = fpsIdle;
-                LoopingAnimation(idleRight);
+                currentFrame = idleRight;
                 break;
 
             case GameData.PlayerState.IdleLeft:
                 fps = fpsIdle;
-                LoopingAnimation(idleLeft);
+                currentFrame = idleLeft;
                 break;
 
             //character movemnt animations
@@ -259,17 +268,37 @@ public class CharacterSprite : AnimationController {
             case GameData.PlayerState.MovementLeft:
                 fps = fpsMovement;
                 LoopingAnimation(movementLeft);
-                break;    
+                break;
 
+            //character carrying pipe animations
+            case GameData.PlayerState.MovementFrontCarryPipe:
+                fps = fpsMovementCarry;
+                LoopingAnimation(movementFrontCarry);
+                break;
+
+            case GameData.PlayerState.MovementBackCarryPipe:
+                fps = fpsMovementCarry;
+                LoopingAnimation(movementBackCarry);
+                break;
+
+            case GameData.PlayerState.MovementRightCarryPipe:
+                fps = fpsMovementCarry;
+                LoopingAnimation(movementRightCarry);
+                break;
+
+            case GameData.PlayerState.MovementLeftCarryPipe:
+                fps = fpsMovementCarry;
+                LoopingAnimation(movementLeftCarry);
+                break;
 
             case GameData.PlayerState.Dance:
                 fps = fpsDance;
                 LoopingAnimation(dance);
                 break;
-    }
+        }
     }
 
-        private void CharacterOneShotAnimation(int[] frames)
+    private void CharacterOneShotAnimation(int[] frames)
     {
 
         currentFrame = Mathf.Clamp(currentFrame, frames[0], frames[frames.Length - 1] + 1);

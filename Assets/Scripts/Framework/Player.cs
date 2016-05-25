@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
     private Transform heldPipe;
     [SerializeField]
     private Transform heldPipeContainer;
+    [SerializeField]
+    private GameObject[] cryParticles;
 
     private MeshRenderer heldPipeRenderer;
     private PipeData.PipeType heldPipeType;
@@ -27,6 +29,14 @@ public class Player : MonoBehaviour
         heldPipeRenderer = heldPipe.GetComponent<MeshRenderer>();
         InputController = GetComponent<InputController>();
         heldPipe.parent = null;
+        foreach (GameObject g in cryParticles)
+            g.SetActive(false);
+    }
+
+    public void EnableCryParticles()
+    {
+        foreach (GameObject g in cryParticles)
+            g.SetActive(true);
     }
 
     void Update()
