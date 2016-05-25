@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using GamepadInput;
 
 public class CharacterSprite : AnimationController
 {
@@ -16,6 +17,11 @@ public class CharacterSprite : AnimationController
     public Material charCyanMat;
     public Material charPurpleMat;
     public Material charYellowMat;
+    public Material charNeutralSecondMat;
+    public Material charBlueSecondMat;
+    public Material charCyanSecondMat;
+    public Material charPurpleSecondMat;
+    public Material charYellowSecondMat;
     public Renderer rend;
 
     private InputController InputController;
@@ -35,6 +41,7 @@ public class CharacterSprite : AnimationController
     private int idleBack = 25;
     private int idleRight = 9;
     private int idleLeft = 17;
+
 
     private int[] movementFront         = new int[3] { 1, 2, 3 };
     private int[] movementBack          = new int[3] { 25, 26, 27 };
@@ -58,10 +65,24 @@ public class CharacterSprite : AnimationController
 
     private int[] dance = new int[8] { 2, 3, 5, 6, 10, 11, 18, 19 };
 
+    public GamePad.Index gamepadIndex;
+    public int pressCounter;
+    public int pressNeeded;
+    public float actionTime;
+    public bool extraMatPermit;
+
     void Start()
     {
         if (this.tag != "VirtualPlayer")
+        { 
             InputController = transform.parent.GetComponent<InputController>();
+            gamepadIndex = InputController.index;
+        }
+
+        pressCounter = 0;
+        pressNeeded = 12;
+        actionTime = 2.5f;
+        extraMatPermit = false;
     }
 
     public void Settings()
@@ -69,6 +90,7 @@ public class CharacterSprite : AnimationController
         rows = spriteSheetRows;
         columns = spriteSheetColumns;
         FindMaterial();
+        ExtraMat();
     }
 
     void Update()
@@ -86,23 +108,58 @@ public class CharacterSprite : AnimationController
             switch (InputController.team)
             {
                 case GameData.Team.Blue:
-                    rend.material = charBlueMat;
+                    if (extraMatPermit)
+                    {
+                        rend.material = charBlueSecondMat;
+                    }
+                    else 
+                    {
+                        rend.material = charBlueMat;
+                    }
                     break;
 
                 case GameData.Team.Cyan:
-                    rend.material = charCyanMat;
+                    if (extraMatPermit)
+                    {
+                        rend.material = charCyanSecondMat;
+                    }
+                    else 
+                    {
+                        rend.material = charCyanMat;
+                    }
                     break;
 
                 case GameData.Team.Purple:
-                    rend.material = charPurpleMat;
+                    if (extraMatPermit)
+                    {
+                        rend.material = charPurpleSecondMat;
+                    }
+                    else
+                    {
+                        rend.material = charPurpleMat;
+                    }
                     break;
 
                 case GameData.Team.Yellow:
-                    rend.material = charYellowMat;
+                    if (extraMatPermit)
+                    {
+                        rend.material = charYellowSecondMat;
+                    }
+                    else
+                    {
+                        rend.material = charYellowMat;
+                    }
                     break;
 
                 case GameData.Team.Neutral:
-                    rend.material = charNeutralMat;
+                    if (extraMatPermit)
+                    {
+                        rend.material = charNeutralSecondMat;
+                    }
+                    else
+                    {
+                        rend.material = charNeutralMat;
+                    }
                     break;
             }
         }
@@ -295,6 +352,38 @@ public class CharacterSprite : AnimationController
                 fps = fpsDance;
                 LoopingAnimation(dance);
                 break;
+        }
+    }
+    private void ExtraMat()
+    {
+        if (pressCounter > 0)
+        {
+            actionTime -= Time.deltaTime;
+        }
+
+        if (GamePad.GetButtonDown(GamePad.Button.Back, gamepadIndex))
+        {
+            pressCounter++;
+            if (actionTime <= 0)
+            {
+                pressCounter = 0;
+                actionTime = 2.5f;
+            }
+
+            if (pressCounter >= pressNeeded && actionTime >= 0)
+            {
+                pressCounter = 0;
+                actionTime = 2.5f;
+
+                if (extraMatPermit)
+                {
+                    extraMatPermit = false;
+                }
+                else
+                {
+                    extraMatPermit = true;
+                }
+            }
         }
     }
 
