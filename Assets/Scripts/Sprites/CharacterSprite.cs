@@ -63,7 +63,7 @@ public class CharacterSprite : AnimationController
     private int pipePlaceRight          = 12;
     private int pipePlaceLeft           = 20;
 
-    private int[] dance = new int[8] { 2, 3, 5, 6, 10, 11, 18, 19 };
+    private int[] dance = new int[10] { 2, 3, 13, 14, 15, 16, 21, 22, 23, 24};
 
     public GamePad.Index gamepadIndex;
     public int pressCounter;
