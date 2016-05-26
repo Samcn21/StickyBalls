@@ -52,7 +52,16 @@ public class WinningMenu : MonoBehaviour
         if (!winningMenu.enabled) return;
 	    GamepadState padState = GamePad.GetState(GamePad.Index.Any);
 
-	    if (padState.Up || padState.LeftStickAxis.y > 0.5f)
+        if (GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.Any)) {
+            if (selected == 0) {
+                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            else {
+                SceneManager.LoadScene(0);
+            }
+        }
+
+        if (padState.Up || padState.LeftStickAxis.y > 0.5f)
 	    {
 	        if (buttonHeld) return;
 	        if (selected == 1)
@@ -71,18 +80,6 @@ public class WinningMenu : MonoBehaviour
         {
             buttonHeld = false;
         }
-
-	    if (GamePad.GetButtonDown(GamePad.Button.A, GamePad.Index.Any))
-	    {
-	        if (selected == 0)
-	        {
-	            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-	        }
-	        else
-	        {
-	            SceneManager.LoadScene(0);
-	        }
-	    }
 	}
 
     private void DisableAllImages()
