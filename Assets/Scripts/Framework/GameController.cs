@@ -71,6 +71,18 @@ public class GameController : MonoBehaviour
             if (winningPlayers.Count == 1)
                 PlayerWon(winningPlayers[0].Team);
         }
+        else if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+        {
+
+            GameObject[] allPipesParticle = GameObject.FindGameObjectsWithTag("PipesParticles");
+
+            foreach (GameObject pipeParticle in allPipesParticle)
+            {
+
+                Destroy(pipeParticle);
+            }
+
+        }
     }
 
     public void SpawnPlayer(GameData.Team team, GamePad.Index gamepadIndex)
@@ -112,14 +124,15 @@ public class GameController : MonoBehaviour
 
             StartCoroutine(ShowWinnerGUI(winningTeam));
         }
+
     }
 
     public void Lose(GameData.Team team)
     {
         if (!PlayerSources.ContainsKey(team))
             return;
-        if(PlayerSources[team]!=null)
-        PlayerSources[team].Explode();
+        if (PlayerSources[team] != null)
+            PlayerSources[team].Explode();
         if (Gamemode_IsCoop)
         {
             List<Player> toLose = PlayersCoop[team];
@@ -135,9 +148,9 @@ public class GameController : MonoBehaviour
             Players[team].EnableCryParticles();
             Players[team].Die();
         }
-        
-    }
 
+    }
+    
     IEnumerator ShowWinnerGUI(GameData.Team team)
     {
         yield return new WaitForSeconds(3);
