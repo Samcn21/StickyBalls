@@ -14,7 +14,6 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     [SerializeField]
     private float velocityThreshold = 0.1f;
-    private float offsetFromMaxRadius =0.1f;
     private float holdTimerLimit;
     public GamePad.Index index;
     public GameData.Team team;
@@ -391,7 +390,7 @@ public class InputController : MonoBehaviour
             }
         }
     next:
-        if (player.HeldPipeType == PipeData.PipeType.Void && Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))<collisionTrigger.radius-offsetFromMaxRadius)
+        if (player.HeldPipeType == PipeData.PipeType.Void)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
             if (conveyorPipe != null)
