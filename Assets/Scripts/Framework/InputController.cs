@@ -67,10 +67,6 @@ public class InputController : MonoBehaviour
     public bool isDead { get; private set; }
     public bool isLocked;
 
-
-    //TEST VARIABLES
-    [SerializeField]
-    private bool TEST_DELETE = false;
     [SerializeField]
     private bool TEST_INFINITEXPIPE = false;
 
@@ -182,37 +178,9 @@ public class InputController : MonoBehaviour
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
 
-
-        if (TEST_DELETE)
-        {
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
-            {
-                isPressingX = true;
-                isPressingDelete = true;
-            }
-            else
-            {
-                isPressingDelete = false;
-            }
-
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
-            {
-                isPressingX = false;
-                destroyTimer = resetDestroyTimer;
-            }
-            if (isPressingX && pipeToDestroyRef != null)
-            {
-                destroyTimer -= Time.deltaTime;
-                if (pipeToDestroyRef != null && destroyTimer <= 0)
-                {
-                    pipeToDestroyRef = null;
-                }
-            }
-        }
-
         if (gamepadState.A)
         {
-            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
+            if (pipeToDestroyRef != null && selectedConveyorPipe == null && selectedPipeConnection == null)
             {
                 if (holdTimer >= holdTimerLimit)
                 {
