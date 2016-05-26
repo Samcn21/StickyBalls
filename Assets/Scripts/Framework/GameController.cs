@@ -93,10 +93,23 @@ public class GameController : MonoBehaviour
                 return;
 
             GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+            GameObject[] allPipesParticle = GameObject.FindGameObjectsWithTag("PipesParticles");
+            GameObject[] CMSuckingParticles = GameObject.FindGameObjectsWithTag("CMSucking");
             foreach (GameObject pipe in allPipes)
             {
                 pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
             }
+
+            foreach (GameObject pipeParticle in allPipesParticle)
+            {
+                Destroy(pipeParticle);
+            }
+
+            foreach (GameObject cmP in CMSuckingParticles)
+            {
+                Destroy(cmP);
+            }
+
             AudioManager.PlayCenterMachineConnection();
             CenterMachineSprite.FindCentralMachineStatus(winningTeam);
 
@@ -139,7 +152,7 @@ public class GameController : MonoBehaviour
             winningGUI.gameObject.SetActive(true);
 
             Text text = winningGUI.GetComponentInChildren<Text>();
-            text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
+            text.GetComponent<Text>().text = color.ToString().ToUpper() +" PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[color];
         }
     }
