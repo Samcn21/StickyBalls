@@ -56,7 +56,7 @@ public class GameController : MonoBehaviour
         }
 
         gameRunning = true;
-        
+
         if (winningGUI != null)
         {
             winningGUI.gameObject.SetActive(false);
@@ -75,6 +75,18 @@ public class GameController : MonoBehaviour
             }
             if (winningPlayers.Count == 1)
                 PlayerWon(winningPlayers[0].Team);
+        }
+        else if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+        {
+
+            GameObject[] allPipesParticle = GameObject.FindGameObjectsWithTag("PipesParticles");
+
+            foreach (GameObject pipeParticle in allPipesParticle)
+            {
+
+                Destroy(pipeParticle);
+            }
+
         }
     }
 
@@ -117,14 +129,15 @@ public class GameController : MonoBehaviour
 
             StartCoroutine(ShowWinnerGUI(winningTeam));
         }
+
     }
 
     public void Lose(GameData.Team team)
     {
         if (!PlayerSources.ContainsKey(team))
             return;
-        if(PlayerSources[team]!=null)
-        PlayerSources[team].Explode();
+        if (PlayerSources[team] != null)
+            PlayerSources[team].Explode();
         if (Gamemode_IsCoop)
         {
             List<Player> toLose = PlayersCoop[team];
@@ -140,10 +153,10 @@ public class GameController : MonoBehaviour
             Players[team].EnableCryParticles();
             Players[team].Die();
         }
-        
+
     }
 
-    IEnumerator ShowWinnerGUI(GameData.Team  color)
+    IEnumerator ShowWinnerGUI(GameData.Team color)
     {
         yield return new WaitForSeconds(3);
 
@@ -152,7 +165,7 @@ public class GameController : MonoBehaviour
             winningGUI.gameObject.SetActive(true);
 
             Text text = winningGUI.GetComponentInChildren<Text>();
-            text.GetComponent<Text>().text = color.ToString().ToUpper() +" PLAYER WON!";
+            text.GetComponent<Text>().text = color.ToString().ToUpper() + " PLAYER WON!";
             text.GetComponent<Text>().color = GameData.TeamColors[color];
         }
     }
