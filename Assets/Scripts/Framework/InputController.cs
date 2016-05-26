@@ -14,11 +14,11 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     [SerializeField]
     private float velocityThreshold = 0.1f;
-   
+    private float offsetFromMaxRadius =0.1f;
     private float holdTimerLimit;
     public GamePad.Index index;
     public GameData.Team team;
-
+    private SphereCollider collisionTrigger;
     private AudioManager AudioManager;
     private Player player;
     private GamepadState gamepadState;
@@ -94,6 +94,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        collisionTrigger = GetComponent<SphereCollider>();
         holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
@@ -371,18 +372,26 @@ public class InputController : MonoBehaviour
                 }
                 else
                 {
-                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
-                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    if (player.HeldPipeType == PipeData.PipeType.Void)
+                    {
+                        if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                            Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                        {
+                            pipeToDestroyRef.SetHightlight(false);
+                            pipeToDestroyRef = col.GetComponent<Pipe>();
+                            pipeToDestroyRef.SetHightlight(true);
+                        }
+                    }
+                    else
                     {
                         pipeToDestroyRef.SetHightlight(false);
-                        pipeToDestroyRef = col.GetComponent<Pipe>();
-                        pipeToDestroyRef.SetHightlight(true);
+                        pipeToDestroyRef = null;
                     }
                 }
             }
         }
     next:
-        if (player.HeldPipeType == PipeData.PipeType.Void)
+        if (player.HeldPipeType == PipeData.PipeType.Void && Mathf.Abs(Vector3.Distance(transform.position,col.gameObject.transform.position))<collisionTrigger.radius-offsetFromMaxRadius)
         {
             ConveyorPipe conveyorPipe = col.gameObject.GetComponent<ConveyorPipe>();
             if (conveyorPipe != null)
