@@ -39,8 +39,8 @@ public class InputController : MonoBehaviour
     //Color Assign Variables
     public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
     private bool pickedPipe = true;
-    private PlayerColorManager PlayerColorManager;
     private Pipe pipeToDestroyRef = null;
+    private List<GameData.Team> assignedColors = new List<GameData.Team>();
     public CharacterSprite CharacterSprite { get; private set; }
 
     //Checking the velocity of the player
@@ -93,7 +93,6 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        PlayerColorManager = GameObject.FindObjectOfType<PlayerColorManager>();
         collisionTrigger = GetComponent<SphereCollider>();
         holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
@@ -360,10 +359,17 @@ public class InputController : MonoBehaviour
         if (col.gameObject.tag == "Pipe")
         {
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
+
+            if (!assignedColors.Contains(team) && StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+            { 
+                return;
+            }
+
             if (pipe.Team != team)
             {
                 goto next;
             }
+
             if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
             {
                 if (pipeToDestroyRef == null)
@@ -406,11 +412,9 @@ public class InputController : MonoBehaviour
         {
             Pipe pipe = col.GetComponent<Pipe>();
             if (pipe == null) return;
-            //Debug.Log(PlayerColorManager.IsColorTaken(pipe.Team));
-            //if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA && PlayerColorManager.IsColorTaken(pipe.Team))
-            //    return;
             if (pipe.Team == GameData.Team.Neutral && !pipe.isCenterMachine)
                 return;
+
             foreach (GameData.Coordinate c in pipe.connections)
             {
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
@@ -554,6 +558,7 @@ public class InputController : MonoBehaviour
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
+
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             GameObject newPipe = Instantiate(pipeMan.pipePrefab,
@@ -567,11 +572,14 @@ public class InputController : MonoBehaviour
                     gridController.Grid[coord.x, coord.y].pipe.UpdateParticles();
             }
 
+
+
             //place a pipe in chosen color pipeline in color assign scene
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
             {
-                team = pipe.Team;
+                assignedColors.Add(pipe.Team);
 
+                team = pipe.Team;
                 switch (index)
                 {
                     case GamePad.Index.One:
@@ -600,6 +608,7 @@ public class InputController : MonoBehaviour
                 }
                 
             }
+
             pipe.UpdateParticles();
             player.PlacePipe();
             selectedPipeConnection = null;
