@@ -39,7 +39,7 @@ public class InputController : MonoBehaviour
     //Color Assign Variables
     public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
     private bool pickedPipe = true;
-
+    private PlayerColorManager PlayerColorManager;
     private Pipe pipeToDestroyRef = null;
     public CharacterSprite CharacterSprite { get; private set; }
 
@@ -93,6 +93,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        PlayerColorManager = GameObject.FindObjectOfType<PlayerColorManager>();
         collisionTrigger = GetComponent<SphereCollider>();
         holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
@@ -405,6 +406,9 @@ public class InputController : MonoBehaviour
         {
             Pipe pipe = col.GetComponent<Pipe>();
             if (pipe == null) return;
+            //Debug.Log(PlayerColorManager.IsColorTaken(pipe.Team));
+            //if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA && PlayerColorManager.IsColorTaken(pipe.Team))
+            //    return;
             if (pipe.Team == GameData.Team.Neutral && !pipe.isCenterMachine)
                 return;
             foreach (GameData.Coordinate c in pipe.connections)
@@ -594,6 +598,7 @@ public class InputController : MonoBehaviour
                     if (vp.GetComponent<VirtualPlayer>().index == index)
                         vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(team);
                 }
+                
             }
             pipe.UpdateParticles();
             player.PlacePipe();
