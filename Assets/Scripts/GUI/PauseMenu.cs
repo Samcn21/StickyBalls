@@ -132,7 +132,7 @@ public class PauseMenu : MonoBehaviour {
                 switch (selectIndex)
                 {
                     case 0:
-                        isPaused = false;
+                        DoPause(false);
                         break;
                     case 1:
                         SceneManager.LoadScene(levelName);

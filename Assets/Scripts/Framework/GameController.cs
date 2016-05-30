@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts.States;
 using GamepadInput;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -8,7 +9,6 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject winningGUI;
     private CenterMachineSprite CenterMachineSprite;
     private static GameController instance;
     public static GameController Instance
@@ -56,11 +56,6 @@ public class GameController : MonoBehaviour
         }
 
         gameRunning = true;
-        
-        if (winningGUI != null)
-        {
-            winningGUI.gameObject.SetActive(false);
-        }
     }
 
     void Update()
@@ -75,6 +70,18 @@ public class GameController : MonoBehaviour
             }
             if (winningPlayers.Count == 1)
                 PlayerWon(winningPlayers[0].Team);
+        }
+        else if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+        {
+
+            GameObject[] allPipesParticle = GameObject.FindGameObjectsWithTag("PipesParticles");
+
+            foreach (GameObject pipeParticle in allPipesParticle)
+            {
+
+                Destroy(pipeParticle);
+            }
+
         }
     }
 
@@ -93,10 +100,23 @@ public class GameController : MonoBehaviour
                 return;
 
             GameObject[] allPipes = GameObject.FindGameObjectsWithTag("Pipe");
+            GameObject[] allPipesParticle = GameObject.FindGameObjectsWithTag("PipesParticles");
+            GameObject[] CMSuckingParticles = GameObject.FindGameObjectsWithTag("CMSucking");
             foreach (GameObject pipe in allPipes)
             {
                 pipe.GetComponent<PipesSprite>().FindWinnerPipes(winningTeam);
             }
+
+            foreach (GameObject pipeParticle in allPipesParticle)
+            {
+                Destroy(pipeParticle);
+            }
+
+            foreach (GameObject cmP in CMSuckingParticles)
+            {
+                Destroy(cmP);
+            }
+
             AudioManager.PlayCenterMachineConnection();
             CenterMachineSprite.FindCentralMachineStatus(winningTeam);
 
@@ -104,14 +124,15 @@ public class GameController : MonoBehaviour
 
             StartCoroutine(ShowWinnerGUI(winningTeam));
         }
+
     }
 
     public void Lose(GameData.Team team)
     {
         if (!PlayerSources.ContainsKey(team))
             return;
-        if(PlayerSources[team]!=null)
-        PlayerSources[team].Explode();
+        if (PlayerSources[team] != null)
+            PlayerSources[team].Explode();
         if (Gamemode_IsCoop)
         {
             List<Player> toLose = PlayersCoop[team];
@@ -127,20 +148,12 @@ public class GameController : MonoBehaviour
             Players[team].EnableCryParticles();
             Players[team].Die();
         }
-        
+
     }
-
-    IEnumerator ShowWinnerGUI(GameData.Team  color)
+    
+    IEnumerator ShowWinnerGUI(GameData.Team team)
     {
-        yield return new WaitForSeconds(3);
-
-        if (winningGUI != null)
-        {
-            winningGUI.gameObject.SetActive(true);
-
-            Text text = winningGUI.GetComponentInChildren<Text>();
-            text.GetComponent<Text>().text = color.ToString() + " PLAYER WON!";
-            text.GetComponent<Text>().color = GameData.TeamColors[color];
-        }
+        yield return new WaitForSeconds(5);
+        StateManager.SwitchState(new Winning(StateManager, team));
     }
 }

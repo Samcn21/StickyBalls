@@ -5,13 +5,13 @@ using System.Collections.Generic;
 public class GameData
 {
 
-    public enum Team
+    public enum Team 
     {
-        Purple,
-        Blue,
-        Yellow,
-        Cyan,
-        Neutral
+        Blue = 0,
+        Cyan = 1,
+        Purple = 2,
+        Yellow = 3,
+        Neutral = -1
     }
 
     public enum Direction
@@ -202,8 +202,7 @@ public class GameData
         ColorAssign2vs2,
         PlayFFA,
         Play2vs2,
-        WinningFFA,
-        Winning2vs2,
+        Winning,
         Restart,
         Pause,
         Replay  //for ghost trail later on
