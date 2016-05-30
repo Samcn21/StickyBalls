@@ -105,7 +105,6 @@ public class AudioManager : MonoBehaviour
         {
             cmContinueVolume -= Time.deltaTime * 0.04f;
             audioControllerSFX.volume = SFXVolume * cmContinueVolume;
-            Debug.Log(cmContinueVolume);
             if (cmContinueVolume <= 0.04f)
                 dropVolume = false;
         }

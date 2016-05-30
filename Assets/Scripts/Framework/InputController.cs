@@ -14,11 +14,10 @@ public class InputController : MonoBehaviour
     private float stickSensivity = 0.25f;
     [SerializeField]
     private float velocityThreshold = 0.1f;
-   
     private float holdTimerLimit;
     public GamePad.Index index;
     public GameData.Team team;
-
+    private SphereCollider collisionTrigger;
     private AudioManager AudioManager;
     private Player player;
     private GamepadState gamepadState;
@@ -40,8 +39,8 @@ public class InputController : MonoBehaviour
     //Color Assign Variables
     public Dictionary<GamePad.Index, GameData.Team> playerColorAssign = new Dictionary<GamePad.Index, GameData.Team>();
     private bool pickedPipe = true;
-
     private Pipe pipeToDestroyRef = null;
+    private List<GameData.Team> assignedColors = new List<GameData.Team>();
     public CharacterSprite CharacterSprite { get; private set; }
 
     //Checking the velocity of the player
@@ -67,10 +66,6 @@ public class InputController : MonoBehaviour
     public bool isDead { get; private set; }
     public bool isLocked;
 
-
-    //TEST VARIABLES
-    [SerializeField]
-    private bool TEST_DELETE = false;
     [SerializeField]
     private bool TEST_INFINITEXPIPE = false;
 
@@ -98,6 +93,7 @@ public class InputController : MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        collisionTrigger = GetComponent<SphereCollider>();
         holdTimerLimit = GameController.Instance.pickupTimer;
         closePipes = new List<Pipe>();
         StateManager = GameObject.FindGameObjectWithTag("GameController").GetComponent<StateManager>();
@@ -182,37 +178,9 @@ public class InputController : MonoBehaviour
         if (pipeToDestroyRef != null && player.HeldPipeType == PipeData.PipeType.Void)
             pipeToDestroyRef.SetHightlight(true);
 
-
-        if (TEST_DELETE)
-        {
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonDown(GamePad.Button.X, gamepadIndex))
-            {
-                isPressingX = true;
-                isPressingDelete = true;
-            }
-            else
-            {
-                isPressingDelete = false;
-            }
-
-            if (GameController.Instance.PipeStatus.DestroySinglePipeActive && GamePad.GetButtonUp(GamePad.Button.X, gamepadIndex))
-            {
-                isPressingX = false;
-                destroyTimer = resetDestroyTimer;
-            }
-            if (isPressingX && pipeToDestroyRef != null)
-            {
-                destroyTimer -= Time.deltaTime;
-                if (pipeToDestroyRef != null && destroyTimer <= 0)
-                {
-                    pipeToDestroyRef = null;
-                }
-            }
-        }
-
         if (gamepadState.A)
         {
-            if (pipeToDestroyRef != null && !TEST_DELETE && selectedConveyorPipe == null && selectedPipeConnection == null)
+            if (pipeToDestroyRef != null && selectedConveyorPipe == null && selectedPipeConnection == null)
             {
                 if (holdTimer >= holdTimerLimit)
                 {
@@ -229,8 +197,8 @@ public class InputController : MonoBehaviour
             holdTimer = 0;
 
             if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
-            { 
-                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
+            {
+                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null && velocityTotal <= velocityThreshold)
                 {
                     GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
                 }
@@ -391,10 +359,17 @@ public class InputController : MonoBehaviour
         if (col.gameObject.tag == "Pipe")
         {
             Pipe pipe = col.gameObject.GetComponent<Pipe>();
+
+            if (!assignedColors.Contains(team) && StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
+            { 
+                return;
+            }
+
             if (pipe.Team != team)
             {
                 goto next;
             }
+
             if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
             {
                 if (pipeToDestroyRef == null)
@@ -403,12 +378,20 @@ public class InputController : MonoBehaviour
                 }
                 else
                 {
-                    if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
-                        Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                    if (player.HeldPipeType == PipeData.PipeType.Void)
+                    {
+                        if (Mathf.Abs(Vector3.Distance(transform.position, col.gameObject.transform.position)) <
+                            Mathf.Abs(Vector3.Distance(transform.position, pipeToDestroyRef.gameObject.transform.position)))
+                        {
+                            pipeToDestroyRef.SetHightlight(false);
+                            pipeToDestroyRef = col.GetComponent<Pipe>();
+                            pipeToDestroyRef.SetHightlight(true);
+                        }
+                    }
+                    else
                     {
                         pipeToDestroyRef.SetHightlight(false);
-                        pipeToDestroyRef = col.GetComponent<Pipe>();
-                        pipeToDestroyRef.SetHightlight(true);
+                        pipeToDestroyRef = null;
                     }
                 }
             }
@@ -431,6 +414,7 @@ public class InputController : MonoBehaviour
             if (pipe == null) return;
             if (pipe.Team == GameData.Team.Neutral && !pipe.isCenterMachine)
                 return;
+
             foreach (GameData.Coordinate c in pipe.connections)
             {
                 if (gridController.Grid[c.x, c.y].pipe == null && !closePipeConnections.Contains(c) && !gridController.Grid[c.x, c.y].locked)
@@ -574,6 +558,7 @@ public class InputController : MonoBehaviour
 
         //SFX
         AudioManager.PlayOneShotPlayer(GameData.AudioClipState.PlacePipe, index, true);
+
         if (player.HeldPipeType != PipeData.PipeType.Dynamite)
         {
             GameObject newPipe = Instantiate(pipeMan.pipePrefab,
@@ -587,11 +572,14 @@ public class InputController : MonoBehaviour
                     gridController.Grid[coord.x, coord.y].pipe.UpdateParticles();
             }
 
+
+
             //place a pipe in chosen color pipeline in color assign scene
             if (StateManager.CurrentActiveState == GameData.GameStates.ColorAssignFFA)
             {
-                team = pipe.Team;
+                assignedColors.Add(pipe.Team);
 
+                team = pipe.Team;
                 switch (index)
                 {
                     case GamePad.Index.One:
@@ -618,7 +606,9 @@ public class InputController : MonoBehaviour
                     if (vp.GetComponent<VirtualPlayer>().index == index)
                         vp.GetComponent<CharacterSprite>().FindMaterialVirtualPlayer(team);
                 }
+                
             }
+
             pipe.UpdateParticles();
             player.PlacePipe();
             selectedPipeConnection = null;
@@ -704,19 +694,47 @@ public class InputController : MonoBehaviour
 
                 if (CharacterSprite.previousAnim.ToString().Contains("Front"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabFront;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleFront;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Right"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleRight;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabRight;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleRight;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Left"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleLeft;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabLeft;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleLeft;
+                    }
                 }
                 else if (CharacterSprite.previousAnim.ToString().Contains("Back"))
                 {
-                    CharacterSprite.currentAnim = GameData.PlayerState.IdleBack;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.PipeGrabBack;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.IdleBack;
+                    }
                 }
             }
             else
@@ -727,22 +745,50 @@ public class InputController : MonoBehaviour
                 if (velocityX >= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.East;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementRight;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementRightCarryPipe;                    
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementRight;
+                    }
                 }
                 else if (velocityZ >= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.North;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementBack;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementBackCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementBack;
+                    }
                 }
                 else if (velocityZ <= velocityThreshold && Mathf.Abs(velocityX) < Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.South;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementFront;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementFrontCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementFront;
+                    }
                 }
                 else if (velocityX <= velocityThreshold && Mathf.Abs(velocityX) > Mathf.Abs(velocityZ))
                 {
                     characterFacing = GameData.Direction.West;
-                    CharacterSprite.currentAnim = GameData.PlayerState.MovementLeft;
+                    if (player.HeldPipeType != PipeData.PipeType.Void)
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementLeftCarryPipe;
+                    }
+                    else
+                    {
+                        CharacterSprite.currentAnim = GameData.PlayerState.MovementLeft;
+                    }
                 }
             }
         }
