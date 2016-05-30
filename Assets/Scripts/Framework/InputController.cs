@@ -197,8 +197,8 @@ public class InputController : MonoBehaviour
             holdTimer = 0;
 
             if (StateManager.CurrentActiveState != GameData.GameStates.ColorAssignFFA)
-            { 
-                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null)
+            {
+                if (holdTimer > 0.15f && pipeToDestroyRef != null && selectedPipeConnection == null && selectedConveyorPipe == null && velocityTotal <= velocityThreshold)
                 {
                     GameController.Instance.ProgressBarManager.ShowProgressBarAt(transform,holdTimer);
                 }
